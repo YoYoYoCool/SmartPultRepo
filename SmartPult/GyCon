@@ -1,0 +1,638 @@
+#include <xdc/std.h>
+
+#include <xdc/runtime/Log.h>
+#include <xdc/runtime/Diags.h>
+#include <xdc/runtime/System.h>
+#include <ti/sysbios/BIOS.h>
+#include <ti/sysbios/knl/Semaphore.h>
+#include <ti/sysbios/knl/Task.h>
+#include <ControlSystem/ServoPwm.h>
+
+#include <GyConBoard.h>
+#include <ti/drivers/GPIO.h>
+
+#include <../GyConCommon/ExchangeDrivers/UartDriver.h>
+#include <ControlSystem/Dus/DusProtocol.h>
+#include <ControlSystem/Encoder/Encoder.h>
+#include <ExchangeLibrary/ExchangeCore/PackRxTx/CommonRxTx.h>
+#include <../GyConCommon/ControlSystem/TransferFunctions.h>
+#include <ControlSystem/AxisController.h>
+#include <ControlSystem/Controllers/SimpleControllers.h>
+#include <ControlSystem/MainController/MainController.h>
+#include <ExchangeLibrary/BasicRs485/BasicRs485.h>
+
+#include <../GyConCommon/ExchangeBasic/BasicProtocol.h>
+#include <Periphery/GyroVertical/GyroVertical.h>
+#include <Periphery/Pult/Pult.h>
+#include <Periphery/Encoders/Encoders.h>
+
+extern "C" {
+void printfOutFunc(char* buf, UInt count);
+void monitoringTaskFxn();
+void pultTaskFxn();
+void verticalGyroTaskFxn();
+void clk1ms();
+void clk100ms();
+void idle();
+void controllerTaskFxn(xdc_UArg, xdc_UArg);
+void mainTaskFxn();
+void encodersTaskFxn();
+}
+
+#define PREINIT_DELAY_CYCLES 1200000
+static int startDelayCounter = 0;
+
+int main(void) {
+	/* Call board init functions. */
+	for(startDelayCounter = 0; startDelayCounter<PREINIT_DELAY_CYCLES; startDelayCounter++) {
+
+	}
+	GyConBoard_initGeneral();
+	GyConBoard_initGPIO();
+	GyConBoard_initUART();
+	GyConBoard_initPWM();
+	/* Turn on user LED */
+	//GPIO_write(Board_LED0, Board_LED_ON);
+	/* Start BIOS */
+	BIOS_start();
+	return (0);
+}
+
+
+void commonParserTest();
+void parseTest();
+void transmitTest();
+
+
+
+volatile float panSense = 0.67;
+volatile float dutchSense = 0.67;
+volatile float tiltSense = 0.67;
+
+volatile float panSpeed = 0.1;
+volatile float dutchSpeed = 0.1;
+volatile float tiltSpeed = 0.1;
+
+
+volatile float P = 0;
+volatile float I = 0;
+
+volatile bool recieveFlag = false;
+
+typedef enum {
+	GET_BASIC_DATA = 0, SET_AXIS_SETTINGS = 5, GET_AXIS_SETTINGS = 10
+} PackType;
+
+typedef enum {
+	PAN = 0, DUTCH = 1, TILT = 2
+} AxisType;
+
+UInt8 controllerTaskStack[2048];
+
+static volatile float panSpeedRef = 0, dutchSpeedRef = 0, tiltSpeedRef = 0, focus, zoom;
+
+AxisController* panAxisSpeedController = NULL;
+AxisController* dutchAxisSpeedController = NULL;
+AxisController* tiltAxisSpeedController = NULL;
+DusProtocol* panDusProtocol = NULL;
+DusProtocol* dutchDusProtocol = NULL;
+DusProtocol* tiltDusProtocol = NULL;
+GyroVertical* gv;
+Encoders* encoders;
+Pult *pult;
+MainController *mainController;
+
+#define PAN_ANGLE_LIMIT_COEFF 2777.0
+#define DUTCH_ANGLE_LIMIT_COEFF 2777.0
+#define TILT_ANGLE_LIMIT_COEFF 7777.0
+#define ANGLE_UNLIMIT 999999999.0
+
+void mainTaskFxn() {
+	Pult pult;
+	::pult = &pult;
+	GyroVertical gv(GyConBoard_GV_UART);
+	::gv = &gv;
+	Encoders encoders(GyConBoard_ENCODER_UART);
+	::encoders = &encoders;
+
+	ServoPwm panPwmA(GyConBoard_panPwmA, 100);
+	ServoPwm panPwmB(GyConBoard_panPwmB, 100);
+
+	ServoPwm dutchPwmA(GyConBoard_dutchPwmA, 100);
+	ServoPwm dutchPwmB(GyConBoard_dutchPwmB, 100);
+	dutchPwmA.sign = -1;
+	dutchPwmB.sign = -1;
+
+	ServoPwm tiltPwmA(GyConBoard_tiltPwmA, 100);
+	ServoPwm tiltPwmB(GyConBoard_tiltPwmB, 100);
+	tiltPwmA.sign = -1;
+	tiltPwmB.sign = -1;
+
+	PIDController panSpeedCorrector(5.0, 25.0);
+	PIDController dutchSpeedCorrector(5.0, 25.0);
+	RPIDController tiltSpeedCorrector(5.0, 25.0, 0.05);
+	tiltSpeedCorrector.setKres(0.05);
+	//Инициализация систем управления
+
+	AxisController panAxisSpeedController(&panPwmA, &panPwmB,
+			&panSpeedCorrector);
+	AxisController dutchAxisSpeedController(&dutchPwmA, &dutchPwmB,
+			&dutchSpeedCorrector);
+	AxisController tiltAxisSpeedController(&tiltPwmA, &tiltPwmB,
+			&tiltSpeedCorrector);
+
+	panAxisSpeedController.speedControl.currentScale = 10.0;
+	panAxisSpeedController.angleLimitedSpeedControl.setTurnControlK(PAN_ANGLE_LIMIT_COEFF);
+	panAxisSpeedController.angleLimitedSpeedControl.setMaxTurns(+500.1);
+	panAxisSpeedController.angleLimitedSpeedControl.setMinTurns(-500.1);
+
+	dutchAxisSpeedController.angleLimitedSpeedControl.setTurnControlSign(-1.0);
+	dutchAxisSpeedController.angleLimitedSpeedControl.setTurnControlK(DUTCH_ANGLE_LIMIT_COEFF);
+	dutchAxisSpeedController.angleLimitedSpeedControl.setMaxTurns(+2.1);
+	dutchAxisSpeedController.angleLimitedSpeedControl.setMinTurns(-2.1);
+
+	tiltAxisSpeedController.angleLimitedSpeedControl.setTurnControlK(TILT_ANGLE_LIMIT_COEFF);
+	tiltAxisSpeedController.angleLimitedSpeedControl.setMaxTurns(ANGLE_UNLIMIT);
+	tiltAxisSpeedController.angleLimitedSpeedControl.setMinTurns(-ANGLE_UNLIMIT);
+
+	::panAxisSpeedController = &panAxisSpeedController;
+	::dutchAxisSpeedController = &dutchAxisSpeedController;
+	::tiltAxisSpeedController = &tiltAxisSpeedController;
+
+	//*========== Инициализация ДУС  ===========*/
+	DusProtocol panDusProtocol(GyConBoard_PAN_DUS_UART, 115000,
+			&panAxisSpeedController);
+	DusProtocol dutchDusProtocol(GyConBoard_DUTCH_DUS_UART, 115000,
+			&dutchAxisSpeedController);
+	DusProtocol tiltDusProtocol(GyConBoard_TILT_DUS_UART, 115000,
+			&tiltAxisSpeedController);
+
+	dutchDusProtocol.sign = -1.0;
+	panDusProtocol.offset = 0.0137;
+	dutchDusProtocol.offset = 0.014;
+	tiltDusProtocol.offset = -0.0;
+	//	panAxisSpeedController.speedControlMode();
+	panAxisSpeedController.setPI(0.23, 0.001);
+	//	dutchAxisSpeedController.angleControlMode();
+	dutchAxisSpeedController.setPI(-0.15, 0.001);
+	//	tiltAxisSpeedController.speedControlMode();
+	tiltAxisSpeedController.setPI(0.07, 0.001); //0.07, 0.015
+	::panDusProtocol = &panDusProtocol;
+    ::dutchDusProtocol = &dutchDusProtocol;
+	::tiltDusProtocol = &tiltDusProtocol;
+
+	MainControlledParams params;
+	params.panAxisSpeedController = &panAxisSpeedController;
+	params.dutchAxisSpeedController = &dutchAxisSpeedController;
+	params.tiltAxisSpeedController = &tiltAxisSpeedController;
+	params.gv = &gv;
+	params.pult = &pult;
+	params.panGyrconPin = GyConBoard_panGyrcon;
+	params.dutchGyrconPin = GyConBoard_dutchGyrcon;
+	params.tiltGyrconPin = GyConBoard_tiltGyrcon;
+	params.panDus =  &panDusProtocol;
+	params.dutchDus =  &dutchDusProtocol;
+	params.tiltDus =  &tiltDusProtocol;
+    params.encoders = &encoders;
+
+	MainController mainController(&params);
+    ::mainController = &mainController;
+	ti_sysbios_knl_Task_Params controllerTaskParams;
+	Task_Params_init(&controllerTaskParams);
+	controllerTaskParams.instance->name = "controllerTask";
+	controllerTaskParams.priority = 2;
+	controllerTaskParams.arg0 = (xdc_UArg) &mainController;
+	controllerTaskParams.arg1 = 0;
+	controllerTaskParams.stackSize = 2048;
+	controllerTaskParams.stack = &controllerTaskStack;
+	Task_Struct controllerTaskStruct;
+	Task_construct(&controllerTaskStruct,
+			(ti_sysbios_knl_Task_FuncPtr) controllerTaskFxn,
+			&controllerTaskParams, NULL);
+
+	Task_sleep(1500);
+	GPIO_write(GyConBoard_SERVO_ENABLE_GPIO, GyConBoard_SERVO_ENABLE);
+    while(true) {
+    	Task_sleep(100);
+    }
+}
+
+void monitoringTaskFxn() {
+//Инициализация ШИМ
+
+
+//*========== Инициализация протокола обмена с обработчиком энкодера =========*/
+//	EncoderProtocol encoderProtocol(GyConBoard_ENCODER_UART, 120192,
+//			&panAxisSpeedController, NULL, NULL);
+
+//Инициализация данных передаваемых в пакете GET_BASIC_DATA
+	Int16Data panSpeedRefData, panSpeedData, panControllerOutData,
+			panEncoderCounterData, panEncoderSpeedData, panPData, panIData,
+			angleX, dutchSpeedRefData, dutchSpeedData, dutchControllerOutData,
+			dutchEncoderCounterData, dutchEncoderSpeedData, dutchPData,
+			dutchIData, angleY, tiltSpeedRefData, tiltSpeedData,
+			tiltControllerOutData, tiltEncoderCounterData, tiltEncoderSpeedData,
+			tiltdutchPData, tiltdutchIData, angleZ;
+	Int16Data* basicDataList[19] = { &panSpeedRefData, &panSpeedData,
+			&panEncoderSpeedData, &panControllerOutData, &panEncoderCounterData,
+			&angleX, &dutchSpeedRefData, &dutchSpeedData,
+			&dutchEncoderSpeedData, &dutchControllerOutData,
+			&dutchEncoderCounterData, &angleY, &tiltSpeedRefData, &tiltSpeedData,
+			&tiltEncoderSpeedData, &tiltControllerOutData, &tiltEncoderCounterData,
+	        &angleZ, NULL };
+
+//Инициализация данных передаваемых в пакете GET_SETTINGS и SET_SETTINGS
+	Int16Data axisType, axisPSetting, axisISetting, dusOffsetSetting,
+	axisSenseSetting, axisSpeedSetting, dummySetting;
+	dummySetting.value = 1;
+	Int16Data* axisSettingList[8] = { &axisType, &axisPSetting, &axisISetting,
+			&dusOffsetSetting, &axisSenseSetting, &axisSpeedSetting, &dummySetting, NULL};
+
+
+//Включение усилителей
+	GPIO_write(GyConBoard_SERVO_ENABLE_GPIO, GyConBoard_SERVO_ENABLE);
+
+//Инициализация протокола обмена с пультом
+	BasicRs485Protocol protocol(GyConBoard_PULT_UART, 460800,
+	GyConBoard_PULT_RS485RW, 3);
+
+
+	while (true) {
+//Прием данных от ПК
+		protocol.recieve();
+//Данные приняты, получаем часть пакета которая содержит принятые данные
+		TagData16Element* rxDataElement = protocol.getDataElement();
+		PackType8Element* pack8Element = protocol.getPackTypeElement();
+		switch (pack8Element->packType) {
+		case GET_BASIC_DATA:
+			panSpeedRefData.value = panAxisSpeedController->speedRef * 64;// panAxisSpeedController.speedRef*64;//
+			panSpeedData.value = panAxisSpeedController->speedDus * 64;
+			panEncoderSpeedData.value = panAxisSpeedController->motorSpeed;
+			panControllerOutData.value =
+					panAxisSpeedController->getSpeedControllerOut() * 256;
+			panEncoderCounterData.value = panAxisSpeedController->motorTurns;
+			angleX.value = (gv->angleX/(360))* 65536;//Тангаж
+
+			dutchSpeedRefData.value = dutchAxisSpeedController->speedRef * 64;//dutchAxisSpeedController.speedControl.speedRef * 64;
+			dutchSpeedData.value = dutchAxisSpeedController->speedDus * 64;
+			dutchEncoderSpeedData.value = dutchAxisSpeedController->motorSpeed;
+			dutchControllerOutData.value =
+					dutchAxisSpeedController->getSpeedControllerOut() * 256;
+			dutchEncoderCounterData.value = dutchAxisSpeedController->motorTurns;
+			angleY.value = (gv->angleY /(360)) * 65536;//Курс
+
+			tiltSpeedRefData.value = tiltAxisSpeedController->speedRef * 64;//tiltAxisSpeedController.speedControl.speedRef * 64;
+			tiltSpeedData.value = tiltAxisSpeedController->speedDus * 64;
+			tiltEncoderSpeedData.value = tiltAxisSpeedController->motorSpeed;
+			tiltControllerOutData.value =
+					tiltAxisSpeedController->getSpeedControllerOut() * 256;
+			tiltEncoderCounterData.value = tiltAxisSpeedController->motorTurns;
+			angleZ.value = (gv->angleZ /(360)) * 65536; //Крен
+
+			protocol.transmit(pack8Element->packType, basicDataList);
+			break;
+
+		case SET_AXIS_SETTINGS: {
+			Int16Data* rxData = rxDataElement->getNextData();
+			AxisType axis = (AxisType) rxData->value;
+			rxData = rxDataElement->getNextData();
+			float P = (float) rxData->value / 4096;
+			rxData = rxDataElement->getNextData();
+			float I = (float) rxData->value / 32768;
+			rxData = rxDataElement->getNextData();
+			float offset = (float) rxData->value / 32768;
+			rxData = rxDataElement->getNextData();
+			float axisSense = (float) rxData->value / 4096;
+			rxData = rxDataElement->getNextData();
+			float axisSpeed = (float) rxData->value / 4096;
+
+			switch (axis) {
+			case PAN: //Переделать на массивы???
+				panAxisSpeedController->setPI(P, I);
+				panDusProtocol->offset = offset;
+				panSense = axisSense;
+				panAxisSpeedController->speedControl.refSpeedLpf.setTimeConstant(axisSpeed);
+				axisType.value = PAN;
+				break;
+			case DUTCH:
+				dutchAxisSpeedController->setPI(P, I);
+				dutchDusProtocol->offset = offset;
+				dutchSense = axisSense;
+				dutchSpeed = axisSpeed;
+				axisType.value = DUTCH;
+				break;
+			case TILT:
+				tiltAxisSpeedController->setPI(P, I);
+				tiltDusProtocol->offset = offset;
+				tiltSense = axisSense;
+				tiltSpeed = axisSpeed;
+				axisType.value = TILT;
+				break;
+			}
+			axisPSetting.value = P * 4096;
+			axisISetting.value = I * 32768;
+			dusOffsetSetting.value = offset * 32768;
+			axisSenseSetting.value = axisSense * 4096;
+			axisSpeedSetting.value = axisSpeed * 4096;
+			//protocol.transmit(pack8Element->packType, axisSettingList);
+			break;
+		}
+		case GET_AXIS_SETTINGS:
+			Int16Data* rxData = rxDataElement->getNextData();
+			AxisType axis = (AxisType) rxData->value;
+			switch (axis) {
+			case PAN: //Переделать на массивы???
+				axisType.value = PAN;
+				axisPSetting.value = panAxisSpeedController->P * 4096;
+				axisISetting.value = panAxisSpeedController->I * 32768;
+				dusOffsetSetting.value = panDusProtocol->offset * 32768;
+				axisSenseSetting.value = panSense * 4096;
+				axisSpeedSetting.value = panAxisSpeedController->speedControl.refSpeedLpf.T*4096;
+				break;
+			case DUTCH:
+				axisType.value = DUTCH;
+				axisPSetting.value = dutchAxisSpeedController->P * 4096;
+				axisISetting.value = dutchAxisSpeedController->I * 32768;
+				dusOffsetSetting.value = dutchDusProtocol->offset * 32768;
+				axisSenseSetting.value = dutchSense * 4096;
+				axisSpeedSetting.value = dutchSpeed * 4096;
+				break;
+			case TILT:
+				axisType.value = TILT;
+				axisPSetting.value = tiltAxisSpeedController->P * 4096;
+				axisISetting.value = tiltAxisSpeedController->I * 32768;
+				dusOffsetSetting.value = tiltDusProtocol->offset * 32768;
+				axisSenseSetting.value = tiltSense * 4096;
+				axisSpeedSetting.value = tiltSpeed * 4096;
+				break;
+			}
+			protocol.transmit(pack8Element->packType, axisSettingList);
+			break;
+		}
+
+	}
+}
+
+void controllerTaskFxn(xdc_UArg arg0, xdc_UArg arg1) {
+   MainController* mainController = (MainController*)arg0;
+   while(true) {
+	   mainController->task10ms();
+	   Task_sleep(10);
+   }
+}
+
+static float deadZone(float value, float dz) {
+	float sign = 1.0;
+	if (value < 0) {
+		sign = -1.0;
+		value = -value;
+	}
+	if (value < dz) {
+		value = 0;
+	} else {
+		value = value - dz;
+	}
+	return sign * value;
+}
+
+static volatile float panSpeed1 = 111.5, dutchSpeed1 = 217.77, tiltSpeed1 = 187.15;
+
+static volatile float PULT_PK = 0.0, PULT_PI=0.0, PULT_DK=0.0, PULT_DI=0.0, PULT_TK=0.0, PULT_TI=0.0;
+static volatile float resonantFrequency = 0.0;
+int okCounter = 0;
+int faultCounter = 0;
+volatile float panTurns = 3.3;
+volatile float a = 0.125;
+
+static volatile float controlBitsExchange;
+static volatile float gyConFaultBitsExchange;
+static volatile float speedLevelCorrect = 0;
+
+static volatile float panWriteAngle = 0;
+static volatile float dutchWriteAngle = 0;
+static volatile float tiltWriteAngle = 0;
+
+static volatile float panReadAngle = 0;
+static volatile float dutchReadAngle = 0;
+static volatile float tiltReadAngle = 0;
+
+
+#define GYCON_EXCHANGE_ADDR 0x01
+#define PULT_EXCHANGE_ADDR 0x00
+void pultSlave() {
+	#define PULT_COMMANDS_COUNT 5
+
+	#define WRITE_CONTROL_CMD_DATA_COUNT 3
+	#define ASK_BASIC_CMD_DATA_COUNT 3
+	#define WRITE_AXIS_SETTINGS_CMD_DATA_COUNT 6
+
+//Инициализация данных
+		BasicCmdValue writeControlCmdData[] = {
+			{&panSpeedRef   , IQ6},
+			{&dutchSpeedRef , IQ6},
+			{&tiltSpeedRef  , IQ6},
+			{&speedLevelCorrect, IQ15},
+			{&controlBitsExchange, IQ0},
+			{&PULT_PK , IQ15},
+			{&PULT_PI , IQ15},
+			{&PULT_DK , IQ15},
+			{&PULT_DI , IQ15},
+			{&PULT_TK , IQ15},
+			{&PULT_TI , IQ15},
+			{&pult->zifParams.zoomRef, IQ15},
+			{&pult->zifParams.focusRef, IQ15},
+			{&pult->zifParams.irisRef, IQ15},
+			{&pult->zifParams.control1, IQ0},
+			{&pult->zifParams.control2, IQ0},
+			NULL
+		};
+
+		BasicCmdValue askBasicCmdData[] = {
+			{&encoders->panTurns   , IQ10},
+			{&gyConFaultBitsExchange, IQ0},
+			NULL
+		};
+		BasicCmdValue axisSettingsCmdData[] = {
+			{&PULT_PK , IQ15},
+			{&PULT_PI , IQ15},
+			{&PULT_DK , IQ15},
+			{&PULT_DI , IQ15},
+			{&PULT_TK , IQ15},
+			{&PULT_TI , IQ15},
+			NULL
+		};
+
+		BasicCmdValue writeAnglesCmdData[] = {
+			{&panWriteAngle   , IQ6},
+			{&dutchWriteAngle , IQ6},
+			{&tiltWriteAngle  , IQ6},
+			{&speedLevelCorrect, IQ15},
+			{&controlBitsExchange, IQ0},
+			{&PULT_PK , IQ15},
+			{&PULT_PI , IQ15},
+			{&PULT_DK , IQ15},
+			{&PULT_DI , IQ15},
+			{&PULT_TK , IQ15},
+			{&PULT_TI , IQ15},
+			{&pult->zifParams.zoomRef, IQ15},
+			{&pult->zifParams.focusRef, IQ15},
+			{&pult->zifParams.irisRef, IQ15},
+			{&pult->zifParams.control1, IQ0},
+			{&pult->zifParams.control2, IQ0},
+			NULL
+		};
+
+		BasicCmdValue askReadAnglesCmdData[] = {
+			{&panReadAngle, IQ15},
+			{&dutchReadAngle, IQ15},
+			{&tiltReadAngle, IQ15},
+			NULL
+		};
+
+		BasicCmd commands[] = {
+			{writeControlCmdData, WRITE_CONTROL_CMD_DATA_COUNT},
+			{askBasicCmdData, ASK_BASIC_CMD_DATA_COUNT},
+			{axisSettingsCmdData, WRITE_AXIS_SETTINGS_CMD_DATA_COUNT},
+			{writeAnglesCmdData, 0},
+			{askReadAnglesCmdData, 0}
+		};
+		BasicCmdList cmdList = {commands, PULT_COMMANDS_COUNT};
+	//Инициализация протокола
+		BasicProtocolParams params (
+				1,
+				&cmdList,
+				GyConBoard_PULT_FAST_UART,
+				300,
+				GyConBoard_PULT_FAST_RS485RW
+		);
+		BasicProtocolSlave slave(&params);
+	while (true) {
+		gyConFaultBitsExchange = mainController->faultBits.all;
+
+		if (slave.transaction(GYCON_EXCHANGE_ADDR, PULT_EXCHANGE_ADDR)) {
+			pult->connectedFlag = true;
+			pult->controlBits.all = controlBitsExchange;
+			pult->speedLevelCorrect = speedLevelCorrect;
+			pult->zifControl1.all = pult->zifParams.control1;
+			pult->zifControl2.all = pult->zifParams.control2;
+			panAxisSpeedController->speedRef = panSpeedRef;
+			panAxisSpeedController->setPI(PULT_PK, PULT_PI / 10);
+
+//TODO реализовать коррекцию крена по фактической опорной скорости курса, т.к. panSpeedRef преобразовывается в контроллере скорости
+			dutchAxisSpeedController->angleGv = gv->angleY;
+
+			dutchAxisSpeedController->speedRef = dutchSpeedRef;
+
+			dutchAxisSpeedController->setPI(3*PULT_DK, PULT_DI / 10);
+
+
+			{
+				{
+					static bool setUpTiltFlag_1 = false;
+					static bool setDwTiltFlag_1 = false;
+					static bool resetUpTiltFlag_1 = false;
+					static bool resetDwTiltFlag_1 = false;
+
+					bool setUpTiltFlag = pult->controlBits.bit.setUpTiltLimits;
+					bool setDwTiltFlag = pult->controlBits.bit.setDwTiltLimits;
+					bool resetUpTiltFlag = pult->controlBits.bit.resetUpTiltLimits;
+					bool resetDwTiltFlag = pult->controlBits.bit.resetDwTiltLimits;
+
+					if (setUpTiltFlag && !setUpTiltFlag_1) {
+						float curTiltTurns = tiltAxisSpeedController->angleLimitedSpeedControl.curTurns;
+						tiltAxisSpeedController->angleLimitedSpeedControl.setMaxTurns(curTiltTurns - AXIS_CONTROLLER_MAX_SPEED/TILT_ANGLE_LIMIT_COEFF);
+					}
+					if (setDwTiltFlag && !setDwTiltFlag_1) {
+						float curTiltTurns = tiltAxisSpeedController->angleLimitedSpeedControl.curTurns;
+						tiltAxisSpeedController->angleLimitedSpeedControl.setMinTurns( curTiltTurns + AXIS_CONTROLLER_MAX_SPEED/TILT_ANGLE_LIMIT_COEFF);
+					}
+					if (resetUpTiltFlag && !resetUpTiltFlag_1) {
+						float newTiltTurns = ANGLE_UNLIMIT;
+						tiltAxisSpeedController->angleLimitedSpeedControl.setMaxTurns(newTiltTurns);
+					}
+					if (resetDwTiltFlag && !resetDwTiltFlag_1) {
+						float newTiltTurns = -ANGLE_UNLIMIT;
+						tiltAxisSpeedController->angleLimitedSpeedControl.setMinTurns(newTiltTurns);
+					}
+					setUpTiltFlag_1 = setUpTiltFlag;
+					setDwTiltFlag_1 = setDwTiltFlag;
+					setUpTiltFlag_1 = resetUpTiltFlag;
+					setDwTiltFlag_1 = resetDwTiltFlag;
+				}
+
+//				float dutchAngle = (3.1415 / 180) * dutchAxisSpeedController->angleGv;
+//				float tiltDusTiltAngle = (3.1415 / 180) * (+0.4); //2:0.0
+
+				tiltAxisSpeedController->speedRef = tiltSpeedRef;
+//				tiltAxisSpeedController->angleLimitedSpeedControl.compensation =  panSpeedComp * arm_sin_f32(dutchAngle+tiltDusTiltAngle);
+
+				tiltAxisSpeedController->setPI(PULT_TK, PULT_TI / 100);
+			}
+			okCounter++;
+		} else {
+			faultCounter++;
+			pult->connectedFlag = false;
+		}
+		//pult->connectedFlag = slave.isConnected();
+	}
+	}
+
+
+void pultTaskFxn() {
+	pultSlave();
+}
+
+volatile int x;
+
+void verticalGyroTaskFxn() {
+	gv->task();
+}
+
+void encodersTaskFxn() {
+	while(1) {
+		if (encoders->recieve()) {
+			panAxisSpeedController->angleLimitedSpeedControl.setCurTurns(encoders->panTurns);
+			dutchAxisSpeedController->angleLimitedSpeedControl.setCurTurns(encoders->dutchTurns);
+			tiltAxisSpeedController->angleLimitedSpeedControl.setCurTurns(encoders->tiltTurns);
+			panReadAngle = encoders->panTurns;
+			dutchReadAngle = encoders->dutchTurns;
+			tiltReadAngle = encoders->tiltTurns;
+		}
+	}
+}
+
+void clk1ms() {
+	float panSpeedComp;
+	if (pult->controlBits.bit.overslangUnderslang) {
+		panSpeedComp = panAxisSpeedController->angleLimitedSpeedControl.speedRef;
+	} else {
+		panSpeedComp = - panAxisSpeedController->angleLimitedSpeedControl.speedRef;
+	}
+
+	float suspensionTiltAngle = (3.1415 / 180) * gv->angleX;
+	float suspensionTiltAngleCorrection = - panSpeedComp * arm_cos_f32(suspensionTiltAngle);
+    float dutchDusTiltAngle = (3.1415 / 180) * (-0.2); //2:-0.2
+    float dutchDusTiltAngleCompensation = - panSpeedComp * arm_sin_f32(dutchDusTiltAngle);
+
+    dutchAxisSpeedController->angleLimitedSpeedControl.compensation = dutchDusTiltAngleCompensation + suspensionTiltAngleCorrection;
+
+	float dutchAngle = (3.1415 / 180) * dutchAxisSpeedController->angleGv;
+	float tiltDusTiltAngle = (3.1415 / 180) * (0.3); //2:0.0
+	tiltAxisSpeedController->angleLimitedSpeedControl.compensation =  panSpeedComp * arm_sin_f32(dutchAngle+tiltDusTiltAngle);
+}
+
+void tiltDusConnectionTest() {
+}
+
+void clk100ms() {
+	panDusProtocol->clk100ms();
+	dutchDusProtocol->clk100ms();
+	tiltDusProtocol->clk100ms();
+}
+
+
+void printfOutFunc(char* buf, UInt count) {
+//	globalDriver->write((UInt8*)buf, count);
+}
+void idle() {
+}
