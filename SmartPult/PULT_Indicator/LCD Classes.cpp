@@ -457,8 +457,7 @@ void pultIndikator_Task(Pult* point_pult)
 	init_PWM_Bright(&pwmBright);
 
 	p_pult = point_pult;
-	controlBits.all = p_pult->getControlBits();//получаем контрольные биты
-	gyConFaultBits= p_pult->getGyConFaultBits();
+
 
 	//пункты подменю главного меню
 	//коэффициенты
@@ -3665,38 +3664,7 @@ void TurnsViewMenu::DrawVert()
     sprintf(textBuffer[1],"DUTCH: %1.6f",   val[1]);
     sprintf(textBuffer[2],"TILT: %1.6f",    val[2]);
     //todo логика дрейф стопер
-    if (gyConFaultBits==0) { //все хорошо ошибок системы нет
-        if (!controlBits.bit.joysticOn) {
-              if (!controlBits.bit.fastLevelCorrect)   {
-                  if(controlBits.bit.onOffMotors){
-    //                  if (controlBits.bit.)
-                      sprintf(textBuffer[3],"Function activated");
-                      autoOn=true;
-                      p_pult->setDriftStopperMode(autoOn);
-                  }
-                  else {
-                      sprintf(textBuffer[3],"Turn on motor");
-                      autoOn=false;
-                      p_pult->setDriftStopperMode(autoOn);
-                  }
-              }
-              else {
-                  sprintf(textBuffer[3],"Turn off level correct");
-                  autoOn=false;
-                  p_pult->setDriftStopperMode(autoOn);
-              }
-        }
-        else {
-            sprintf(textBuffer[3],"Turn off joysticks");
-            autoOn=false;
-            p_pult->setDriftStopperMode(autoOn);
-            }
-        }
-    else {
-        sprintf(textBuffer[3],"The system has errors");
-        autoOn=false;
-        p_pult->setDriftStopperMode(autoOn);
-        }
+
    /* if(autoOn)
     {
         sprintf(textBuffer[3],"AUTO: ON"  );
@@ -3772,7 +3740,45 @@ void  TurnsViewMenu::Listener()
         p_pult->setDriftStopperMode(autoOn);
         return;
     }
-
+    controlBits.all = p_pult->getControlBits();//получаем контрольные биты
+    gyConFaultBits= p_pult->getGyConFaultBits();
+        if (gyConFaultBits==0) { //все хорошо ошибок системы нет
+            if (!controlBits.bit.joysticOn) {
+                  if (!controlBits.bit.levelCorrect)   {
+                      if(controlBits.bit.onOffMotors){
+        //                  if (controlBits.bit.)
+                          sprintf(textBuffer[3],"Function activated");
+                          autoOn=true;
+                          p_pult->setDriftStopperMode(autoOn);
+                          Draw(Tek_Count);
+                      }
+                      else {
+                          sprintf(textBuffer[3],"Turn on motor");
+                          autoOn=false;
+                          p_pult->setDriftStopperMode(autoOn);
+                          Draw(Tek_Count);
+                      }
+                  }
+                  else {
+                      sprintf(textBuffer[3],"Turn off level correct");
+                      autoOn=false;
+                      p_pult->setDriftStopperMode(autoOn);
+                      Draw(Tek_Count);
+                  }
+            }
+            else {
+                sprintf(textBuffer[3],"Turn off joysticks");
+                autoOn=false;
+                p_pult->setDriftStopperMode(autoOn);
+                Draw(Tek_Count);
+                }
+            }
+        else {
+            sprintf(textBuffer[3],"The system has errors");
+            autoOn=false;
+            p_pult->setDriftStopperMode(autoOn);
+            Draw(Tek_Count);
+            }
 /*    if (getButtonState(pult_Button_Select) == PRESSED) //выпиливаем за ненадобностью
     {
         autoOn=!autoOn;
