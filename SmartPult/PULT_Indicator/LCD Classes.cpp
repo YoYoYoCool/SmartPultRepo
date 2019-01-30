@@ -39,6 +39,19 @@ tMenu_Link Main_Menu_Link[6]={
 		{"LENS CONTROL",NULL}
 
 };
+enum {CoeffSetupMainMenu=1,
+    SetupMainMenu,
+    TiltLimiterMainMenu,
+    MotionCtrlMainMenu,
+    EqualizerMainMenu,
+    LensControlMainMenu}; //в настоящее время с единицы пока не решится вопрос с сведением переменных
+
+enum {CoeffSetupMainMenuSistem=0,
+    SetupMainMenuSistem,
+    TiltLimiterMainMenuSistem,
+    MotionCtrlMainMenuSistem,
+    EqualizerMainMenuSistem,
+    LensControlMainMenuSistem};
 
 tMenu_Link Txt_MenuTiltLimit[5]={
 		{"Set Upper Limit",NULL},
@@ -48,7 +61,17 @@ tMenu_Link Txt_MenuTiltLimit[5]={
 		{"Reset All Limits",NULL}
 };
 
+enum {SetUpperLimitMenuTiltLimit=1,
+    SetLowerLimitMenuTiltLimit,
+    ResetUpperLimitMenuTiltLimit,
+    ResetLowerLimmitMenuTiltLimit,
+    ResetAllLimitMenuTiltLimit};
 
+enum {SetUpperLimitMenuTiltLimitSistem=0,
+    SetLowerLimitMenuTiltLimitSistem,
+    ResetUpperLimitMenuTiltLimitSistem,
+    ResetLowerLimitMenuTiltLimitSistem,
+    ResetAllLimitMenuTiltLimitSistem};
 
 //наименования пуктов меню PAN DUTCH TILT перед вызовом эквалайзера
 tMenu_Link PDTMenu_link[4]={
@@ -57,6 +80,14 @@ tMenu_Link PDTMenu_link[4]={
 		{"TILT",NULL},
 		{"ZOOM",NULL}
 };
+enum {PanPDTMenu=1,
+    DutchPDTMenu,
+    TiltPDTMenu,
+    ZoomPDTMenu};
+enum {PanPDTMenuSistem=0,
+    DutchPDTMenuSistem,
+    TiltPDTMenuSistem,
+    ZoomPDTMenuSistem};
 
 tMenu_Link secretMenuText[3]={
 		{"Set",NULL},
@@ -64,10 +95,17 @@ tMenu_Link secretMenuText[3]={
 		{"Check",NULL},
 
 };
+enum {SetSecretMenu=1,
+    VievSecretMenu,
+    CheckSecretMenu};
+
+enum {SetSecretMenuSistem=0,
+    VievSecretMenuSistem,
+    CheckSecretMenuSistem};
 
 tMenu_Link setupMenuText[8]={
 		{"BRIGHTNESS",NULL},
-		{"PROFILES",NULL},
+		{"USER PROFILES",NULL},
 		{"JOYSTICK PLACEMENT",NULL},
 		{"UNDER/OVERSLUNG",NULL},
 		{"WHEEL SPEED",NULL},
@@ -75,7 +113,23 @@ tMenu_Link setupMenuText[8]={
 		{"TUNING",NULL},
 		{"FOLOWING MODE",NULL}
 };
+enum {BrightnessSetupMenu=1,
+    UserProfilesSetupMenu,
+    JoystickPlacementSetupMenu,
+    UnderOverslungSetupMenu,
+    WhellSpeedSetupMenu,
+    JoystickCalibrationSetupMenu,
+    TuningSetupMenu,
+    FolowingModeSetupMenu};
 
+enum {BrightnessSetupMenuSistem=0,
+    UserProfilesSetupMenuSistem,
+    JoystickPlacementSetupMenu_sistem,
+    UnderOverslungSetupMenu_sistem,
+    WhellSpeedSetupMenuSistem,
+    JoystickCalibrationSetupMenuSistem,
+    TuningSetupMenuSistem,
+    FolowingModeSetupMenuSistem};
 
 tMenu_Link tuningMenuText[8]={
 		{"SUSPENTION RESONANCE",NULL},
@@ -86,8 +140,24 @@ tMenu_Link tuningMenuText[8]={
 		{"PREROL",NULL},
 		{"SYNCHRO SOURCE",NULL},
 		{"DRIFT STOPPER",NULL}
-
 };
+enum {SuspensionResonansTuningMenu=1,
+    MaxTorqueTuningMenu,
+    JoysticDeadZoneTuningMenu,
+    FrontRampTuningMenu,
+    TotalRuntimeTuningMenu,
+    PrerolTuningMenu,
+    SynchroSourceTuningMenu,
+    DriftStopperTuningMenu};
+
+enum {SuspensionResonansTuningMenuSistem=0,
+    MaxTorqueTuningMenuSistem,
+    JoysticDeadZoneTuningMenuSistem,
+    FrontRampTuningMenuSistem,
+    TotalRuntimeTuningMenuSistem,
+    PrerolTuningMenuSistem,
+    SynchroSourceTuningMenuSistem,
+    DriftStopperTuningMenuSistem};
 
 tMenu_Link suspensionResonanceSelectMenuText[2]={
 		{"TILT",NULL},
@@ -95,12 +165,25 @@ tMenu_Link suspensionResonanceSelectMenuText[2]={
 
 };
 
+enum {TiltResonanceSuspensionResonance=1,
+    PanResonanceSuspensionResonance};
+
+enum {TiltResonanceSuspensionResonanceSistem=0,
+    PanResonanceSuspensionResonanceSistem};
+
 tMenu_Link wheelSpeedText[3]={
 		{"PAN WHEEL",NULL},
 		{"TILT WHEEL",NULL},
 		{"DUTCH WHEEL",NULL}
 
 };
+enum {PanWheelSpeed=1,
+    TiltWheelSpeed,
+    DutchWheelSpeed};
+
+enum {PanWheelSpeedSistem=0,
+    TiltWheelSpeedSistem,
+    DutchWheelSpeedSistem};
 
 tMenu_Link profileMenuText[11]={
 		{"PROFILE 1", NULL},
@@ -116,11 +199,21 @@ tMenu_Link profileMenuText[11]={
 		{"PROFILE 10",NULL}
 
 };
+enum {ProfileProfileMenu=1,
+    RstCurrentProfileProfileMenu=6};
+
+enum {ProfileProfileMenuSistem=0,
+    RstCurrentProfileProfileMenuSistem=5};
+
 
 tMenu_Link switchAxesText[2]={
 		{"RIGHT SIDE/HAND", NULL},
 		{"LEFT SIDE/HAND", NULL},
 };
+enum {RigthSideHandSwitchAxesText=1,
+    LeftSideHandSwitchAxesText};
+enum {RigthSideHandSwitchAxesTextSistem=0,
+    LeftSideHandSwitchAxesTextSistem};
 
 tMenu_Link lensControlSetup[6]={
 		{"MOTOR MAPPING", NULL},
@@ -130,23 +223,58 @@ tMenu_Link lensControlSetup[6]={
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
 };
+
+enum {MotorMappingLensControlSetup=1,
+    MotorModelLensControlSetup,
+    CameraModelLensControlSetup,
+    ZoomSensLensControlSetup,
+    LensCalibrateLensControlSetup,
+    ZoomDriftLensControlSetup};
+
+enum {MotorMappingLensControlSetupSistem=0,
+    MotorModelLensControlSetupSistem,
+    CameraModelLensControlSetupSistem,
+    ZoomSensLensControlSetupSistem,
+    LensCalibrateLensControlSetupSistem,
+    ZoomDriftLensControlSetupSistem};
+
 tMenu_Link lensControlZIF[3]={
 		{"ZOOM", NULL},
 		{"IRIS", NULL},
 		{"FOCUS",NULL},
 };
+enum {ZoomLensControl=1,
+    IrisLensControl,
+    FocusLensControl};
+
+enum {ZoomLensControlSistem=0,
+    IrisLensControlSistem,
+    FocusLensControlSistem};
 
 tMenu_Link lensControlMotorsText[3]={
 		{"MOTOR 1", NULL},
 		{"MOTOR 2", NULL},
 		{"MOTOR 3",NULL}
 };
+enum {MotorLensControlMotors1=1,
+    MotorLensControlMotors2,
+    MotorLensControlMotors3};
+
+enum {MotorLensControlMotors1Sistem=0,
+    MotorLensControlMotors2Sistem,
+    MotorLensControlMotors3Sistem};
 
 tMenu_Link lensControlMotorsTypesText[2]={
 		{"HEDEN M21VE", NULL},
 		{"HEDEN M26VE", NULL}
 
 };
+
+enum {HEDENM21veMotorsTypes=1,
+    HEDENM26veMotorsTypes};
+
+enum {HEDENM21veMotorsTypesSistem=0,
+    HEDENM26veMotorsTypesSistem};
 
 tMenu_Link lensControlCameraStartText[8]={
 		{"ARRI ALEXA", NULL},
@@ -159,31 +287,82 @@ tMenu_Link lensControlCameraStartText[8]={
 		{"LEVEL", NULL}
 
 };
+
+enum {ArriAlexaLensControlCamera=1,
+    RedOneLensControlCamera,
+    RedScarletLensControlCamera,
+    RedEpicLensControlCamera,
+    CanonLensLensControlCamera,
+    FujinonLensLensControlCamera,
+    FrontLensControlCamera,
+    LevelLensControlCamera};
+
+enum {ArriAlexaLensControlCameraSistem=0,
+    RedOneLensControlCameraSistem,
+    RedScarletLensControlCameraSistem,
+    RedEpicLensControlCameraSistem,
+    CanonLensLensControlCameraSistem,
+    FujinonLensLensControlCameraSistem,
+    FrontLensControlCameraSistem,
+    LevelLensControlCameraSistem};
+
 tMenu_Link lensControlZoomSenseText[4]={
 		{"LINEAR", NULL},
 		{"CUBIC", NULL},
 		{"QUADRATIC", NULL},
 		{"EQUALIZER", NULL},
 };
+enum {LinLensControlZoomSense=1,
+    CubLensControlZoomSense,
+    QuadLensControlZoomSense,
+    EquLensControlZoomSense};
+
+enum {LinLensControlZoomSenseSistem=0,
+    CubLensControlZoomSenseSistem,
+    QuadLensControlZoomSenseSistem,
+    EquLensControlZoomSenseSistem};
+
 tMenu_Link overslangOnOffText[2]={
 		{"OVERSLUNG", NULL},
 		{"UNDERSLUNG", NULL}
 };
 
+enum {OverslungOnOff=1,
+    underslungOnOff};
+
+enum {OverslungOnOffSistem=0,
+    underslungOnOffSistem};
+
 tMenu_Link tiltSpiderSelectText[2]={
 		{"DEFAULT", NULL},
 		{"EDIT", NULL}
 };
+
+enum {DefaultTiltSpiderSelect=1,
+    EditTiltSpiderSelect};
+enum {DefaultTiltSpiderSelectSistem=0,
+    EditTiltSpiderSelectSistem};
+
 tMenu_Link panSpiderSelectText[3]={
 		{"DEFAULT", NULL},
 		{"EDIT", NULL},
 		{"DISABLE", NULL}
 };
+enum {DefaultPanSpiderSelect=1,
+    EditPanSpiderSelect,
+    DisablePanSpiderSelect};
+enum {DefaultPanSpiderSelectSistem=0,
+    EditPanSpiderSelectSistem,
+    DisablePanSpiderSelectSistem};
 
 tMenu_Link syncroSourceText[2]={
 		{"SYNCHRO", NULL},
 		{"PANBAR", NULL}
 };
+enum {SynchroSyncroSource=1,
+    PanbarSyncroSource};
+enum {SynchroSyncroSourcesSistem=0,
+    PanbarSyncroSourceSistem};
 
 tMenu_Link axisTurnsText[4]={
 		{"PAN  : ", NULL},
@@ -192,6 +371,14 @@ tMenu_Link axisTurnsText[4]={
 		{"AUTO ", NULL}
 
 };
+enum {PanAxisTurns=1,
+    DutchAxisTurns,
+    TiltAxisTurns,
+    AutoAxisTurns};
+enum {PanAxisTurnsSistem=0,
+    DutchAxisTurnsSistem,
+    TiltAxisTurnsSistem,
+    AutoAxisTurnsSistem};
 
 //укзатели на все экранные формы
 
@@ -2168,10 +2355,10 @@ void LCD_Menu::Listener()
 	if (getButtonState(pult_Button_Select) == PRESSED)
 	{
 
-		if(this==lensControlMenuPointer&&this->Tek_Count==5)
+		if(this==lensControlMenuPointer&&this->Tek_Count==LensCalibrateLensControlSetup)
 		{
 
-			Table_Cell[5-1]->Hide();
+			Table_Cell[LensCalibrateLensControlSetupSistem]->Hide();
 
 			p_pult->startLensCalibration();
 			for(UInt32 i=0;i!=80;i++)
@@ -2179,17 +2366,17 @@ void LCD_Menu::Listener()
 				watchDogTimer.useKey(WD_KEY3);
 				Task_sleep(10);
 			}
-			this->Table_Cell[5-1]->ReHide();
-			this->Table_Cell[5-1]->ReDraw();
+			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReHide();
+			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReDraw();
 			return;
 		}
-		if(this==setupMenuPointer&&this->Tek_Count==6)
+		if(this==setupMenuPointer&&this->Tek_Count==JoystickCalibrationSetupMenu)
 		{
-			resP=Table_Cell[6-1]->p_text;
-			tempColorJoyCalibration=Table_Cell[6-1]->UnActive_Style.Cell_Color;
-			Table_Cell[6-1]->SetText((char*)p);
-			Table_Cell[6-1]->UnActive_Style.Cell_Color=ClrLinen ;
-			Table_Cell[6-1]->Hide();
+			resP=Table_Cell[JoystickCalibrationSetupMenuSistem]->p_text;
+			tempColorJoyCalibration=Table_Cell[JoystickCalibrationSetupMenuSistem]->UnActive_Style.Cell_Color;
+			Table_Cell[JoystickCalibrationSetupMenuSistem]->SetText((char*)p);
+			Table_Cell[JoystickCalibrationSetupMenuSistem]->UnActive_Style.Cell_Color=ClrLinen ;
+			Table_Cell[JoystickCalibrationSetupMenuSistem]->Hide();
 
 			for(UInt32 i=0;i!=300;i++)
 			{
@@ -2206,31 +2393,30 @@ void LCD_Menu::Listener()
 			EE_Working::WriteCalibrationData(EE_CAL_OFFSET_EXT_TILT,	(UInt32)(p_pult->getCalibrationOffset(CALIB_OFFSET_EXT_TILT)));
 			EE_Working::WriteCalibrationData(EE_CAL_OFFSET_EXT2_DUCTH,	(UInt32)(p_pult->getCalibrationOffset(CALIB_OFFSET_EXT2_DUTCH)));
 
-			Table_Cell[6-1]->UnActive_Style.Cell_Color=tempColorJoyCalibration;
+			Table_Cell[JoystickCalibrationSetupMenuSistem]->UnActive_Style.Cell_Color=tempColorJoyCalibration;
 
-			Table_Cell[6-1]->p_text=resP;
-			this->Table_Cell[6-1]->ReHide();
-			this->Table_Cell[6-1]->ReDraw();
+			Table_Cell[JoystickCalibrationSetupMenuSistem]->p_text=resP;
+			this->Table_Cell[JoystickCalibrationSetupMenuSistem]->ReHide();
+			this->Table_Cell[JoystickCalibrationSetupMenuSistem]->ReDraw();
 			return;
 
 		}
 
-
 		if(this == pMain_Menu)
-		{
-			if(this->Tek_Count==4)
-			{
-				mainScreenPointer->switchMotionMode();
-				pDispl = pDispl->Parent;
-				pDispl->Focused = true;
-				return;
-			}
+		    {
+			if(this->Tek_Count==MotionCtrlMainMenu)
+                {
+                mainScreenPointer->switchMotionMode();
+                pDispl = pDispl->Parent;
+                pDispl->Focused = true;
+                return;
+                }
 			pDispl = (Menu_Link+(Tek_Count-1))->pPointSub;
 			pDispl->Parent = this;
 			pDispl->Focused = true;
 			if(pDispl == pSet_Koeff) pDispl->Param = 100; //уводим из нормального диапазона, чтобы был неактивным
 			return;
-		}
+		    }
 		else
 		{
 			if(Menu_Listener(this)) return;
@@ -3367,20 +3553,20 @@ void LCD_Menu_WeelSpeed::Listener()
 		else                          { 	values[Tek_Count-1]+=0.01;	}
 
 		Draw(Tek_Count);
-		if(Tek_Count==1)
+		if(Tek_Count==PanWheelSpeed)
 		{
-			p_pult->setPanWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setPanWeelSpeed(values[PanWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
 		}
-		if(Tek_Count==2)
+		if(Tek_Count==TiltWheelSpeed)
 		{
-			p_pult->setTiltWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
-		if(Tek_Count==3)
+		if(Tek_Count==DUTCHWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setDutchWeelSpeed(values[DUTCHWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DUTCHWheelSpeedSistem]))));
 		}
 
 	}
@@ -3390,20 +3576,20 @@ void LCD_Menu_WeelSpeed::Listener()
 		else		                    {    values[Tek_Count-1]-=0.01;	}
 
 		Draw(Tek_Count);
-		if(Tek_Count==1)
+		if(Tek_Count==PanWheelSpeed)
 		{
-			p_pult->setPanWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setPanWeelSpeed(values[PanWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
 		}
-		if(Tek_Count==2)
+		if(Tek_Count==TiltWheelSpeed)
 		{
-			p_pult->setTiltWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
-		if(Tek_Count==3)
+		if(Tek_Count==DUTCHWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[Tek_Count-1]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[Tek_Count-1]))));
+			p_pult->setDutchWeelSpeed(values[DUTCHWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DUTCHWheelSpeedSistem]))));
 		}
 	}
 
@@ -4593,8 +4779,6 @@ void loadEepromValueFromPult()
 	lensControlMotorTypeSelectPointer->updateFromEEPROM();
 	lensControlMotorActionSelectPointer->updateFromEEPROM();
 	wheelSpeedMenuPointer->updateFromEEPROM();
-
-
 	setMaxTorqueMenuPointer->updateFromEeprom();
 	tiltSpiderSelectMenuPointer->updateFromEEPROM();
 	setupOverslangActivatePointer->updateFromEEPROM();
@@ -4634,20 +4818,20 @@ void ProfileSelectMenu::Listener()
 	}
 	if (getButtonState(pult_Button_Select) == PRESSED)
 	{
-	    if (this->Tek_Count==6) {
+	    if (this->Tek_Count==RstCurrentProfileProfileMenu) {
 	        char* text_need;
 	        UInt32 tempColorProfile;
 	        //todo  сброс профидля по умолчанию
-	        tempColorProfile=Table_Cell[Tek_Count-1]->Active_Style.Cell_Color;//сохранение цвета
-	        text_need=Table_Cell[Tek_Count-1]->p_text;// сохранение надписи
-	        Table_Cell[Tek_Count-1]->SetText((char*)p);// запись надписи ожидайте
-	        Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrLinen ;// запись красного цвета
+	        tempColorProfile=Table_Cell[RstCurrentProfileProfileMenuSistem]->Active_Style.Cell_Color;//сохранение цвета
+	        text_need=Table_Cell[RstCurrentProfileProfileMenuSistem]->p_text;// сохранение надписи
+	        Table_Cell[RstCurrentProfileProfileMenuSistem]->SetText((char*)p);// запись надписи ожидайте
+	        Table_Cell[RstCurrentProfileProfileMenuSistem]->Active_Style.Cell_Color=ClrLinen ;// запись красного цвета
 	        Draw(Tek_Count);// перерисовать область
 	        EE_Working::setDefaultProfile(old_position_number-1); //перезапись профиля на дефолт
 	        Task_sleep(500);
 	        ClearDisp();
-	        Table_Cell[Tek_Count-1]->SetText((char*)text_need);// востановление старого названия
-	        Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=tempColorProfile ;// востановление старого цвета
+	        Table_Cell[RstCurrentProfileProfileMenuSistem]->SetText((char*)text_need);// востановление старого названия
+	        Table_Cell[RstCurrentProfileProfileMenuSistem]->Active_Style.Cell_Color=tempColorProfile ;// востановление старого цвета
 	        Draw(Tek_Count);//перерисовать область
 	        Draw(old_position_number);//перерисовать область выбранного профиля
 	        Tek_Count=old_position_number; //сохранение старой позиции
