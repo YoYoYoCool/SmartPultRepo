@@ -29,6 +29,8 @@ tCell_Style Style_Error; //стиль €чейка ошибки
 tContext sContext;
 static volatile UInt32 HourMeter_rawValue=0;
 
+PultControlBits controlBits;
+UInt16 gyConFaultBits;
 //наименовани€ и св€зи пуктов главного меню
 tMenu_Link Main_Menu_Link[6]={
 		{"COEFF SETUP",NULL},
@@ -455,7 +457,8 @@ void pultIndikator_Task(Pult* point_pult)
 	init_PWM_Bright(&pwmBright);
 
 	p_pult = point_pult;
-
+	controlBits.all = p_pult->getControlBits();//получаем контрольные биты
+	gyConFaultBits= p_pult->getGyConFaultBits();
 
 	//пункты подменю главного меню
 	//коэффициенты
@@ -3563,10 +3566,10 @@ void LCD_Menu_WeelSpeed::Listener()
 			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
 			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
-		if(Tek_Count==DUTCHWheelSpeed)
+		if(Tek_Count==DutchWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[DUTCHWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DUTCHWheelSpeedSistem]))));
+			p_pult->setDutchWeelSpeed(values[DutchWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
 		}
 
 	}
@@ -3586,10 +3589,10 @@ void LCD_Menu_WeelSpeed::Listener()
 			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
 			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
-		if(Tek_Count==DUTCHWheelSpeed)
+		if(Tek_Count==DutchWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[DUTCHWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DUTCHWheelSpeedSistem]))));
+			p_pult->setDutchWeelSpeed(values[DutchWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
 		}
 	}
 
@@ -3661,15 +3664,47 @@ void TurnsViewMenu::DrawVert()
     sprintf(textBuffer[0],"PAN: %1.6f",     val[0]);
     sprintf(textBuffer[1],"DUTCH: %1.6f",   val[1]);
     sprintf(textBuffer[2],"TILT: %1.6f",    val[2]);
-
-    if(autoOn)
+    //todo логика дрейф стопер
+    if (gyConFaultBits==0) { //все хорошо ошибок системы нет
+        if (!controlBits.bit.joysticOn) {
+              if (!controlBits.bit.fastLevelCorrect)   {
+                  if(controlBits.bit.onOffMotors){
+    //                  if (controlBits.bit.)
+                      sprintf(textBuffer[3],"Function activated");
+                      autoOn=true;
+                      p_pult->setDriftStopperMode(autoOn);
+                  }
+                  else {
+                      sprintf(textBuffer[3],"Turn on motor");
+                      autoOn=false;
+                      p_pult->setDriftStopperMode(autoOn);
+                  }
+              }
+              else {
+                  sprintf(textBuffer[3],"Turn off level correct");
+                  autoOn=false;
+                  p_pult->setDriftStopperMode(autoOn);
+              }
+        }
+        else {
+            sprintf(textBuffer[3],"Turn off joysticks");
+            autoOn=false;
+            p_pult->setDriftStopperMode(autoOn);
+            }
+        }
+    else {
+        sprintf(textBuffer[3],"The system has errors");
+        autoOn=false;
+        p_pult->setDriftStopperMode(autoOn);
+        }
+   /* if(autoOn)
     {
         sprintf(textBuffer[3],"AUTO: ON"  );
     }
     else
     {
         sprintf(textBuffer[3],"AUTO: OFF"  );
-    }
+    }*/
 
 
     for(UInt8 i=0;i<Menu_On_Screen;i++)
@@ -3728,20 +3763,23 @@ void  TurnsViewMenu::Listener()
     }
 
 
-    if (getButtonState(pult_Button_ESC) == PRESSED)
+    if (getButtonState(pult_Button_ESC) == PRESSED)// здесь добавить drift stoper off
     {
         pDispl = pDispl->Parent;
         pDispl->Focused = true;
+        autoOn=false;
+ //       saveInEEPROM();
+        p_pult->setDriftStopperMode(autoOn);
         return;
     }
 
-    if (getButtonState(pult_Button_Select) == PRESSED)
+/*    if (getButtonState(pult_Button_Select) == PRESSED) //выпиливаем за ненадобностью
     {
         autoOn=!autoOn;
         saveInEEPROM();
         p_pult->setDriftStopperMode(autoOn);
         Draw(Tek_Count);
-    }
+    }*/
 
     action();
 }
@@ -3749,7 +3787,8 @@ void  TurnsViewMenu::Listener()
 
 void  TurnsViewMenu::updateFromEEPROM()
 {
-    UInt32 tmp=EE_Working::Read(eepromAddress);
+    //выпелино на осовании новой логике работы пульта
+/*    UInt32 tmp=EE_Working::Read(eepromAddress);
 
     if(tmp>1)
     {
@@ -3759,11 +3798,11 @@ void  TurnsViewMenu::updateFromEEPROM()
     }
     autoOn=tmp;
     p_pult->setDriftStopperMode(autoOn);
-    action();
+    action();*/
 }
 void  TurnsViewMenu::saveInEEPROM()
 {
-    EE_Working::Write(eepromAddress, autoOn);
+//    EE_Working::Write(eepromAddress, autoOn);
 }
 
 

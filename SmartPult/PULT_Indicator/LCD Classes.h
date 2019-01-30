@@ -27,6 +27,28 @@ extern Pult* p_pult;
 
 //typedef uint8_t byte;
 
+typedef union PultControlBits {
+    UInt16 all;
+    struct {
+        volatile UInt16 onOffMotors:1;
+        volatile UInt16 levelCorrect:1;//
+        volatile UInt16 fastLevelCorrect:1;//
+        volatile UInt16 levelSetup:1;//
+        volatile UInt16 gvCalibration:1;
+        volatile UInt16 gvAcc:1;
+        volatile UInt16 setUpTiltLimits:1;
+        volatile UInt16 setDwTiltLimits:1;
+        volatile UInt16 resetUpTiltLimits:1;
+        volatile UInt16 resetDwTiltLimits:1;
+        volatile UInt16 overslangUnderslang:1;
+        volatile UInt16 goToAngels:1;
+        volatile UInt16 joysticOn:1;
+        volatile UInt16 panSuspensionResonatorDisable:1;
+        volatile UInt16 driftStopperOn:1;
+
+    }bit;
+};
+
 typedef struct
 {
     int16_t X; //начальная координата X

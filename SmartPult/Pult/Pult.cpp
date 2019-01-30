@@ -1496,6 +1496,7 @@ Warning tDusFail("Tilt ARS Fail", 						WT_WARNING);
 Warning gvFail("GV Fail", 								WT_WARNING);
 Warning encoderFail("Encoder Fail", 					WT_WARNING);
 Warning pultFail("Pult Fail", 							WT_WARNING);
+Warning pultGVCalibrat ("Attention!!! Vertical alignment calibration", WT_INFO);
 
 void Pult::updateWarningsList()
 {
@@ -1508,6 +1509,8 @@ void Pult::updateWarningsList()
 	if(gyConFaultBits.faultBits.gvFault!=0){	warnings.getRunStrWarnings()->add(&gvFail);}
 	if(gyConFaultBits.faultBits.encodersFault!=0){	warnings.getRunStrWarnings()->add(&encoderFail);}
 	if(gyConFaultBits.faultBits.pultFault!=0){	warnings.getRunStrWarnings()->add(&pultFail);}
+	//здесь дописываем индикацию калибровки ГВ
+	if (controlBits.bit.gvCalibration) {warnings.getRunStrWarnings()->add(&pultGVCalibrat);}
 }
 
 const char* Pult::getJoystickPresetName(PultJoystickPresets preset) {
@@ -2115,6 +2118,17 @@ float Pult::getDutchDriftFactor()
 float Pult::getTiltDriftFactor()
 {
     return (float)tiltDriftFactor; //   /100
+}
+
+//-------------------------------------------------------------------------------
+UInt16 Pult::getControlBits ()
+{
+    return controlBits.all;
+}
+//-------------------------------------------------------------------------------
+UInt16 Pult::getGyConFaultBits ()
+{
+    return gyConFaultBits.stateBits.faultBits;
 }
 //-------------------------------------------------------------------------------
 void Pult::setDriftStopperMode(bool val)
