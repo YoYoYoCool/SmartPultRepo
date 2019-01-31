@@ -789,6 +789,8 @@ Cell_D_Name((char*) "", 1,1,10,10),
 Cell_D_Inf((char*) "", 1,1,10,10),
 Cell_T_Name((char*) "", 1,1,10,10),
 Cell_T_Inf((char*) "", 1,1,10,10),
+Cell_Z_Name((char*) "", 1,1,10,10),
+Cell_Z_Inf((char*) "", 1,1,10,10),
 Cell_Joyst_State((char*) "", 1,1,10,10),
 Cell_Motor_State((char*) "", 1,1,10,10),
 Cell_GV_Acc((char*) "", 1,1,10,10),
@@ -1097,9 +1099,9 @@ void LCD_Main::Draw() //рисование
 
 	sendSetupValuesByPult();
 	ClearDisp(); //закрасим старое
-
 	if(!inMotionMode)
 	{
+
 		p_pult->resetCentralButtons();
 		// ======== Центр ==============
 		//позиция индикатора
@@ -1278,8 +1280,10 @@ void LCD_Main::Draw() //рисование
 		// ======== END Центр ==============
 	}
 
-	// ======== Сверху ==============
-	UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
+	// ======== Сверху ==============void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active);
+//todo русуем зум сенс
+	//UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
+	UInt16 PosX = 1, Length1 = 22, Length2 = 59, Otkat = 2;
 	Cell_P_Name.Active_Style = Style_MenuHeader;
 	Cell_P_Name.FastDraw(PosX,                                  1,Length1,30, (char*)"P", Cell_Active);
 
@@ -1300,6 +1304,13 @@ void LCD_Main::Draw() //рисование
 	Cell_T_Inf.Active_Style = Style_MenuHeader;
 	Cell_T_Inf.UnActive_Style = Style_Error;
 	Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,   1,Length2,30, (char*)"TS1", Cell_Active);
+
+    Cell_Z_Name.Active_Style = Style_MenuHeader;
+    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,  1,Length1,30, (char*)"Z", Cell_Active);
+
+    Cell_Z_Inf.Active_Style = Style_MenuHeader;
+    Cell_Z_Inf.UnActive_Style = Style_Error;
+    Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) + 3*Length2,   1,Length2,30, (char*)"ZS1", Cell_Active);
 	// ======== END Сверху ==============
 
 	Serv_Counter(p_pult->getPanTurns(), true);
@@ -1340,6 +1351,9 @@ void LCD_Main::ReDraw() //перерисовка
 	Cell_D_Inf.ReDraw();
 	Cell_T_Name.ReDraw();
 	Cell_T_Inf.ReDraw();
+	//todo вписываем новые объекты верхнего подменю на перерисовку
+	Cell_Z_Name.ReDraw();
+	Cell_Z_Inf.ReDraw();
 	// ======== END Сверху ==============
 	updateTiltLimiterCell();
 	updatecurrentProfileCell();
@@ -1589,7 +1603,21 @@ void LCD_Main::explore_Presets()
 		Cell_T_Inf.SetText(promName);
 		Cell_T_Inf.ReDraw();
 	}
-
+    promName = (char*)p_pult->getJoystickPresetName(ZoomJoystickPreset);
+    if(Cell_Z_Inf.p_text != promName)
+    {
+        temp=p_pult->getJoystickPresetId(ZoomJoystickPreset);
+        if(temp!=EE_Working::Read(EE_LC_ZOOM_SENSE))
+        {
+            if(EE_Working::Write(EE_LC_ZOOM_SENSE,temp)!=0)
+            {
+                        //EEPROM EXCEPTION
+            }
+        }
+        Cell_Z_Inf.p_text = promName;
+        Cell_Z_Inf.SetText(promName);
+        Cell_Z_Inf.ReDraw();
+    }
 }
 
 bool LCD_Main::explore_Koeff_Butt()

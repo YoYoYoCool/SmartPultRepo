@@ -121,6 +121,7 @@ static const float tiltScaler       =-0.13;
 static const float zoomScaler       =-(1.0/1810);
 
 static const char* joystickPresetNames[JOYSTICK_FUNCS_COUNT] = {"Cube", "Sqr", "Lin", "Eql"};
+static const char* zoomJoystickPresetNames[JOYSTICK_FUNCS_COUNT] = {"Lin", "Cube", "Sqr", "Eql"};
 static JoyStickFunction* panFuncs[JOYSTICK_FUNCS_COUNT] =   {&panCubitorFunc,   &panQuadratorFunc,      &panLinearFunc,     &panLineralAproximator};
 static JoyStickFunction* dutchFuncs[JOYSTICK_FUNCS_COUNT] = {&dutchCubitorFunc, &dutchQuadratorFunc,    &dutchLinearFunc,   &dutchLineralAproximator};
 static JoyStickFunction* tiltFuncs[JOYSTICK_FUNCS_COUNT] =  {&tiltCubitorFunc,  &tiltQuadratorFunc,     &tiltLinearFunc,    &tiltLineralAproximator};
@@ -403,7 +404,7 @@ typedef union GyConStateBits {
 	   UInt16 gvFault:1;
 	   UInt16 encodersFault:1;
 	   UInt16 pultFault:1;
-	   UInt16 bit6:1;
+	   UInt16 connectedSmartHead:1;
 	   UInt16 bit7:1;
 	   UInt16 bit8:1;
 	   UInt16 bit9:1;
@@ -1111,6 +1112,7 @@ void Pult::exchangeTask()
 		}
 		pultController();
 		connectedFlag = protocol.isConnected();
+
 		checkErrorLogic();
 
 	}
@@ -1202,6 +1204,7 @@ static void joySticksOnOffLogic() {
 static UInt8 panSensId = 0;
 static UInt8 dutchSensId = 0;
 static UInt8 tiltSensId = 0;
+static UInt8 zoomSensId = 0;
 
 volatile static UInt16 stErrorBits=0;
 volatile static UInt8 disconnectedCounter=0;
@@ -1496,7 +1499,7 @@ Warning tDusFail("Tilt ARS Fail", 						WT_WARNING);
 Warning gvFail("GV Fail", 								WT_WARNING);
 Warning encoderFail("Encoder Fail", 					WT_WARNING);
 Warning pultFail("Pult Fail", 							WT_WARNING);
-Warning pultGVCalibrat ("Attention!!! Vertical alignment calibration", WT_INFO);
+Warning pultGVCalibrat ("Vertical alignment calibration", WT_INFO);
 
 void Pult::updateWarningsList()
 {
@@ -1521,6 +1524,8 @@ const char* Pult::getJoystickPresetName(PultJoystickPresets preset) {
 		return joystickPresetNames[dutchSensId];
 	case TiltJoystickPreset:
 		return joystickPresetNames[tiltSensId];
+	case ZoomJoystickPreset:
+	        return zoomJoystickPresetNames[zoomSensId];
 	}
 	return "";
 }
@@ -1533,6 +1538,8 @@ UInt8 Pult::getJoystickPresetId(PultJoystickPresets preset) {
 		return dutchSensId;
 	case TiltJoystickPreset:
 		return tiltSensId;
+	case ZoomJoystickPreset:
+	    return zoomSensId;
 	}
 	return 0;
 }
@@ -1553,8 +1560,8 @@ void Pult::setJoystickPresetId(PultJoystickPresets preset, UInt8 presetId) {
 			else									{tiltJoy.func = tiltFuncs[presetId];	tiltSensId=presetId;}
 			return;
 		case ZoomJoystickPreset:
-			if (presetId >= JOYSTICK_FUNCS_COUNT)   {zoomJoy.func = zoomFuncs[0];}
-			else									{zoomJoy.func = zoomFuncs[presetId];}
+			if (presetId >= JOYSTICK_FUNCS_COUNT)   {zoomJoy.func = zoomFuncs[0];           zoomSensId=0;}
+			else									{zoomJoy.func = zoomFuncs[presetId];    zoomSensId=presetId;}
 			return;
 		}
 	}

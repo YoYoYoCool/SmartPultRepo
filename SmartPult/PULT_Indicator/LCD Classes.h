@@ -213,7 +213,7 @@ public:
 	Int16 Main_Counter;
 	UInt16 lastVoltage;
 
-	LCD_Cell Cell_P_Name, Cell_P_Inf, Cell_D_Name, Cell_D_Inf, Cell_T_Name, Cell_T_Inf;
+	LCD_Cell Cell_P_Name, Cell_P_Inf, Cell_D_Name, Cell_D_Inf, Cell_T_Name, Cell_T_Inf, Cell_Z_Name, Cell_Z_Inf;
 	LCD_Cell Cell_Main_Counter, Cell_Main_Counter_Right, Cell_Main_Counter_Left;
 	LCD_Cell Cell_Joyst_State, Cell_Motor_State, Cell_GV_Acc/*, CellTiltLimitedState*/;
 	LCD_Cell motionLimitTime, motionCurrentTime,motionTrackNumber, motionState, motionPlayMode,motionMixMode;
