@@ -1499,7 +1499,7 @@ Warning tDusFail("Tilt ARS Fail", 						WT_WARNING);
 Warning gvFail("GV Fail", 								WT_WARNING);
 Warning encoderFail("Encoder Fail", 					WT_WARNING);
 Warning pultFail("Pult Fail", 							WT_WARNING);
-Warning pultGVCalibrat ("Vertical alignment calibration", WT_INFO);
+Warning pultGVCalibrat ("Giro vertical calibration", WT_INFO);
 
 void Pult::updateWarningsList()
 {

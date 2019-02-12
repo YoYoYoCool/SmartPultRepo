@@ -3774,13 +3774,17 @@ void  TurnsViewMenu::Listener()
             if (!controlBits.bit.joysticOn) {
                   if (!controlBits.bit.levelCorrect)   {
                       if(controlBits.bit.onOffMotors){
-        //                  if (controlBits.bit.)
+        //                  if (controlBits.bit.) ClrDarkSlateBlue
+                          Table_Cell[3]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+                         // Table_Cell[3]->Active_Style.Cell_Color=ClrDarkSlateBlue ;
                           sprintf(textBuffer[3],"Function activated");
                           autoOn=true;
                           p_pult->setDriftStopperMode(autoOn);
                           Draw(Tek_Count);
                       }
                       else {
+                          Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
+                         // Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
                           sprintf(textBuffer[3],"Turn on motor");
                           autoOn=false;
                           p_pult->setDriftStopperMode(autoOn);
@@ -3788,6 +3792,8 @@ void  TurnsViewMenu::Listener()
                       }
                   }
                   else {
+                      Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
+                     // Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
                       sprintf(textBuffer[3],"Turn off level correct");
                       autoOn=false;
                       p_pult->setDriftStopperMode(autoOn);
@@ -3795,6 +3801,8 @@ void  TurnsViewMenu::Listener()
                   }
             }
             else {
+                Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
+              //  Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
                 sprintf(textBuffer[3],"Turn off joysticks");
                 autoOn=false;
                 p_pult->setDriftStopperMode(autoOn);
@@ -3802,6 +3810,8 @@ void  TurnsViewMenu::Listener()
                 }
             }
         else {
+            Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
+          //  Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
             sprintf(textBuffer[3],"The system has errors");
             autoOn=false;
             p_pult->setDriftStopperMode(autoOn);
