@@ -59,3 +59,35 @@ switch (axisName)
         return focusParam;
     }
 }
+
+paramLenseAxis lenseAxisParametr:: aprocsimatorAxis(paramLenseAxis param) {
+    if (param.maxPoint==0)
+        return param;
+    if (param.maxPoint==63)
+        return param;
+    if (param.procent[param.maxPoint]==100.0) {
+        for (Uint8 i=param.maxPoint+1; i<64; i++) {
+            param.position[i]=param.position[param.maxPoint];
+            param.procent[i]=param.procent[param.maxPoint];
+            }
+        return param;
+    }
+    float deltaPos=param.position[param.maxPoint]-param.position[param.maxPoint-1];
+    float deltaProc=param.procent[param.maxPoint]-param.procent[param.maxPoint-1];
+    for (Uint8 i=param.maxPoint+1; i<64;i++) {
+        param.procent[i]=param.procent[i-1]+deltaPos;
+        param.position[i]=param.position[i-1]+deltaProc;
+        if (param.procent[i]>100.0) {
+            //здесь делается линеризация
+            float aproximationLiner=100.0-param.procent[i-1];
+            aproximationLiner/=deltaProc;
+            aproximationLiner*=deltaPos;
+            param.procent[i]=100.0;
+            param.position[i]=param.position[i-1]+aproximationLiner;
+            deltaProc=0;
+            deltaPos=0;
+            }
+        }
+    return param;
+    }
+

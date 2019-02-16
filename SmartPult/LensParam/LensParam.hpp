@@ -40,6 +40,7 @@ public:
     paramLenseAxis getAxisParametr(Uint8 axisName);
     void setObectivName(nameObektivParam inputValue);
     void setMaxPoint(Uint8 tochka, Uint8 axisName);
+    paramLenseAxis aprocsimatorAxis(paramLenseAxis param);
 
 
 private:
@@ -50,7 +51,15 @@ private:
 
     };
 
+class dataIO: public lenseAxisParametr {
+public:
 
+
+private:
+
+
+
+    };
 }
 
 
