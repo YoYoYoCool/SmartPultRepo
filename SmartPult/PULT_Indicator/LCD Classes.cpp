@@ -11,6 +11,7 @@
 #include "Image.hpp"
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
 #include "MotionControl/LogicController/MotionLogicController.hpp"
+//#include "../LensParam/LensParam.hpp"
 
 #define VERTICAL_LEN 200
 Pult* p_pult;
@@ -381,6 +382,9 @@ enum {PanAxisTurnsSistem=0,
     DutchAxisTurnsSistem,
     TiltAxisTurnsSistem,
     AutoAxisTurnsSistem};
+
+/*LanseParam::lenseAxisParametr aktivObektivSistem();
+LanseParam::lenseAxisParametr newObektivSistem();*/
 
 //укзатели на все экранные формы
 

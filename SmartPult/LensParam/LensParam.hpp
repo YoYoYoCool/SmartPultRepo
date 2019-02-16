@@ -2,7 +2,7 @@
  * LensParam.hpp
  *
  *  Created on: 15 февр. 2019 г.
- *      Author: User9
+ *      Author: Cheverev kirill
  */
 
 #ifndef LENSPARAM_LENSPARAM_HPP_
@@ -11,45 +11,47 @@
 #include <Pult/PultClasses.h>
 #include <ti/sysbios/BIOS.h>
 
+
 namespace LanseParam {
 
 enum AxisList {
     zoomAxis=0,
     irisAxis,
-    fokusAxis
+    focusAxis
 };
 
 struct paramLenseAxis {
+    volatile float position[64];
+    volatile float procent[64];
+    volatile Uint8 maxPoint;
+};
 
-    float position[64];
-    float procent[64];
-    };
-
+struct nameObektivParam {
+    char* nameObectiv;
+    Uint8 longName;
+};
 
 class lenseAxisParametr {
 public:
     void setName (char *name);
-    Uint32 getNameObectiv();
-    void axisSet(Uint8 axisName, float Procent, float Position,Uint8 tochka);
-    float axisGet(Uint8 axisName);
+    nameObektivParam getObectivName();
+    void setAxisParametr(Uint8 axisName, float procent, float position,Uint8 point);
+    void setAxisMaxPoint(Uint8 axisName, Uint8 point);
+    paramLenseAxis getAxisParametr(Uint8 axisName);
+    void setObectivName(nameObektivParam inputValue);
+    void setMaxPoint(Uint8 tochka, Uint8 axisName);
+
 
 private:
     paramLenseAxis zoomParam;
     paramLenseAxis irisParam;
     paramLenseAxis focusParam;
-    char nameObectiv[100];
-};
+    nameObektivParam obektiv;
 
-class lensExcheng: public lenseAxisParametr   {
-public:
+    };
 
 
-private:
-    Uint16 crcCalc;
-    Uint16 crcRead;
-
-
-};
 }
+
 
 #endif /* LENSPARAM_LENSPARAM_HPP_ */

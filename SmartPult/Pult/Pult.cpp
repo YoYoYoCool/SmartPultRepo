@@ -218,7 +218,7 @@ JoyChanel panExtern1Channel     (0.4, 	panExtrenal1Offset,		&panChanelDeadResist
 JoyChanel dutchExtern1Channel   (0.4,	dutchExtrenal1Offset,	&dutchChanelDeadResistor,   5,  0.015 );
 JoyChanel tiltExtern1Channel    (0.4,	tiltExtrenal1Offset,	&tiltChanelDeadResistor,    5,  0.015 );
 
-/**/ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
+ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_PAN,
