@@ -10,57 +10,71 @@
 
 #include <Pult/PultClasses.h>
 #include <ti/sysbios/BIOS.h>
-
+#include "stddef.h"
+#include "stdint.h"
+#include "DebugAssert.hpp"
+#include "Lib/Lib.h"
 
 namespace LanseParam {
 
-enum AxisList {
-    zoomAxis=0,
-    irisAxis,
-    focusAxis
+enum {
+    MaxAxisPoints = 64
 };
 
-struct paramLenseAxis {
-    volatile float position[64];
-    volatile float procent[64];
-    volatile Uint8 maxPoint;
+enum {
+    MaxSize = 64
 };
 
-struct nameObektivParam {
-    char* nameObectiv;
-    Uint8 longName;
+struct LensePoint {
+    volatile float position;
+    volatile float percent;
 };
 
-class lenseAxisParametr {
+
+struct ObjectiveName {
+    char* nameObjectiv;
+    Uint8 _nameSize;
+};
+
+class Axis {
+
 public:
-    void setName (char *name);
-    nameObektivParam getObectivName();
-    void setAxisParametr(Uint8 axisName, float procent, float position,Uint8 point);
-    void setAxisMaxPoint(Uint8 axisName, Uint8 point);
-    paramLenseAxis getAxisParametr(Uint8 axisName);
-    void setObectivName(nameObektivParam inputValue);
-    void setMaxPoint(Uint8 tochka, Uint8 axisName);
-    paramLenseAxis aprocsimatorAxis(paramLenseAxis param);
-
+    inline void setPoint(uint32_t pointId, LensePoint& point) {
+        debugAssert(pointId<MaxAxisPoints);
+        points[pointId] = point;
+    }
+    inline LensePoint getPoint(uint32_t pointId) {
+        debugAssert(pointId<MaxAxisPoints);
+        return points[pointId];
+    }
 
 private:
-    paramLenseAxis zoomParam;
-    paramLenseAxis irisParam;
-    paramLenseAxis focusParam;
-    nameObektivParam obektiv;
+    LensePoint points[MaxAxisPoints];
+};
 
-    };
+class Objective  {
 
-class dataIO: public lenseAxisParametr {
 public:
-
+    inline Axis& zoom() {return _zoom;};
+    inline Axis& iris() {return _iris;};
+    inline Axis& focus() {return _focus;};
+    inline ObjectiveName& getName() {        return name;    }
+    inline void setName(char* nameObj) {
+       name.nameObjectiv=nameObj;
+       name._nameSize=strLen(nameObj,MaxSize);     }
+    inline void setZoom (Uint8 pointId, LensePoint& point){ _zoom.setPoint(pointId, point);}
+    inline void setIris (Uint8 pointId, LensePoint& point){ _iris.setPoint(pointId, point);}
+    inline void setFocus (Uint8 pointId, LensePoint& point){ _focus.setPoint(pointId, point);}
 
 private:
+    ObjectiveName name;
+    Axis _zoom;
+    Axis _iris;
+    Axis _focus;
+};
 
 
 
-    };
+
 }
-
-
 #endif /* LENSPARAM_LENSPARAM_HPP_ */
