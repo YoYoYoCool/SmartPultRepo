@@ -26,8 +26,8 @@ enum {
 };
 
 struct LensePoint {
-    volatile float position;
-    volatile float percent;
+    float position;
+    float percent;
 };
 
 
@@ -38,6 +38,7 @@ struct ObjectiveName {
 
 class Axis {
 
+
 public:
     inline void setPoint(uint32_t pointId, LensePoint& point) {
         debugAssert(pointId<MaxAxisPoints);
@@ -47,9 +48,13 @@ public:
         debugAssert(pointId<MaxAxisPoints);
         return points[pointId];
     }
+    inline void setSize(Uint8 size ) {sizePoint=size;}
+
+    inline Uint8 getSize() { return sizePoint; }
 
 private:
     LensePoint points[MaxAxisPoints];
+    Uint8 sizePoint;
 };
 
 class Objective  {

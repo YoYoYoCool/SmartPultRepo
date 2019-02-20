@@ -9,11 +9,24 @@
 #define LENSPARAM_WRITER_HPP_
 #include "../LensParam/LensParam.hpp"
 #include "../LensParam/driver.hpp"
+#include "../LensParam/builder.hpp"
+
 
 
 namespace Write {
 
-enum {paket0=0,paketCrcName,paket1,paket2,paket3,paket4,paket5,paket6,paketCrc,numberOfPackages};
+enum {paketName=0,
+    paketCrcName,
+    paketZoomPosition,
+    paketZoomPercent,
+    paketIrisPosition,
+    paketIrisPercent,
+    paketFocusPosition,
+    paketFocusPercent,
+    paketCrcParamObj,
+    numberOfPackages};
+
+
 union AdresStruct {
     Uint32 all;
     struct {
@@ -27,11 +40,16 @@ struct Paket {
     Uint8 data[256];
     Uint8 longPaket;
     };
+
 class Adres {
 
 public:
     Adres () {
-        for (Uint16 i=0;i<numberOfPackages; i++) { startAdres[i]=256*i; }
+        startAdres[paketName]=0;
+        startAdres[paketCrcName]=256;
+        startAdres[paketZoomPosition]=startAdres[paketCrcName]+4;
+        for (Uint16 i=paketZoomPercent;i<numberOfPackages; i++) { startAdres[i]=startAdres[i-1]+256; }
+
     }
     inline Uint16 getAdres (Uint8 startAdresNumber) {return  startAdres[startAdresNumber];}
 private:
@@ -42,24 +60,26 @@ class PaketCreating {
 
 public:
     PaketCreating(){
-        for (Uint16 i=0;i<numberOfPackages; i++) {
-            if (i==paketCrcName){
-                _paket[i].adresFlash.all=0;
-                _paket[i].adresFlash.slovo.startAdres=adres.getAdres(paketCrc);
-                _paket[i].longPaket=0x3;
-                i++;
-                }
+        _paket[paketName].adresFlash.all=0;
+        _paket[paketName].adresFlash.slovo.startAdres=adres.getAdres(paketCrcParamObj);
+        _paket[paketName].longPaket=0xFF;
+        _paket[paketCrcName].adresFlash.all=0;
+        _paket[paketCrcName].adresFlash.slovo.startAdres=adres.getAdres(paketCrcParamObj);
+        _paket[paketCrcName].longPaket=0x3;
+        for (Uint16 i=paketZoomPosition;i<paketCrcParamObj; i++) {
             _paket[i].adresFlash.all=0;
             _paket[i].adresFlash.slovo.startAdres=adres.getAdres(i);
             _paket[i].longPaket=0xff;
-            if (i==paketCrc) {
-                _paket[i].adresFlash.all=0;
-                _paket[i].adresFlash.slovo.startAdres=adres.getAdres(paketCrc);
-                _paket[i].longPaket=0x3;
-                }
             }
+        _paket[paketCrcParamObj].adresFlash.all=0;
+        _paket[paketCrcParamObj].adresFlash.slovo.startAdres=adres.getAdres(paketCrcParamObj);
+        _paket[paketCrcParamObj].longPaket=0x3;
         }
-   inline void creatPaket (Uint8 pakketID);
+
+   inline void creatPaket (Uint8 pakketID){
+
+
+       }
 
    inline void setSektor (Uint32 adresSector) {
        for (Uint16 i=0; i<numberOfPackages; i++) {
@@ -71,7 +91,11 @@ public:
 private:
 Paket _paket[numberOfPackages];
 Adres adres;
+Builder::DataStruct data;
+
 };
+
+
 
 }
 

@@ -9,9 +9,7 @@
 #define LENSPARAM_LENSDB_HPP_
 
 #include "../LensParam/LensParam.hpp"
-#include "../LensParam/builder.hpp"
-#include "../LensParam/writer.hpp"
-#include "../LensParam/driver.hpp"
+
 
 namespace LanseDataBase {
 
@@ -25,22 +23,6 @@ public:
     inline LanseParam::Objective &objektive() {return obj;}
 
     void store() {
-    flash.buildData(obj);
-    paket.setSektor(1);// создать переменную и ее записать "1" временно
-    paket.creatPaket(0);
-    driver.write();
-    paket.creatPaket(1);
-    driver.write();
-    paket.creatPaket(2);
-    driver.write();
-    paket.creatPaket(3);
-    driver.write();
-    paket.creatPaket(4);
-    driver.write();
-    paket.creatPaket(5);
-    driver.write();
-    paket.creatPaket(6);
-    driver.write();
 
     }
     LanseParam::Objective load(Uint32 objNumber) {
@@ -48,14 +30,19 @@ public:
     }
 
     void delObj(Uint32 objNumber);
+    inline void setDataObj (const LanseParam::Objective & objectiv) {
+        obj=objectiv;
+    }
+    inline LanseParam::Objective & dataObjectiv () {
+        return obj;
+    }
 
 
 
 private:
 LanseParam::Objective obj;
-Write::PaketCreating paket;
-Builder::Build flash;
-Drive::Driver driver;
+
+
 
 
 };
