@@ -21,7 +21,10 @@
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
 #include "../ExtrenalDeviceSynchro/PanBar/CartoniPanBar.hpp"
 
+
 #define MAX_TRANSFER_TIMEOUT 100
+#define PULT_DEVELOPING_BOARD
+
 
 static volatile UInt32 transferDelayMaximum = 20;
 static volatile UInt32 transferDelayCurrent = 0;
@@ -208,6 +211,7 @@ static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
 static VirtualMenuResistor panChanelDeadResistor;
 static VirtualMenuResistor dutchChanelDeadResistor;
 static VirtualMenuResistor tiltChanelDeadResistor;
+static VirtualMenuResistor dummySpecRes(1.0);
 
 JoyChanel panJoyChannel     (panScaler,     panOffset,      &panJoySpeedResistor ,  15,0);
 JoyChanel dutchJoyChannel   (dutchScaler,   dutchOffset,    &dutchJoySpeedResistor, 15,0 );
@@ -222,21 +226,24 @@ ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_PAN,
-        0.046, &panJoySpeedResistor,
+       // 0.046, &panJoySpeedResistor,
+        0.01,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_TILT,
-        0.05, &tiltJoySpeedResistor,
+     //   0.05, &tiltJoySpeedResistor,
+        0.01,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_DUTCH,
-        0.01, &dutchJoySpeedResistor,
+     //   0.01, &dutchJoySpeedResistor,
+        0.01,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel
@@ -261,7 +268,7 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         ExtrenalDevices::CH_IRIS,
         0.0000307,
         1.0
-);/**/
+);
 
 //--------------------------------------------------------------------
 
@@ -278,16 +285,7 @@ JoyChannels dutchChannals   (dutchChannelsArray,4);
 JoyChannels tiltChannals    (tiltChannelsArray,3);
 JoyChannels zoomChannals    (zoomChannelsArray,2);
 
-/*
-JoyChannelIF* panChannelsArray[2]=      {&panJoyChannel,    &panExtern1Channel};
-JoyChannelIF* dutchChannelsArray[3]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel};
-JoyChannelIF* tiltChannelsArray[2]=     {&tiltJoyChannel,   &tiltExtern1Channel};
-JoyChannelIF* zoomChannelsArray[1]=     {&zoomJoyChannel};
 
-JoyChannels panChannals     (panChannelsArray,2);
-JoyChannels dutchChannals   (dutchChannelsArray,3);
-JoyChannels tiltChannals    (tiltChannelsArray,2);
-JoyChannels zoomChannals    (zoomChannelsArray,1);*/
 
 									//joystics
 
@@ -503,12 +501,70 @@ Pult::Pult(Semaphore_Handle* s,Semaphore_Handle* sA):
 }
 
 static UInt16 muxPosRef = 9;
+//=====================================================================================================
+//сея чушь есть пробный объектив;
+//#define LensOtlancka
+#ifdef LensOtlancka
+#include "LensParam/LensDb.hpp"
+#include "LensParam/LensData.hpp"
+#include "LensParam/MX66L51235FDriver.hpp"
+#include "LensParam/dummyDriver.hpp"
+#include "Libs/Containers/List.hpp"
+#include "Libs/Containers/String.hpp"
+#define DummyDriverSet
 
+#ifdef DummyDriverSet
+    LensDb::DummyDriverSettings setting = {0x1234,0x5678,0x9abc};
+    LensDb::DummyDriver driver(setting);
+
+#else
+    LensDb::MX66L51235FDriverSettings setting = {0x1234,0x5678,0x9abc};
+    LensDb::MX66L51235FDriver driver(setting);
+#endif
+    char* nameDummy = "myName";
+        Containers::StringStatic<64> stringNameDummy(&nameDummy[0]);
+        LensDb::LensPoint zoomPoint[3]={zoomPoint[0].position=10,
+                                        zoomPoint[0].percent=0,
+                                        zoomPoint[1].position=20,
+                                        zoomPoint[1].percent=50,
+                                        zoomPoint[2].position=40,
+                                        zoomPoint[2].percent=100};
+        LensDb::LensPoint irisPoint[4]={irisPoint[0].position=10,
+                                        irisPoint[0].percent=0,
+                                        irisPoint[1].position=20,
+                                        irisPoint[1].percent=30,
+                                        irisPoint[2].position=50,
+                                        irisPoint[2].percent=80,
+                                        irisPoint[3].position=90,
+                                        irisPoint[3].percent=100};
+        LensDb::LensPoint focusPoint[5]={focusPoint[0].position=10,
+                                         focusPoint[0].percent=0,
+                                         focusPoint[1].position=20,
+                                         focusPoint[1].percent=30,
+                                         focusPoint[2].position=40,
+                                         focusPoint[2].percent=45,
+                                         focusPoint[3].position=50,
+                                         focusPoint[3].percent=80,
+                                         focusPoint[4].position=90,
+                                         focusPoint[4].percent=100};
+        Containers::List<LensDb::LensPoint> dummyZoomPointList(&zoomPoint[0],3,64);
+        Containers::List<LensDb::LensPoint> dummyIrisPointList(&irisPoint[0],4,64);
+        Containers::List<LensDb::LensPoint> dummyFocusPointList(&focusPoint[0],5,64);
+        LensDb::LensAxis _zoom(dummyZoomPointList);
+        LensDb::LensAxis _iris(dummyIrisPointList);
+        LensDb::LensAxis _focus(dummyFocusPointList);
+        LensDb::LensObjective dummyObjective(stringNameDummy,_zoom,_iris,_focus);
+        LensDb::LensDb<64,300> lansBaseManager(driver);
+#endif
 //=====================================================================================================
 //============================== DRIVER API  ==========================================================
 #pragma CODE_SECTION(".secure")
 void Pult::driverTask()
 {
+
+#ifdef LensOtlancka
+    lansBaseManager.store(1,dummyObjective);
+#endif
 	watchDogTimer.registerKey(WD_KEY2);
 
 	filesSystemAPI.initFS();
@@ -544,6 +600,7 @@ void Pult::driverTask()
 		cartoniZoomAxisChannel.setData();
         cartoniFocusAxisChannel.setData();
         cartoniIrisAxisChannel.setData();
+        //запихиваем суда объектив для отлаки
 
 		UInt8 muxPos = signalsReader.getMultiplexer();
 		if(muxPos==14){	dutchExtern2Channel.setRef(result[SIGNAL_SLOW]);}

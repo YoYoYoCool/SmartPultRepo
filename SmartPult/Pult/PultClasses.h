@@ -168,6 +168,10 @@ public:
 	 {
 		 value=0.5;
 	 }
+	 VirtualMenuResistor(float val): Resistor()
+	     {
+	         value=val;
+	     }
 	 void setValue(float v){value=v;}
 	 virtual void calculate(UInt32 adcValue)
 	 {

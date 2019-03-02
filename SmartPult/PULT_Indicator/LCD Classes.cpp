@@ -1,6 +1,6 @@
 
 
-#include "Board.h"
+#include "../Board.h"
 #include "LCD Classes.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "driverlib/rom.h"

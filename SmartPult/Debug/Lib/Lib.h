@@ -10,8 +10,8 @@
 #include "stddef.h"
 
 
-inline size_t strLen (const char * str, size_t maxSize) {
-for (size_t i=0; i<maxSize; i++) {
+inline Uint8 strLen (const char * str, Uint8 maxSize) {
+for (Uint8 i=0; i<maxSize; i++) {
     if (str[i]=='\0') {
 
     return i;}
