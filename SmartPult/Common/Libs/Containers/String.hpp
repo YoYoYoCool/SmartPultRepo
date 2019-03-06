@@ -102,7 +102,7 @@ public:
     //ќператор предназначен дл€ доступа к внутреннему массиву дл€ оптимизации вывода
     //ѕредполагает использование только дл€ конечного вывода строки.
     //–абота со строкой во внешней системе крайне не рекомендуетс€
-    const char& operator[](uint32_t id) {
+    char& operator[](uint32_t id) {
         debugAssert(id<maxLength);
     	id = std::min(id, maxLength-1);
     	return strBuf[id];

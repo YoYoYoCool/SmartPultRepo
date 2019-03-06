@@ -36,6 +36,8 @@ public:
     inline LensPoint* points() {
         return &pointsList[0];
     }
+    inline void setSize(size_t size) {pointsList.setSize(size); }
+
     inline size_t getSize() { return pointsList.getSize(); }
 private:
     Containers::List<LensPoint>& pointsList;
@@ -52,12 +54,14 @@ public:
 
 class LensObjective {
 public:
+
     LensObjective(
             Containers::String& name,
             LensAxis& zoom,
             LensAxis& iris,
             LensAxis& focus) : _name(name),
             _zoom(zoom), _iris(iris), _focus(focus){;};
+
     inline LensAxis& zoom()    {return _zoom; };
     inline LensAxis& iris()    {return _iris; };
     inline LensAxis& focus()   {return _focus;};

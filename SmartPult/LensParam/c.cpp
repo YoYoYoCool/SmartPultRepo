@@ -9,6 +9,6 @@
 
 
 
-LensDb::LensPackParser/*<12,15>*/ a;
+
 
 

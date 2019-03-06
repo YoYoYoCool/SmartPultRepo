@@ -16,25 +16,32 @@
 
 namespace LensDb {
 
-template<size_t maxAxisPoints, size_t maxPackLen>
+enum {addrWriteSize=0};
+
+template<size_t maxPackLen>
 class LensPackBuilder
 {
 private:
-    LensPackStatic<maxPackLen> pack;
+    LensPack & pack;
 public:
-    LensPackBuilder() {
+    LensPackBuilder(LensPack & pack): pack(pack) {
     }
-    inline LensPack& buildPack(LensObjective& lensObjective) {
-        ExchangeLib::OutSerial outBytes(&pack[0], pack.getSize());
-        uint8_t sizeName=lensObjective.name().getLength();
+    inline void buildPack(LensObjective& lensObjective) {
+        ExchangeLib::OutSerial outBytes(&pack[0], pack.getSize(),headerSize);
+        uint8_t sizeName=lensObjective.name().getLength()+1;
         outBytes.write<uint8_t>(sizeName);//пишем длинну имени
         outBytes.write<const char>(&lensObjective.name()[0], lensObjective.name().getLength());//пишем имя
+        char endStr='\0';
+        outBytes.write<char>(endStr);
         writeAxis(lensObjective.zoom(), outBytes);//пишем зум
         writeAxis(lensObjective.iris(), outBytes);//пишем диафрагму
         writeAxis(lensObjective.focus(), outBytes);//пишем фокус
-        uint16_t crc = findCrc(&pack[0], outBytes.getWritedCount()); //Считаем контрольную сумму
+        uint16_t sizeWritedCount=outBytes.getWritedCount();
+        outBytes.setOffset(addrWriteSize);
+        outBytes.write<uint16_t>(sizeWritedCount);
+        uint16_t crc = findCrc(&pack[0], sizeWritedCount); //Считаем контрольную сумму
+        outBytes.setOffset(sizeWritedCount);
         outBytes.write<uint16_t>(crc); //Пишем контрольную сумму
-        return pack;
     }
 private:
 
@@ -44,8 +51,6 @@ private:
         outBytes.write<uint8_t>(pointsCount); //Пишем количество точек
         outBytes.write<LensPoint>(points, pointsCount);//Пишем точки
     }
-
-
 };
 
 } /* namespace LensDb */

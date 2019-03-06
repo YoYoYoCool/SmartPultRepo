@@ -24,7 +24,7 @@ MX66L51235FDriverSettings driverSettings = {
     .setting1 = 0x5678,
     .setting2 = 0x9ABC
 };
-MX66L51235FDriver flashDriver(driverSettings);
+//MX66L51235FDriver flashDriver(driverSettings);
 
 //LensDb::LensDb<MaxAxisPoints, MaxPackSize> lensDb(flashDriver);
 

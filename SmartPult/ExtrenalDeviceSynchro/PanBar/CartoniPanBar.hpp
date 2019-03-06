@@ -18,8 +18,6 @@
 namespace ExtrenalDevices
 {
 
-
-
     enum CartoniAxisID
     {
         AXIS_PAN=1,
@@ -114,7 +112,7 @@ namespace ExtrenalDevices
     struct CartoniAxis
     {
         volatile bool isActive;
-        volatile Int32 value;
+        volatile float value;
 
     };
 
@@ -196,12 +194,9 @@ namespace ExtrenalDevices
 
             inline CartoniAxis getAxis(CartoniChannelAxisList ax)
             {
-
                 CartoniAxis dummyAxis=  {   false, 0   };
                 CartoniAxis ret;
-
-                if(Semaphore_pend( *sem,7))
-                {
+                if(Semaphore_pend( *sem,7))    {
                     switch(ax)
                     {
                         case CH_PAN:
@@ -279,43 +274,33 @@ namespace ExtrenalDevices
 
             volatile bool invalidAxisID;
 
-            inline void resetAllData()
-            {
+            inline void resetAllData()          {
                 buttons.all=0;
-
                 pan.isActive=false;
                 pan.value=0;
-
                 dutch.isActive=false;
                 dutch.value=0;
-
                 tilt.isActive=false;
                 tilt.value=0;
-
                 zoom.isActive=false;
                 zoom.value=0;
-
                 iris.isActive=false;
                 iris.value=0;
-
                 focus.isActive=false;
                 focus.value=0;
-
                 invalidAxisID=false;
+                transactionCounter=0;        }
 
-                transactionCounter=0;
-
-            }
-
-            inline Int32 axisRendererSpeed(CartoniAxisData* d)
+            inline float axisRendererSpeed(CartoniAxisData* d)
             {
-                Int32 data=0;
+                uint32_t data=0;
                 data|=(d->data.bit21&0x1 )      <<31;
                 if (data<0) {data|=0x7FE00000;}
                 data|=(d->data.bits14_20&0x7F)  <<14;
                 data|=(d->data.bits07_13&0x7F)  <<7;
                 data|=(d->data.bits00_06&0x7F);
-                return data;
+                float dat=data;
+                return dat*0.01;
             }
             inline Int32 axisRendererZoomSpeed(CartoniAxisData* d)
             {
@@ -424,7 +409,6 @@ namespace ExtrenalDevices
             {
 
             }
-
 
             float getCurrentAdcValue()
             {

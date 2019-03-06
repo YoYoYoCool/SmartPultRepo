@@ -227,7 +227,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_PAN,
        // 0.046, &panJoySpeedResistor,
-        0.01,&dummySpecRes,
+        1,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
@@ -235,7 +235,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_TILT,
      //   0.05, &tiltJoySpeedResistor,
-        0.01,&dummySpecRes,
+        1,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
@@ -243,7 +243,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_DUTCH,
      //   0.01, &dutchJoySpeedResistor,
-        0.01,&dummySpecRes,
+        1,&dummySpecRes,
         30,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel
@@ -503,7 +503,7 @@ Pult::Pult(Semaphore_Handle* s,Semaphore_Handle* sA):
 static UInt16 muxPosRef = 9;
 //=====================================================================================================
 //сея чушь есть пробный объектив;
-//#define LensOtlancka
+#define LensOtlancka
 #ifdef LensOtlancka
 #include "LensParam/LensDb.hpp"
 #include "LensParam/LensData.hpp"
@@ -523,30 +523,31 @@ static UInt16 muxPosRef = 9;
 #endif
     char* nameDummy = "myName";
         Containers::StringStatic<64> stringNameDummy(&nameDummy[0]);
-        LensDb::LensPoint zoomPoint[3]={zoomPoint[0].position=10,
+        LensDb::LensPoint zoomPoint[3]={zoomPoint[0].position=10.1,
                                         zoomPoint[0].percent=0,
-                                        zoomPoint[1].position=20,
-                                        zoomPoint[1].percent=50,
-                                        zoomPoint[2].position=40,
-                                        zoomPoint[2].percent=100};
-        LensDb::LensPoint irisPoint[4]={irisPoint[0].position=10,
+                                        zoomPoint[1].position=20.5,
+                                        zoomPoint[1].percent=50.4,
+                                        zoomPoint[2].position=40.5,
+                                        zoomPoint[2].percent=100.0};
+        LensDb::LensPoint irisPoint[4]={irisPoint[0].position=10.2,
                                         irisPoint[0].percent=0,
-                                        irisPoint[1].position=20,
-                                        irisPoint[1].percent=30,
-                                        irisPoint[2].position=50,
-                                        irisPoint[2].percent=80,
-                                        irisPoint[3].position=90,
-                                        irisPoint[3].percent=100};
-        LensDb::LensPoint focusPoint[5]={focusPoint[0].position=10,
-                                         focusPoint[0].percent=0,
-                                         focusPoint[1].position=20,
-                                         focusPoint[1].percent=30,
-                                         focusPoint[2].position=40,
-                                         focusPoint[2].percent=45,
-                                         focusPoint[3].position=50,
-                                         focusPoint[3].percent=80,
-                                         focusPoint[4].position=90,
-                                         focusPoint[4].percent=100};
+                                        irisPoint[1].position=20.6,
+                                        irisPoint[1].percent=30.7,
+                                        irisPoint[2].position=50.9,
+                                        irisPoint[2].percent=80.8,
+                                        irisPoint[3].position=90.8,
+                                        irisPoint[3].percent=100.0};
+        LensDb::LensPoint focusPoint[5]={focusPoint[0].position=10.0,
+                                         focusPoint[0].percent=0.0,
+                                         focusPoint[1].position=20.4,
+                                         focusPoint[1].percent=30.3,
+                                         focusPoint[2].position=40.8,
+                                         focusPoint[2].percent=45.7,
+                                         focusPoint[3].position=50.9,
+                                         focusPoint[3].percent=80.7,
+                                         focusPoint[4].position=90.8,
+                                         focusPoint[4].percent=100.0};
+
         Containers::List<LensDb::LensPoint> dummyZoomPointList(&zoomPoint[0],3,64);
         Containers::List<LensDb::LensPoint> dummyIrisPointList(&irisPoint[0],4,64);
         Containers::List<LensDb::LensPoint> dummyFocusPointList(&focusPoint[0],5,64);
@@ -554,6 +555,7 @@ static UInt16 muxPosRef = 9;
         LensDb::LensAxis _iris(dummyIrisPointList);
         LensDb::LensAxis _focus(dummyFocusPointList);
         LensDb::LensObjective dummyObjective(stringNameDummy,_zoom,_iris,_focus);
+
         LensDb::LensDb<64,300> lansBaseManager(driver);
 #endif
 //=====================================================================================================
@@ -561,9 +563,32 @@ static UInt16 muxPosRef = 9;
 #pragma CODE_SECTION(".secure")
 void Pult::driverTask()
 {
-
+    watchDogTimer.registerKey(WD_KEY2);
 #ifdef LensOtlancka
     lansBaseManager.store(1,dummyObjective);
+    char* nameDummyNew = "";
+    Containers::StringStatic<64> stringNameDummyNew(&nameDummyNew[0]);
+    dummyObjective.setName(stringNameDummyNew);
+    bool lensValid = lansBaseManager.load(1,dummyObjective);
+    LensDb::LensAxis dummyAxis1 (dummyObjective.zoom());
+
+    LensDb::LensPoint dymmyPoint1[3];
+    for (Uint32 id=0; id<dummyAxis1.getSize(); id++) {
+        dymmyPoint1[id]=dummyAxis1.point(id);
+        }
+    LensDb::LensAxis dummyAxis2 (dummyObjective.iris());
+    LensDb::LensPoint dymmyPoint2[4];
+    for (Uint32 id=0; id<dummyAxis2.getSize(); id++) {
+        dymmyPoint2[id]=dummyAxis2.point(id);
+        }
+    LensDb::LensAxis dummyAxis3 (dummyObjective.focus());
+    LensDb::LensPoint dymmyPoint3[5];
+    for (Uint32 id=0; id<dummyAxis3.getSize(); id++) {
+        dymmyPoint3[id]=dummyAxis3.point(id);
+        }
+    uint32_t a=0;
+    a=10;
+    a-=5;
 #endif
 	watchDogTimer.registerKey(WD_KEY2);
 

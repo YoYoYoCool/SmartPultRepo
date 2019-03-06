@@ -19,7 +19,7 @@ public:
         virtual void write(uint32_t addr, uint8_t* buf, size_t count) = 0;
         virtual void read(uint32_t addr, uint8_t* buf, size_t count) = 0;
         virtual void eraseObjective(uint32_t addr)=0;
-
+        virtual void clearOffset ()=0;
 };
 
 } /* namespace LensDb */

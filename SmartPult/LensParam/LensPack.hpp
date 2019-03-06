@@ -14,6 +14,8 @@
 
 namespace LensDb {
 
+enum {headerSize=2};
+
 class LensPack {
 private:
     uint8_t* packBuf;

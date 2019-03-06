@@ -43,13 +43,11 @@ public:
     template<typename TData>
     inline bool read(TData* dataArr, size_t dataArrSize) {
         if (dataArrSize*sizeof(TData) < _size - _offset) {
-            for(size_t i = 0; i < dataArrSize; i++) {
-                _read(dataArr[i]);
-                return true;
+            _readArray(dataArr,dataArrSize);
+            return true;
             }
-        }
         return false;
-    }
+        }
     template<typename TData>
     inline bool get(TData &data) {
         if (sizeof(TData) < _size- _offset) {
@@ -81,13 +79,16 @@ public:
 private:
     template<typename TData>
     inline void _read(TData &data) {
-        _get(data);
+        memcpy((uint8_t*)&data, (uint8_t*)&_buf[_offset], sizeof(TData));
         _offset = _offset + sizeof(TData);
     }
     template<typename TData>
-    inline void _get(TData &data) {
-        memcpy((uint8_t*)&data, (uint8_t*)&_buf[_offset], sizeof(TData));
+    inline void _readArray(TData *data, size_t dataArrSize) {
+        size_t writeSize = sizeof(TData)*dataArrSize;
+        memcpy((uint8_t*)data, (uint8_t*)&_buf[_offset], writeSize);
+        _offset = _offset + writeSize;
     }
+
 };
 };
 

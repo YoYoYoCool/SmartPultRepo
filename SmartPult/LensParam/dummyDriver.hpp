@@ -21,24 +21,39 @@ struct DummyDriverSettings {
 
 class DummyDriver : public LensDriver {
 private:
-    LensPackStatic<4096> pack;
+    uint8_t pack[300];
+    uint16_t offset;
 public:
 
     DummyDriver(DummyDriverSettings& settings){}
 
     virtual void write(uint32_t addr, uint8_t* buf, size_t count) {
 
+        for (Uint16 i=0; i<count;i++) {
+            pack[i]=buf[i];
+        }
+        uint32_t a;// штоб было куда ткнуть точку останова
+        a++;
+        a--;
     }
 
-    virtual void read (uint32_t addr, uint8_t* buf, size_t count) {
+    virtual void read (uint32_t addr, uint8_t* buf,size_t count) {
 
+        for (Uint16 i=0; i<count;i++) {
+                buf[i]=pack[offset];
+                offset++;
+                }
+                uint32_t a;
+                a++;
     }
 
     virtual void eraseObjective(uint32_t addr) {
 
     }
 
-
+    virtual void clearOffset () {
+        offset=0;
+        }
 };
 }
 

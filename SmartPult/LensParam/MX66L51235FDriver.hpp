@@ -44,6 +44,7 @@ public:
     virtual void eraseObjective (uint32_t addr) {
         MX66L51235FSectorErase(addr);
         }
+    virtual void clearOffset () {}
 private:
 
 

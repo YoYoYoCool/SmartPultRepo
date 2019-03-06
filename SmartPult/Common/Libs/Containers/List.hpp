@@ -24,7 +24,8 @@ public:
         Array<TData>(arr, 0), maxSize(maxSize) {
     }
     inline List(TData* arr, size_t size, size_t maxSize) :
-        Array<TData>(arr, size), maxSize(maxSize) {
+        Array<TData>(arr, size), maxSize(maxSize){
+        this->size=size;
         debugAssert(this->size<maxSize);
     }
     inline void add(TData& data) {
@@ -36,6 +37,7 @@ public:
         if (id>=this->size) this->size=id+1;
         this->data[id] = data;
     }
+    inline void setSize (size_t size) {this->size=size;}
     inline TData& get(size_t id) {
         debugAssert(id<this->size);
         return this->data[id];

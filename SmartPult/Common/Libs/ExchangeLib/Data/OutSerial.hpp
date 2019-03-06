@@ -23,7 +23,7 @@ private:
     size_t _maxSize;
     size_t offset;
 public:
-    inline OutSerial(uint8_t* buf, size_t size) : buf(buf), _maxSize(size), offset(0) {
+    inline OutSerial(uint8_t* buf, size_t size, size_t offset=0 ) : buf(buf), _maxSize(size), offset(offset) {
     }
 
     template<typename TData>
@@ -64,6 +64,9 @@ public:
     inline size_t getMaxSize() {
        return _maxSize;
     }
+    inline void setOffset (size_t offset) {
+        this->offset=offset;
+        }
     inline bool skip(size_t count) {
         debugAssert(count < _maxSize - offset);
         if (count < _maxSize - offset) {

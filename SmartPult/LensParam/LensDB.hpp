@@ -16,39 +16,35 @@
 namespace LensDb {
 
 
+
 template<size_t MaxAxisPoints, size_t MaxPackSize>
 class LensDb {
 private:
-    LensPackBuilder<MaxAxisPoints, MaxPackSize> packBuilder;
+    LensPackStatic<MaxPackSize> pack;
+    LensPackBuilder<MaxPackSize> packBuilder ;
     LensDriver& driver;
-    LensPackParser packParser;
+    LensPackParser<MaxPackSize> packParser;
 public:
-    LensDb(LensDriver& driver) : driver(driver) {
-    }
-    inline bool store(size_t id, LensObjective& lensObjective) {
-        LensPack& pack = packBuilder.buildPack(lensObjective);
-        driver.write(calcAddr(id), &pack[0], pack.getSize());
-        return validateDb(calcAddr(id));
+    LensDb(LensDriver& driver) : driver(driver), packBuilder(pack), packParser(pack){    }
+    inline bool store(size_t objectiveId, LensObjective& lensObjective) {
+        packBuilder.buildPack(lensObjective);
+        driver.write(objectiveId, &pack[0], pack.getSize());
+        return validateDb(objectiveId);
         }
 
-    inline bool load(size_t id, LensObjective& lensObjective) {
-        LensPackStatic<MaxPackSize> pack;
-        driver.read(calcAddr(id), &pack[0], maxPackSize);
-        if (!packParser.validate(&pack[0])) return false;
-        packParser.objectiveBuild(&pack[0], lensObjective)
-        return true;
+    inline bool load(size_t objectiveId, LensObjective& lensObjective) {
+        driver.read(objectiveId, &pack[0],headerSize);
+        driver.read(objectiveId, &pack[headerSize],(packParser.parsePackSize()));
+        return packParser.parseObjective(lensObjective);
         }
-    inline void defrogmentaciaLensDataBase () {}
+    inline void defrogmentationLensDb () {}
 private:
 
     inline bool validateDb (size_t id) {
         return true;
     }
 
-    inline uint32_t calcAddr(uint32_t id) {
-        id-=1;
-        return id<<12;
-    }
+
 };
 
 } /* namespace LensDb */
