@@ -102,10 +102,10 @@
     const EepromDefault dutchMaxTorqDefault     =  {       0,             100,                100};             //78
     const EepromDefault tiltMaxTorqDefault      =  {       0,             100,                100};             //79
 
-    const EepromDefault panJoyDzDefault         =  {       0,              0,                100};             //80
-    const EepromDefault dutchJoyDzDefault       =  {       0,              15,                100};             //81
-    const EepromDefault tiltJoyDzDefault        =  {       0,              0,                100};             //82
-    const EepromDefault zoomJoyDzDefault        =  {       0,              0,                100};             //83
+    const EepromDefault panJoyDzDefault         =  {       0,              7,                200};             //80
+    const EepromDefault dutchJoyDzDefault       =  {       0,              7,                200};             //81
+    const EepromDefault tiltJoyDzDefault        =  {       0,              7,                200};             //82
+    const EepromDefault zoomJoyDzDefault        =  {       0,              7,                200};             //83
 
     const EepromDefault dutchWheelSpeedDefault  =  {       0,      0x3d4ccccF,         0x3f800001};             //84
 

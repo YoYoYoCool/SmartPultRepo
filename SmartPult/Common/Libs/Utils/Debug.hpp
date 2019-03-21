@@ -8,7 +8,7 @@
 #ifndef SUPPORT_DEBUG_HPP_
 #define SUPPORT_DEBUG_HPP_
 
-#define LIBS_DEBUG_MODE
+//#define LIBS_DEBUG_MODE
 
 #ifdef LIBS_DEBUG_MODE
 

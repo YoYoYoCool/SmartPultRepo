@@ -23,7 +23,7 @@
 
 
 #define MAX_TRANSFER_TIMEOUT 100
-#define PULT_DEVELOPING_BOARD
+//#define PULT_DEVELOPING_BOARD
 
 
 static volatile UInt32 transferDelayMaximum = 20;
@@ -503,7 +503,7 @@ Pult::Pult(Semaphore_Handle* s,Semaphore_Handle* sA):
 static UInt16 muxPosRef = 9;
 //=====================================================================================================
 //сея чушь есть пробный объектив;
-#define LensOtlancka
+//#define LensOtlancka
 #ifdef LensOtlancka
 #include "LensParam/LensDb.hpp"
 #include "LensParam/LensData.hpp"

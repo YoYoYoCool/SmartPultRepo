@@ -10,7 +10,9 @@
 #include "../WatchDogTimer/WatchDog.hpp"
 #include "Image.hpp"
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
-#include "MotionControl/LogicController/MotionLogicController.hpp"/*
+#include "MotionControl/LogicController/MotionLogicController.hpp"
+//#include "LCD Lens.hpp"
+/*
 #include "../LensParam/LensParam.hpp"*/
 
 #define VERTICAL_LEN 200
@@ -218,18 +220,21 @@ enum {RigthSideHandSwitchAxesText=1,
 enum {RigthSideHandSwitchAxesTextSistem=0,
     LeftSideHandSwitchAxesTextSistem};
 
-tMenu_Link lensControlSetup[6]={
+tMenu_Link lensControlSetup[7]={
 		{"MOTOR MAPPING", NULL},
 		{"MOTOR MODELS", NULL},
 		{"CAMERA MODEL", NULL},
+		{"OBJECTIVE SET",NULL},
 		{"ZOOM SENS", NULL},
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
 };
 
+
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
     CameraModelLensControlSetup,
+    objectiveSelectControlSetup,
     ZoomSensLensControlSetup,
     LensCalibrateLensControlSetup,
     ZoomDriftLensControlSetup};
@@ -237,9 +242,22 @@ enum {MotorMappingLensControlSetup=1,
 enum {MotorMappingLensControlSetupSistem=0,
     MotorModelLensControlSetupSistem,
     CameraModelLensControlSetupSistem,
+    objectiveSelectControlSetupSistem,
     ZoomSensLensControlSetupSistem,
     LensCalibrateLensControlSetupSistem,
     ZoomDriftLensControlSetupSistem};
+
+tMenu_Link lensControlObjectiv[2]= {
+        {"SELECT",NULL},
+        {"CREATE",NULL}
+};
+tMenu_Link LensControlObjectivSelect[5]= {
+        {"ONE", NULL},
+        {"TWO", NULL},
+        {"THREE",NULL},
+        {"FOUR",NULL},
+        {"FIVE",NULL}
+};
 
 tMenu_Link lensControlZIF[3]={
 		{"ZOOM", NULL},
@@ -409,6 +427,8 @@ LCD_Menu* startFluidSelectPointer;
 ProfileSelectMenu* profileMenuPointer;
 SwitchAxsesMenu* switchAxesPointer;
 LCD_Menu* lensControlMenuPointer;
+LCD_Menu* lensControlObjectiveMenuPointer;
+LCD_Menu* lensControlObjectiveMenySelectPointer;
 LCD_Menu* lensControlZifSetupPointer;
 LCD_Menu* lensControlMotorsSetupPointer;
 SelectMenu* lensControlCameraStartPointer;
@@ -609,8 +629,16 @@ void pultIndikator_Task(Pult* point_pult)
 	Main_Menu_Link[4].pPointSub = p_PDT_Menu_Eq;
 
 	//"LENS CONTROL"
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,6,0,6);
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
 	lensControlMenuPointer=&lensControlMenu;
+
+	//TableForm<float,11,2,64,2,10> a("str");
+
+	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",lensControlObjectiv,2,0,2);
+	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
+
+	LCD_Menu lensControlObjectiveSelectMenu ("OBJECTIVE SELECT",LensControlObjectivSelect,5,0,5);
+	lensControlObjectiveMenySelectPointer=&lensControlObjectiveSelectMenu;
 
 	LCD_Menu_lcZIF lensControlZifSetup("MOTOR MAPPING",lensControlZIF ,3,0,3,lensControlMotorsText,3);
 	lensControlZifSetupPointer=&lensControlZifSetup;
@@ -1037,7 +1065,7 @@ void LCD_Main::updateMotionState()
 void LCD_Main::updateMotionTrackNumber()
 {
 	UInt8 curTrackNum=p_pult->getMotionSubsystem()->getCurrentTrackID();
-	sprintf(motionTrackNumberString,"Track:%d",curTrackNum+1);
+	(motionTrackNumberString,"Track:%d",curTrackNum+1);
 	motionTrackNumberString[9]=0;
 	if(curTrackNum!=motionLastTrackNumber)
 	{
@@ -1288,32 +1316,32 @@ void LCD_Main::Draw() //рисование
 	//UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
 	UInt16 PosX = 1, Length1 = 22, Length2 = 59, Otkat = 2;
 	Cell_P_Name.Active_Style = Style_MenuHeader;
-	Cell_P_Name.FastDraw(PosX,                                  1,Length1,30, (char*)"P", Cell_Active);
+	Cell_P_Name.FastDraw(PosX,1,Length1,30, (char*)"P", Cell_Active);
 
 	Cell_P_Inf.Active_Style = Style_MenuHeader;
 	Cell_P_Inf.UnActive_Style = Style_Error;
-	Cell_P_Inf.FastDraw(PosX + (Length1-Otkat),                 1,Length2,30, (char*)"PS1", Cell_Active);
+	Cell_P_Inf.FastDraw(PosX + (Length1-Otkat),1,Length2,30, (char*)"PS1", Cell_Active);
 
 	Cell_D_Name.Active_Style = Style_MenuHeader;
-	Cell_D_Name.FastDraw(PosX + (Length1-Otkat) + Length2,      1,Length1,30, (char*)"D", Cell_Active);
+	Cell_D_Name.FastDraw(PosX + (Length1-Otkat) + Length2,1,Length1,30, (char*)"D", Cell_Active);
 
 	Cell_D_Inf.Active_Style = Style_MenuHeader;
 	Cell_D_Inf.UnActive_Style = Style_Error;
-	Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,     1,Length2,30, (char*)"DS1", Cell_Active);
+	Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"DS1", Cell_Active);
 
 	Cell_T_Name.Active_Style = Style_MenuHeader;
-	Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,  1,Length1,30, (char*)"T", Cell_Active);
+	Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"T", Cell_Active);
 
 	Cell_T_Inf.Active_Style = Style_MenuHeader;
 	Cell_T_Inf.UnActive_Style = Style_Error;
-	Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,   1,Length2,30, (char*)"TS1", Cell_Active);
+	Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
 
     Cell_Z_Name.Active_Style = Style_MenuHeader;
-    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,  1,Length1,30, (char*)"Z", Cell_Active);
+    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,1,Length1,30, (char*)"Z", Cell_Active);
 
     Cell_Z_Inf.Active_Style = Style_MenuHeader;
     Cell_Z_Inf.UnActive_Style = Style_Error;
-    Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) + 3*Length2,   1,Length2,30, (char*)"ZS1", Cell_Active);
+    Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) + 3*Length2,1,Length2,30, (char*)"ZS1", Cell_Active);
 	// ======== END Сверху ==============
 
 	Serv_Counter(p_pult->getPanTurns(), true);
@@ -1728,7 +1756,7 @@ void LCD_Main::Serv_Counter(float value, bool isForseUpdate)
 
 }
 
-
+/*
 LCD_Cell::LCD_Cell(char* pNam, UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize)
 {
 	pName = pNam;
@@ -1741,7 +1769,7 @@ LCD_Cell::LCD_Cell(char* pNam, UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize)
 	Rounded = false;
 	Drawed = false;
 	Hided = false;
-}
+}*/
 
 void LCD_Cell::SetRect()
 {
@@ -1791,11 +1819,11 @@ void LCD_Cell::PreDraw()
 		}
 	}
 }
-
+/*
 void LCD_Cell::SetText(char* ptext)
 {
 	p_text = ptext;
-}
+}*/
 
 
 void LCD_Cell::Draw()
@@ -2545,7 +2573,7 @@ void SetJoyDeadZone::upValue(UInt8 id)
 void SetJoyDeadZone::downValue(UInt8 id)
 {
 	if(id>=4){return;}
-	if(values[id]<=1){values[id]=0;}
+	if(values[id]<=3){values[id]=3;}
 	else{values[id]-=1;}
 }
 
@@ -3696,16 +3724,6 @@ void TurnsViewMenu::DrawVert()
     sprintf(textBuffer[2],"TILT: %1.6f",    val[2]);
     //todo логика дрейф стопер
 
-   /* if(autoOn)
-    {
-        sprintf(textBuffer[3],"AUTO: ON"  );
-    }
-    else
-    {
-        sprintf(textBuffer[3],"AUTO: OFF"  );
-    }*/
-
-
     for(UInt8 i=0;i<Menu_On_Screen;i++)
     {
         textBuffer[i][29]=0;
@@ -3752,16 +3770,12 @@ void  TurnsViewMenu::action()
 }
 void  TurnsViewMenu::Listener()
 {
-
-
     if(Focused)
     {
         ClearDisp();
         Draw(Tek_Count);
         Focused = false;
     }
-
-
     if (getButtonState(pult_Button_ESC) == PRESSED)// здесь добавить drift stoper off
     {
         pDispl = pDispl->Parent;

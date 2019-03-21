@@ -11,6 +11,7 @@
 #include <Pult/Pult.h>
 #include <SPI/SPI_Work.h>
 #include "PWM_Work.h"
+#include "drivers/kentec320x240x16_ssd2119.h"
 #include "../GyConCommon/dataTypes.h"
 #include "../MotionControl/MotionSynchroModule.hpp"
 #include "MemoryControl.hpp"
@@ -109,11 +110,36 @@ public:
 	tCell_Style Active_Style, UnActive_Style;
 	char* p_text; //запомним текст
 	bool Rounded; //в круге
+	LCD_Cell() {}
+	LCD_Cell (char *text, t_Pos_Size_XY  position/*={.X=1,.Y=1,.Xsize=10,.Ysize=10}*/) : p_text(text),p_Pos_Size_XY(position) { // делает все тоже самое что и старый конструктор только адекватнее
+	    Tek_Style = Style_MenuActive;
+	    Active_Style = Style_MenuActive;
+	    UnActive_Style = Style_MenuUnActive;
+	    this->Rounded=false;
+	    this->Drawed=false;
+	    this->Hided=false;
+	}
+	LCD_Cell(char* pNam, UInt32 X=1,UInt32 Y=1,UInt32 Xsize=10,UInt32 Ysize=10) // старый конструктор
+	{
+	    pName = pNam;
+	    p_Pos_Size_XY.X = X-1;  p_Pos_Size_XY.Xsize = Xsize;
+	    p_Pos_Size_XY.Y = Y-1;  p_Pos_Size_XY.Ysize = Ysize;
 
-	LCD_Cell(char* pNam, UInt32 X=1,UInt32 Y=1,UInt32 Xsize=10,UInt32 Ysize=10);
+	    Tek_Style = Style_MenuActive;
+	    Active_Style = Style_MenuActive;
+	    UnActive_Style = Style_MenuUnActive;
+	    Rounded = false;
+	    Drawed = false;
+	    Hided = false;
+	}
 	void Set_Coord(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize);
 	void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active); //рисует ячейку с предустановленными параметрами
-	void SetText(char* ptext); //сохраняет текст для себя
+	inline void FastDraw (bool active) {
+	    if (active)  ReDraw();
+	    else    ReHide();
+	    }
+	inline void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
+	void SetText(char* ptext) {p_text = ptext;} //сохраняет текст для себя
 	void Draw(); //рисует ячейку в стиле Active_Style
 	void Hide(); //рисует ячейку в стиле UnActive_Style
 	void ReDraw(); //рисует ячейку в стиле Active_Style
@@ -771,6 +797,18 @@ typedef struct
 	UInt32 Value;
 }
 tColor;
+/*
+void ClearDisp()
+{
+    //сначала просто закрасим старое
+    tRectangle pRect;
+
+    pRect.i16XMin = 0;
+    pRect.i16YMin = 0;
+    pRect.i16XMax = 319;
+    pRect.i16YMax = 239;
+    DpyRectFill(&g_sKentec320x240x16_SSD2119,&pRect,Color_Fon_Displ);
+}*/
 
 
 #endif /* _LCD_CLASSES_H_ */
