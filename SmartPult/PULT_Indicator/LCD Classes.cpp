@@ -220,11 +220,11 @@ enum {RigthSideHandSwitchAxesText=1,
 enum {RigthSideHandSwitchAxesTextSistem=0,
     LeftSideHandSwitchAxesTextSistem};
 
-tMenu_Link lensControlSetup[7]={
+tMenu_Link lensControlSetup[6]={
 		{"MOTOR MAPPING", NULL},
 		{"MOTOR MODELS", NULL},
 		{"CAMERA MODEL", NULL},
-		{"OBJECTIVE SET",NULL},
+/*		{"OBJECTIVE SET",NULL},*/
 		{"ZOOM SENS", NULL},
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
@@ -234,7 +234,7 @@ tMenu_Link lensControlSetup[7]={
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
     CameraModelLensControlSetup,
-    objectiveSelectControlSetup,
+//    objectiveSelectControlSetup,
     ZoomSensLensControlSetup,
     LensCalibrateLensControlSetup,
     ZoomDriftLensControlSetup};
@@ -242,7 +242,7 @@ enum {MotorMappingLensControlSetup=1,
 enum {MotorMappingLensControlSetupSistem=0,
     MotorModelLensControlSetupSistem,
     CameraModelLensControlSetupSistem,
-    objectiveSelectControlSetupSistem,
+//    objectiveSelectControlSetupSistem,
     ZoomSensLensControlSetupSistem,
     LensCalibrateLensControlSetupSistem,
     ZoomDriftLensControlSetupSistem};
@@ -629,16 +629,16 @@ void pultIndikator_Task(Pult* point_pult)
 	Main_Menu_Link[4].pPointSub = p_PDT_Menu_Eq;
 
 	//"LENS CONTROL"
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,6,0,6);
 	lensControlMenuPointer=&lensControlMenu;
 
 	//TableForm<float,11,2,64,2,10> a("str");
 
-	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",lensControlObjectiv,2,0,2);
+	/*LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",lensControlObjectiv,2,0,2);
 	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
 
 	LCD_Menu lensControlObjectiveSelectMenu ("OBJECTIVE SELECT",LensControlObjectivSelect,5,0,5);
-	lensControlObjectiveMenySelectPointer=&lensControlObjectiveSelectMenu;
+	lensControlObjectiveMenySelectPointer=&lensControlObjectiveSelectMenu;*/
 
 	LCD_Menu_lcZIF lensControlZifSetup("MOTOR MAPPING",lensControlZIF ,3,0,3,lensControlMotorsText,3);
 	lensControlZifSetupPointer=&lensControlZifSetup;
@@ -1065,7 +1065,7 @@ void LCD_Main::updateMotionState()
 void LCD_Main::updateMotionTrackNumber()
 {
 	UInt8 curTrackNum=p_pult->getMotionSubsystem()->getCurrentTrackID();
-	(motionTrackNumberString,"Track:%d",curTrackNum+1);
+	sprintf(motionTrackNumberString,"Track:%d",curTrackNum+1);
 	motionTrackNumberString[9]=0;
 	if(curTrackNum!=motionLastTrackNumber)
 	{
@@ -1298,7 +1298,7 @@ void LCD_Main::Draw() //рисование
 
 //		renderDateString(limitTimeString,10,4000);
 //		renderDateString(counterTimeString,10,4100);
-	//	updateMotionState();
+		//updateMotionState();
 		//updateMotionTrackNumber();
 
 		motionTrackNumber.FastDraw	(140,80,105,30,motionTrackNumberString, Cell_Active);
@@ -2567,14 +2567,14 @@ void SetJoyDeadZone::DrawVert() //рисование вертикального меню
 void SetJoyDeadZone::upValue(UInt8 id)
 {
 	if(id>=4){return;}
-	if(values[id]>=199){values[id]=200;}
-	else{values[id]+=1;}
+	values[id]+=1;
+	if(values[id]>200){values[id]=200;}
 }
 void SetJoyDeadZone::downValue(UInt8 id)
 {
 	if(id>=4){return;}
-	if(values[id]<=3){values[id]=3;}
-	else{values[id]-=1;}
+	values[id]-=1;
+	if(values[id]<1){values[id]=1;}
 }
 
 
@@ -3610,8 +3610,8 @@ void LCD_Menu_WeelSpeed::Listener()
 
 	if (getButtonState(pult_Button_Right) == PRESSED)
 	{
-		if(	values[Tek_Count-1]>=2.0){     values[Tek_Count-1]=2.0;    }
-		else                          { 	values[Tek_Count-1]+=0.01;	}
+	    values[Tek_Count-1]+=0.01;
+		if(	values[Tek_Count-1]>2.0){     values[Tek_Count-1]=2.0;    }
 
 		Draw(Tek_Count);
 		if(Tek_Count==PanWheelSpeed)
@@ -3633,8 +3633,8 @@ void LCD_Menu_WeelSpeed::Listener()
 	}
 	if (getButtonState(pult_Button_Left) == PRESSED)
 	{
-		if(	values[Tek_Count-1]<=0.0)  {    values[Tek_Count-1]=0.0; 	}
-		else		                    {    values[Tek_Count-1]-=0.01;	}
+	    values[Tek_Count-1]-=0.01;
+		if(	values[Tek_Count-1]<0.0)  {    values[Tek_Count-1]=0.0; 	}
 
 		Draw(Tek_Count);
 		if(Tek_Count==PanWheelSpeed)

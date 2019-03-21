@@ -111,7 +111,7 @@ public:
 	char* p_text; //запомним текст
 	bool Rounded; //в круге
 	LCD_Cell() {}
-	LCD_Cell (char *text, t_Pos_Size_XY  position/*={.X=1,.Y=1,.Xsize=10,.Ysize=10}*/) : p_text(text),p_Pos_Size_XY(position) { // делает все тоже самое что и старый конструктор только адекватнее
+	LCD_Cell (char *text, t_Pos_Size_XY  position) : p_text(text),p_Pos_Size_XY(position) { // делает все тоже самое что и старый конструктор только адекватнее
 	    Tek_Style = Style_MenuActive;
 	    Active_Style = Style_MenuActive;
 	    UnActive_Style = Style_MenuUnActive;
@@ -134,10 +134,10 @@ public:
 	}
 	void Set_Coord(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize);
 	void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active); //рисует ячейку с предустановленными параметрами
-	inline void FastDraw (bool active) {
+/*	inline void FastDraw (bool active) {
 	    if (active)  ReDraw();
 	    else    ReHide();
-	    }
+	    }*/
 	inline void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
 	void SetText(char* ptext) {p_text = ptext;} //сохраняет текст для себя
 	void Draw(); //рисует ячейку в стиле Active_Style

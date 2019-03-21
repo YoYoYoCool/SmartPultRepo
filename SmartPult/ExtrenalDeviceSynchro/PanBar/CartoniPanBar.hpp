@@ -13,10 +13,12 @@
 #include "../../GyConCommon/dataTypes.h"
 
 
-
+enum {};
 
 namespace ExtrenalDevices
 {
+
+    enum {kartoniSpeedDelitel=100};
 
     enum CartoniAxisID
     {
@@ -197,66 +199,45 @@ namespace ExtrenalDevices
                 CartoniAxis dummyAxis=  {   false, 0   };
                 CartoniAxis ret;
                 if(Semaphore_pend( *sem,7))    {
-                    switch(ax)
-                    {
-                        case CH_PAN:
-                        {
-                            if (buttons.button0==true)
-                            {
-                                ret.value=0;
+                    switch(ax)  {
+                        case CH_PAN:    {
+                            if (buttons.button0==true)     {
+                                ret.value=0.0;
                                 ret.isActive=true;
-                            }
-                            else
-                            {
-                                ret=pan;
-                            }
-                            break;
-                        }
-                        case CH_DUTCH:
-                        {
-                            if (buttons.button0==true)
-                            {
-                                ret.value=0;
-                                ret.isActive=true;
-                            }
-                            else
-                            {
-                                ret=dutch;
-                            }
+                                }
+                            else    {
+                                ret=pan;    }
+                            break;  }
+                        case CH_DUTCH:  {
+                            if (buttons.button0==true)  {
+                                ret.value=0.0;
+                                ret.isActive=true;  }
+                            else    {
+                                ret=dutch;    }
                             break;}
-                        case CH_TILT:
-                        {
-                            if (buttons.button0==true)
-                            {
-                                ret.value=0;
-                                ret.isActive=true;
-                            }
-                            else
-                            {
-                                ret=tilt;
-                            }
+                        case CH_TILT:  {
+                            if (buttons.button0==true)  {
+                                ret.value=0.0;
+                                ret.isActive=true;  }
+                            else    {
+                                ret=tilt;   }
                             break;}
-                        case CH_ZOOM:
-                        {
+                        case CH_ZOOM:   {
                             ret=zoom;
-                            break;
-                        }
-                        case CH_IRIS:
-                        {
+                            break;  }
+                        case CH_IRIS:   {
                             ret=iris;       break;
-                        }
-                        case CH_FOCUS:
-                        {
+                            }
+                        case CH_FOCUS:  {
                             ret=focus;      break;
-                        }
-                        default:
-                        {
+                            }
+                        default:    {
                             ret=dummyAxis;  break;
+                            }
                         }
-                    }
                     Semaphore_post(*sem);
                     return ret;
-                }
+                    }
                 return dummyAxis;
             }
 
@@ -292,18 +273,19 @@ namespace ExtrenalDevices
                 transactionCounter=0;        }
 
             inline float axisRendererSpeed(CartoniAxisData* d)
-            {
-                uint32_t data=0;
+                {
+                int32_t data=0;
                 data|=(d->data.bit21&0x1 )      <<31;
                 if (data<0) {data|=0x7FE00000;}
                 data|=(d->data.bits14_20&0x7F)  <<14;
                 data|=(d->data.bits07_13&0x7F)  <<7;
                 data|=(d->data.bits00_06&0x7F);
-                float dat=data;
-                return dat*0.01;
-            }
+                float dat=(float)data;
+                dat/=kartoniSpeedDelitel;
+                return dat;
+                }
             inline Int32 axisRendererZoomSpeed(CartoniAxisData* d)
-            {
+                {
                 Int32 data=0;
                 data|=(d->data.bits14_20&0x40 )      <<25;
                 if (data<0) {data|=0x7FF80000;}
@@ -311,9 +293,9 @@ namespace ExtrenalDevices
                 data|=(d->data.bits07_13&0x7F)  <<7;
                 data|=(d->data.bits00_06&0x7F);
                 return data;
-            }
+                }
             inline Int32 axisRendererAbsolutposition(CartoniAxisData* d)
-            {
+                {
                 Int32 data=0;
                 data|=(d->data.bits14_20&0x40 )      <<25;
                 if (data<0) {data|=0x7FF80000;}
@@ -321,19 +303,19 @@ namespace ExtrenalDevices
                 data|=(d->data.bits07_13&0x7F)  <<7;
                 data|=(d->data.bits00_06&0x7F);
                 return data;
-            }
+                }
             inline Int32 axisRendererButton(CartoniAxisData* d)
-            {
+                {
                 Int32 data=0;
                 data|=(d->data.bit21&0x01 )      <<21;
                 data|=(d->data.bits14_20&0x3F)  <<14;
                 data|=(d->data.bits07_13&0x7F)  <<7;
                 data|=(d->data.bits00_06&0x7F);
                 return data;
-            }
+                }
 
             inline bool crcCalculation(UInt8* buffer, UInt8 bufferLen)
-            {
+                {
                 CartoniData* d = (CartoniData*) buffer;
                 UInt8 axisCount = d->header.data.axisCount;
                 if (axisCount > 7)                  {   return false;   }
@@ -351,9 +333,8 @@ namespace ExtrenalDevices
                 if (CRC != buffer[totalBytes - 1])   {   return false;   }
                 return true;
 
-            }
-
-    };
+                }
+            };
 
 
 
@@ -406,9 +387,9 @@ namespace ExtrenalDevices
                 channelAxis(ax),
                 dataConverter(dc),
                 maxValue(maxValue_)
-            {
+                {
 
-            }
+                }
 
             float getCurrentAdcValue()
             {
