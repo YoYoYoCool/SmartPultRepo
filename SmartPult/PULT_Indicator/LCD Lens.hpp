@@ -383,16 +383,8 @@ public:
         visibleHeadLine(visibleHeadline),
         columnNumber(this->visibleColumnNumber),
         stringNumber(this->visibleStringNumber),
-        _nameColumn(nameColumn,this->visibleNameColumn)
-        {
-        t_Pos_Size_XY sizeDisp= {
-            .X=xStartPositionNumber,
-            .Y=yStartPositionNumber,
-            .Xsize=xSizeDisplay,
-            .Ysize=ySizeDisplay
-            };
-        creatForm();
-        }
+        _nameColumn(nameColumn,this->visibleNameColumn)        {
+        creatForm();        }
 
     inline void creatForm() {
         t_Pos_Size_XY sizeDisp= {
@@ -400,6 +392,7 @@ public:
             .Y=yStartPositionNumber,
             .Xsize=xSizeDisplay,
             .Ysize=ySizeDisplay };
+
         }
 
 virtual void Listener() {

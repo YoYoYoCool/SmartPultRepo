@@ -13,7 +13,7 @@
 #include "../../GyConCommon/dataTypes.h"
 
 
-enum {};
+
 
 namespace ExtrenalDevices
 {
