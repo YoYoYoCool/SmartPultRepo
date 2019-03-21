@@ -7,7 +7,7 @@
 
 #ifndef PULT_INDICATOR_LCD_LENS_HPP_
 #define PULT_INDICATOR_LCD_LENS_HPP_
-
+/*
 #include "stddef.h"
 #include "stdint.h"
 #include "stdio.h"
@@ -491,6 +491,6 @@ private:
 
 
 
-
+*/
 
 #endif /* PULT_INDICATOR_LCD_LENS_HPP_ */
