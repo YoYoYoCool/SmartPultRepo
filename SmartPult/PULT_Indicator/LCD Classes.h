@@ -134,10 +134,10 @@ public:
 	}
 	void Set_Coord(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize);
 	void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active); //рисует €чейку с предустановленными параметрами
-/*	inline void FastDraw (bool active) {
+	inline void FastDraw (bool active) {
 	    if (active)  ReDraw();
 	    else    ReHide();
-	    }*/
+	    }
 	inline void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
 	void SetText(char* ptext) {p_text = ptext;} //сохран€ет текст дл€ себ€
 	void Draw(); //рисует €чейку в стиле Active_Style

@@ -1756,20 +1756,6 @@ void LCD_Main::Serv_Counter(float value, bool isForseUpdate)
 
 }
 
-/*
-LCD_Cell::LCD_Cell(char* pNam, UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize)
-{
-	pName = pNam;
-	p_Pos_Size_XY.X = X-1;	p_Pos_Size_XY.Xsize = Xsize;
-	p_Pos_Size_XY.Y = Y-1;	p_Pos_Size_XY.Ysize = Ysize;
-
-	Tek_Style = Style_MenuActive;
-	Active_Style = Style_MenuActive;
-	UnActive_Style = Style_MenuUnActive;
-	Rounded = false;
-	Drawed = false;
-	Hided = false;
-}*/
 
 void LCD_Cell::SetRect()
 {
