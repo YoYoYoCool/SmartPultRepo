@@ -80,7 +80,6 @@ public:
         edit[position.column].ReDraw(); }
     };
 
-
 }
 
 #endif /* PULT_INDICATOR_TABLE_COLUMNNUMBER_HPP_ */

@@ -11,6 +11,9 @@
 #include "Image.hpp"
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
 #include "MotionControl/LogicController/MotionLogicController.hpp"
+#include "PultDBWork/Objective Select.hpp"
+#include "PultDBWork/Measure Sistem types.hpp"
+//#include "tColor.h"
 //#include "LCD Lens.hpp"
 /*
 #include "../LensParam/LensParam.hpp"*/
@@ -21,7 +24,7 @@ PultButton* btn;
 
 extern WatchDog watchDogTimer;
 
-extern tColor FullColorTable[140]; //внизу инициализаци€
+//extern tColor FullColorTable[140]; //внизу инициализаци€
 
 tCell_Style Style_MenuUnActive; //стиль неактивной €чейки меню
 tCell_Style Style_MenuActive; //стиль активной €чейки меню
@@ -34,6 +37,9 @@ static volatile UInt32 HourMeter_rawValue=0;
 
 PultControlBits controlBits;
 UInt16 gyConFaultBits;
+//#define thisname
+
+
 //наименовани€ и св€зи пуктов главного меню
 tMenu_Link Main_Menu_Link[6]={
 		{"COEFF SETUP",NULL},
@@ -220,21 +226,22 @@ enum {RigthSideHandSwitchAxesText=1,
 enum {RigthSideHandSwitchAxesTextSistem=0,
     LeftSideHandSwitchAxesTextSistem};
 
-tMenu_Link lensControlSetup[6]={
-		{"MOTOR MAPPING", NULL},
-		{"MOTOR MODELS", NULL},
-		{"CAMERA MODEL", NULL},
-/*		{"OBJECTIVE SET",NULL},*/
-		{"ZOOM SENS", NULL},
-		{"LENS CALIBRATE", NULL},
-		{"ZOOM DRIFT", NULL},
+//#define objDef
+
+#ifdef objDef
+tMenu_Link lensControlSetup[7]={
+        {"MOTOR MAPPING", NULL},
+        {"MOTOR MODELS", NULL},
+        {"CAMERA MODEL", NULL},
+        {"OBJECTIVE SET",NULL},
+        {"ZOOM SENS", NULL},
+        {"LENS CALIBRATE", NULL},
+        {"ZOOM DRIFT", NULL},
 };
-
-
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
     CameraModelLensControlSetup,
-//    objectiveSelectControlSetup,
+    objectiveSelectControlSetup,
     ZoomSensLensControlSetup,
     LensCalibrateLensControlSetup,
     ZoomDriftLensControlSetup};
@@ -242,28 +249,81 @@ enum {MotorMappingLensControlSetup=1,
 enum {MotorMappingLensControlSetupSistem=0,
     MotorModelLensControlSetupSistem,
     CameraModelLensControlSetupSistem,
-//    objectiveSelectControlSetupSistem,
+    objectiveSelectControlSetupSistem,
     ZoomSensLensControlSetupSistem,
     LensCalibrateLensControlSetupSistem,
     ZoomDriftLensControlSetupSistem};
 
-tMenu_Link lensControlObjectiv[2]= {
+tMenu_Link controlObjectiveMenu[3]= {
         {"SELECT",NULL},
-        {"CREATE",NULL}
+        {"CREATE",NULL},
+        {"MEASURE SYSTEM TYPES",NULL}
+    };
+enum {
+    objectivSelectMenu=1,
+    objectiveCreatMenu,
+    measurementSystemsTypes
 };
-tMenu_Link LensControlObjectivSelect[5]= {
+
+enum {
+    objectivSelectMenuSistem=0,
+    objectiveCreatMenuSistem,
+    measurementSystemsTypesSistem
+    };
+
+LCD::LCDMenuObjectiveSelect* _objectiveSelectMenu;
+tMenu_Link objectiveSelect[5]= {
         {"ONE", NULL},
         {"TWO", NULL},
         {"THREE",NULL},
         {"FOUR",NULL},
         {"FIVE",NULL}
+    };
+
+tMenu_Link objectiveCreat[4]= {
+        {"NAME CREAT",NULL},
+        {"ZOOM CREAT",NULL},
+        {"IRIS CREAT",NULL},
+        {"FOCUS CREAT",NULL}
+    };
+LCD::MeasureSistemTipes* LCDMeasureSelect;
+tMenu_Link MeasureSistemTipesMenu[2]={
+    {"METRIC",NULL },
+    {"IMPERIAL",NULL}
+    };
+enum {metricSistem=0, imperialSistem};
+
+#else
+tMenu_Link lensControlSetup[6]={
+		{"MOTOR MAPPING", NULL},
+		{"MOTOR MODELS", NULL},
+		{"CAMERA MODEL", NULL},
+		{"ZOOM SENS", NULL},
+		{"LENS CALIBRATE", NULL},
+		{"ZOOM DRIFT", NULL},
 };
+enum {MotorMappingLensControlSetup=1,
+    MotorModelLensControlSetup,
+    CameraModelLensControlSetup,
+    ZoomSensLensControlSetup,
+    LensCalibrateLensControlSetup,
+    ZoomDriftLensControlSetup};
+
+enum {MotorMappingLensControlSetupSistem=0,
+    MotorModelLensControlSetupSistem,
+    CameraModelLensControlSetupSistem,
+    ZoomSensLensControlSetupSistem,
+    LensCalibrateLensControlSetupSistem,
+    ZoomDriftLensControlSetupSistem};
+
+#endif
+
 
 tMenu_Link lensControlZIF[3]={
 		{"ZOOM", NULL},
 		{"IRIS", NULL},
 		{"FOCUS",NULL},
-};
+    };
 enum {ZoomLensControl=1,
     IrisLensControl,
     FocusLensControl};
@@ -431,6 +491,7 @@ LCD_Menu* lensControlObjectiveMenuPointer;
 LCD_Menu* lensControlObjectiveMenySelectPointer;
 LCD_Menu* lensControlZifSetupPointer;
 LCD_Menu* lensControlMotorsSetupPointer;
+LCD_Menu* lensCreatMenuPointer;
 SelectMenu* lensControlCameraStartPointer;
 SelectMenu*	lensControlZoomSensePointer;
 SetZoomDrift*	lensControlZoomDriftPointer;
@@ -524,7 +585,7 @@ void pultIndikator_Task(Pult* point_pult)
 	setupOverslangActivatePointer=&setupOverslangActivate;
 	setupOverslangActivatePointer->updateFromEEPROM();
 
-	TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 4, 4, EE_LC_DRIFT_STOPPER_ON);
+	TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 4, 4, EE_LC_ECO_MOD_ON);
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
 	axisTurnsViewMenu.updateFromEEPROM();
 
@@ -627,18 +688,36 @@ void pultIndikator_Task(Pult* point_pult)
 	LCD_Menu PDT_Menu_Eq((char*)"Select Axis", PDTMenu_link,4,0,4);
 	p_PDT_Menu_Eq = &PDT_Menu_Eq;
 	Main_Menu_Link[4].pPointSub = p_PDT_Menu_Eq;
-
+	//todo
 	//"LENS CONTROL"
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,6,0,6);
+
+
+#ifdef objDef
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
 	lensControlMenuPointer=&lensControlMenu;
 
-	//TableForm<float,11,2,64,2,10> a("str");
-
-	/*LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",lensControlObjectiv,2,0,2);
+	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",controlObjectiveMenu,3,0,3);
 	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
+//	lensControlSetup[4].pPointSub=lensControlObjectiveMenuPointer;
 
-	LCD_Menu lensControlObjectiveSelectMenu ("OBJECTIVE SELECT",LensControlObjectivSelect,5,0,5);
-	lensControlObjectiveMenySelectPointer=&lensControlObjectiveSelectMenu;*/
+	LCD_Menu objectiveCreatMenu ("LENS CREAT",objectiveCreat,4,0,4);
+	lensCreatMenuPointer=&objectiveCreatMenu;
+
+	LCD::MeasureSistemTipes selectMeasureMenu("MEASURE SYSTEM TYPES",MeasureSistemTipesMenu,2,0,2);
+	LCDMeasureSelect=&selectMeasureMenu;
+
+	LCD::LCDMenuObjectiveSelect objectiveSelectMenu ("OBJECTIVE SELECT",objectiveSelect,5,0,5);
+	_objectiveSelectMenu=&objectiveSelectMenu;
+
+	controlObjectiveMenu[objectivSelectMenuSistem].pPointSub=_objectiveSelectMenu;
+	controlObjectiveMenu[objectiveCreatMenuSistem].pPointSub=lensCreatMenuPointer;
+	controlObjectiveMenu[measurementSystemsTypesSistem].pPointSub=LCDMeasureSelect;
+	lensControlSetup[objectiveSelectControlSetupSistem].pPointSub=&lensControlObjektiveMenu;
+
+#else
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,6,0,6);
+	lensControlMenuPointer=&lensControlMenu;
+#endif
 
 	LCD_Menu_lcZIF lensControlZifSetup("MOTOR MAPPING",lensControlZIF ,3,0,3,lensControlMotorsText,3);
 	lensControlZifSetupPointer=&lensControlZifSetup;
@@ -658,12 +737,12 @@ void pultIndikator_Task(Pult* point_pult)
 	lensControlZoomDrift.updateFromEeprom();
 	lensControlZoomDriftPointer=&lensControlZoomDrift;
 
-	lensControlSetup[0].pPointSub=&lensControlZifSetup;
-	lensControlSetup[1].pPointSub=&lensControlMotorsSetup;
-	lensControlSetup[2].pPointSub=&lensControlCameraStart;
-	lensControlSetup[3].pPointSub=&lensControlZoomSense;
-	lensControlSetup[5].pPointSub=&lensControlZoomDrift;
+	lensControlSetup[MotorMappingLensControlSetupSistem].pPointSub=&lensControlZifSetup;
+	lensControlSetup[MotorModelLensControlSetupSistem].pPointSub=&lensControlMotorsSetup;
+	lensControlSetup[CameraModelLensControlSetupSistem].pPointSub=&lensControlCameraStart;
 
+	lensControlSetup[ZoomSensLensControlSetupSistem].pPointSub=&lensControlZoomSense;
+	lensControlSetup[ZoomDriftLensControlSetupSistem].pPointSub=&lensControlZoomDrift;
 
 	SwitchMotorTypeMenu lensControlMotorTypeSelect("SELECT TYPE",lensControlMotorsTypesText,2);
 	lensControlMotorTypeSelectPointer=&lensControlMotorTypeSelect;
@@ -671,17 +750,18 @@ void pultIndikator_Task(Pult* point_pult)
 	SwitchMotorAction lensControlMotorActionSelect("SELECT MOTOR",lensControlMotorsText,3);
 	lensControlMotorActionSelectPointer=&lensControlMotorActionSelect;
 
-	lensControlZIF[0].pPointSub=&lensControlMotorActionSelect;
-	lensControlZIF[1].pPointSub=&lensControlMotorActionSelect;
-	lensControlZIF[2].pPointSub=&lensControlMotorActionSelect;
+	lensControlZIF[ZoomLensControlSistem].pPointSub=&lensControlMotorActionSelect;
+	lensControlZIF[IrisLensControlSistem].pPointSub=&lensControlMotorActionSelect;
+	lensControlZIF[FocusLensControlSistem].pPointSub=&lensControlMotorActionSelect;
 
-	lensControlMotorsText[0].pPointSub=&lensControlMotorTypeSelect;
-	lensControlMotorsText[1].pPointSub=&lensControlMotorTypeSelect;
-	lensControlMotorsText[2].pPointSub=&lensControlMotorTypeSelect;
+	lensControlMotorsText[MotorLensControlMotors1Sistem].pPointSub=&lensControlMotorTypeSelect;
+	lensControlMotorsText[MotorLensControlMotors2Sistem].pPointSub=&lensControlMotorTypeSelect;
+	lensControlMotorsText[MotorLensControlMotors3Sistem].pPointSub=&lensControlMotorTypeSelect;
 
 	Main_Menu_Link[5].pPointSub =&lensControlMenu;
 
 	//теперь главное меню
+
 	LCD_Menu Main_Menu((char*)"MAIN MENU", Main_Menu_Link,6,1,6);
 	pMain_Menu = &Main_Menu;
 
@@ -696,24 +776,19 @@ void pultIndikator_Task(Pult* point_pult)
 	UInt32 vax=0;
 
 	for(UInt16 x=0;x!=320;x++)
-		for(UInt16 y=0;y!=240;y++)
-		{
+		for(UInt16 y=0;y!=240;y++)  {
 			vax=0;
 			vax|=buLogo[3*(y*320+x)+2];
 			vax=vax<<8;
 			vax|=buLogo[3*(y*320+x)+1];
 			vax=vax<<8;
 			vax|=buLogo[3*(y*320+x)+0];
-
 			DpyPixelDraw(&g_sKentec320x240x16_SSD2119, x, y, vax) ;
-			watchDogTimer.useKey(WD_KEY3);
-		}
+			watchDogTimer.useKey(WD_KEY3);		}
 	SetBrightness(Bright_Set.Value_Koeff);
-	for(UInt32 i=0;i!=200;i++)
-	{
+	for(UInt32 i=0;i!=200;i++)	{
 		watchDogTimer.useKey(WD_KEY3);
-		Task_sleep(10);
-	}
+		Task_sleep(10);	}
 
 	LCD_Main Main_Screen((char*)"Main_Screen");
 	pDispl = &Main_Screen;
@@ -835,9 +910,6 @@ motionTrackNumber((char*) "", 1,1,10,10),
 motionState((char*) "", 1,1,10,10),
 motionPlayMode((char*) "", 1,1,10,10),
 motionMixMode((char*) "", 1,1,10,10)
-/*,
-
-CellTiltLimitedState((char*) "", 1,1,10,10)*/
 {
 	tiltLimiterStateFlag=TL_RESET;
 	currentPanDirection=PAN_AXIS_STOP;
@@ -2057,9 +2129,6 @@ Cell_8((char*) " ", 1,1,10,10),
 Cell_9((char*) " ", 1,1,10,10),
 Cell_10((char*) " ", 1,1,10,10)
 {
-
-
-
 	Table_Cell[1-1] = &Cell_1;
 	Table_Cell[2-1] = &Cell_2;
 	Table_Cell[3-1] = &Cell_3;
@@ -2074,7 +2143,6 @@ Cell_10((char*) " ", 1,1,10,10)
 	Cell_Header.Active_Style = Style_MenuHeader;
 	Cell_Header.UnActive_Style = Style_MenuHeader;
 
-
 }
 
 
@@ -2084,8 +2152,8 @@ void LCD_Menu::DrawVert() //рисование вертикального меню
 	Int16 StepY;
 
 	{
-		p_Pos_Size_XY.X = 30; p_Pos_Size_XY.Y = 35;
-		p_Pos_Size_XY.Xsize = 250; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
+		p_Pos_Size_XY.X = 25; p_Pos_Size_XY.Y = 35;
+		p_Pos_Size_XY.Xsize = 260; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
 		StepY = p_Pos_Size_XY.Ysize + 5;
 
 		for(i=0;i<Menu_On_Screen;i++)
@@ -2251,120 +2319,116 @@ bool Menu_Listener(LCD_Listener* HoIs)
 		Task_sleep(300);
 		((LCD_Menu*)HoIs )->Table_Cell[((LCD_Menu*)HoIs )->Tek_Count-1]->Draw();
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1)
-		{
-			p_pult->setTiltUpLimit();
+		    {
+		    p_pult->setTiltUpLimit();
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_UP_DOWN; }
 			else{mainScreenPointer->tiltLimiterStateFlag=TL_UP; }
 			return true;
-		}
+		    }
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 2)
-		{
+		    {
 			p_pult->setTiltDnLimit();
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_UP){mainScreenPointer->tiltLimiterStateFlag=TL_UP_DOWN; }
 			else{mainScreenPointer->tiltLimiterStateFlag=TL_DOWN; }
 			return true;
-		}
+		    }
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 3)
-		{
+		    {
 			p_pult->resetTiltUpLimit();
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_UP_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_DOWN; return true;}
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_UP){mainScreenPointer->tiltLimiterStateFlag=TL_RESET; return true;}
 			return true;
-		}
+		    }
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 4)
-		{
+		    {
 			p_pult->resetTiltDnLimit();
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_UP_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_UP; return true;}
 			if(mainScreenPointer->tiltLimiterStateFlag==TL_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_RESET; return true;}
 			return true;
-		}
+		    }
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 5)
-		{
+		    {
 			p_pult->resetTiltUpLimit();
 			p_pult->resetTiltDnLimit();
 			mainScreenPointer->tiltLimiterStateFlag=TL_RESET;
 			return true;
-		}
-	}
+		    }
+	    }
 
-//	if(HoIs == pSet_Platform_Menu) //обработчик выбора платформы
-//	{
-//		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1) {p_pult->setPlatform(1); return true;}
-//		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 2) {p_pult->setPlatform(2); return true;}
-//		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 3) {p_pult->setPlatform(3); return true;}
-//	}
+    #ifdef objDef
+	//todo
+	if (HoIs==lensControlObjectiveMenuPointer) {
+	    //if (){
+	    pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
+	    pDispl->Parent = HoIs;
+	    pDispl->Focused = true;//}
+	    return true;
+	    }
+    #endif
 
-	if(HoIs == p_PDT_Menu_Eq) //обработчик выбора платформы
-	{
-		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1) pDispl = pEqualizerPan;
-		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 2) pDispl = pEqualizerDutch;
-		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 3) pDispl = pEqualizerTilt;
-		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 4) pDispl = pEqualizerZoom;
+	if(HoIs == p_PDT_Menu_Eq) //обработчик выбора эквалайзера
+	    {
+		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1)
+		    pDispl = pEqualizerPan;
+		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 2)
+		    pDispl = pEqualizerDutch;
+		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 3)
+		    pDispl = pEqualizerTilt;
+		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 4)
+		    pDispl = pEqualizerZoom;
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-	}
+	    }
 
 	if(HoIs ==  secretMenuSelectorPointer)
-	{
+	    {
 		pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-	}
+	    }
 	if(HoIs ==  setupMenuPointer)
-	{
+	    {
 		pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-	}
+	    }
 
 	if(HoIs == lensControlMenuPointer)
-	{
+	    {
 		pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
-//		if(((((LCD_Menu*)HoIs )->Tek_Count)-1)<3)
-//		{
-//			lensControlMotorActionSelectPointer->setCurrentVariable((  (LCD_Menu*)HoIs )->Tek_Count-1);
-//		}
-//		else
-//		{
-//			lensControlMotorTypeSelectPointer->setCurrentMotorId((  (LCD_Menu*)HoIs )->Tek_Count-1-3);
-//		}
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-
-	}
+	    }
 
 	if(HoIs == lensControlZifSetupPointer)
-	{
+	    {
 		pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
 		lensControlMotorActionSelectPointer->setCurrentVariable((  (LCD_Menu*)HoIs )->Tek_Count-1);
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-
-	}
+	    }
 
 	if(HoIs == lensControlMotorsSetupPointer)
-	{
+	    {
 		pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
 		lensControlMotorTypeSelectPointer->setCurrentVariable((  (LCD_Menu*)HoIs )->Tek_Count-1);
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-
-	}
+	    }
 
 	if(HoIs == tuningMenuPointer)
-	{
+	    {
 		pDispl= tuningMenuText[tuningMenuPointer->Tek_Count-1].pPointSub;
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-
-	}
+	    }
 
 	if(HoIs == suspResonanceSelectPointer)
 	{
@@ -2372,18 +2436,15 @@ bool Menu_Listener(LCD_Listener* HoIs)
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-
-	}
-
-
+	    }
 
 	if(HoIs != pSub_Menu1) //остальные подменюшки
-	{
+	    {
 		pDispl = pSub_Menu1;
 		pDispl->Parent = HoIs;
 		pDispl->Focused = true;
 		return true;
-	}
+	    }
 	return false;
 }
 
@@ -2665,20 +2726,41 @@ void SetJoyDeadZone::Listener()
 
 }
 //----------------------------------------------------------------------------------------------------------
+/*
+enum {
+    ecoModSistem=0,
+    panTorqueSistem,
+    dutchTorqueSistem,
+    tiltTorqueSistem,
+    zoomTorqueSistem
+};
+
+enum {
+    ecoMod=1,
+    panTorque,
+    dutchTorque,
+    tiltTorque,
+    zoomTorque
+};*/
+
+#define maxTorque 100
+
+
 SetMaxTorque::SetMaxTorque(char* pNam):
 	 LCD_Menu()
 {
-	Counter_Cell = 3;
+	Counter_Cell = 4;
 	Tek_Count = 1;
 	Start = 1;
 	Orientation = 0;
-	Menu_On_Screen = 3;
+	Menu_On_Screen = 4;
 	pName = pNam;
+	eco=true;
 
-	values[0]=100;
-	values[1]=100;
-	values[2]=100;
-	values[3]=100;
+	values[ecoModSistem]=1;
+	values[panTorqueSistem]=maxTorque;
+	values[dutchTorqueSistem]=maxTorque;
+	values[tiltTorqueSistem]=maxTorque;
 }
 
 void SetMaxTorque::Draw(byte Active) //расчет позиции и рисование
@@ -2698,71 +2780,78 @@ void SetMaxTorque::DrawVert() //рисование вертикального меню
 	p_Pos_Size_XY.Xsize = 250; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
 	StepY = p_Pos_Size_XY.Ysize + 5;
 
-	sprintf(bufferNames[0],"PAN: %d", values[0]);
-	sprintf(bufferNames[1],"DUTCH: %d", values[1]);
-	sprintf(bufferNames[2],"TILT: %d", values[2]);
-	sprintf(bufferNames[3],"ZOOM: %d", values[3]);
+	drawEco();
+	sprintf(bufferNames[panTorqueSistem],"PAN: %d", values[panTorqueSistem]);
+	sprintf(bufferNames[dutchTorqueSistem],"DUTCH: %d", values[dutchTorqueSistem]);
+	sprintf(bufferNames[tiltTorqueSistem],"TILT: %d", values[tiltTorqueSistem]);
 
 	for(UInt32 i=0;i!=Menu_On_Screen;i++)
-	{
+	    {
 		Table_Cell[i]->FastDraw(p_Pos_Size_XY.X,p_Pos_Size_XY.Y+StepY*(i),
 											p_Pos_Size_XY.Xsize,p_Pos_Size_XY.Ysize,
-											bufferNames[i], Cell_UnActive);
-	}
-
+											bufferNames[i], Cell_UnActive);	    }
 	Table_Cell[Tek_Count-1]->Draw();
 }
 
 
 void SetMaxTorque::upValue(UInt8 id)
 {
-	if(id>=3){return;}
-	if(values[id]>=95){values[id]=100;}
-	else{values[id]+=5;}
+	if(id>=4){return;}
+	values[id]+=5;
+	if(values[id]>95)
+	    values[id]=100;
 }
 void SetMaxTorque::downValue(UInt8 id)
 {
-	if(id>=3){return;}
-	if(values[id]<=35){values[id]=30;}
-	else{values[id]-=5;}
+	if(id>=4){return;}
+	values[id]-=5;
+	if(values[id]<30)
+	    values[id]=30;
 }
 
 
 void SetMaxTorque::action()
 {
-	p_pult->setMaxTorque(values[0],values[1],values[2]);
+	p_pult->setMaxTorque(values[panTorqueSistem],values[dutchTorqueSistem],values[tiltTorqueSistem]);
+	p_pult->setEcoMode(eco);
 }
 
 void SetMaxTorque::saveInEprom()
 {
-	EE_Working::Write(EE_LC_PAN_MAX_TORQUE,values[0]);
-	EE_Working::Write(EE_LC_DUTCH_MAX_TORQUE,values[1]);
-	EE_Working::Write(EE_LC_TILT_MAX_TORQUE,values[2]);
+    EE_Working::Write(EE_LC_ECO_MOD_ON,values[ecoModSistem]);
+	EE_Working::Write(EE_LC_PAN_MAX_TORQUE,values[panTorqueSistem]);
+	EE_Working::Write(EE_LC_DUTCH_MAX_TORQUE,values[dutchTorqueSistem]);
+	EE_Working::Write(EE_LC_TILT_MAX_TORQUE,values[tiltTorqueSistem]);
 }
 
 void SetMaxTorque::updateFromEeprom()
 {
-	UInt32 tmp[3];
-	tmp[0]=EE_Working::Read(EE_LC_PAN_MAX_TORQUE);
-	tmp[1]=EE_Working::Read(EE_LC_DUTCH_MAX_TORQUE);
-	tmp[2]=EE_Working::Read(EE_LC_TILT_MAX_TORQUE);
+	UInt32 tmp[4];
+	tmp[ecoModSistem]=EE_Working::Read(EE_LC_ECO_MOD_ON);
+	tmp[panTorqueSistem]=EE_Working::Read(EE_LC_PAN_MAX_TORQUE);
+	tmp[dutchTorqueSistem]=EE_Working::Read(EE_LC_DUTCH_MAX_TORQUE);
+	tmp[tiltTorqueSistem]=EE_Working::Read(EE_LC_TILT_MAX_TORQUE);
 
-	if(tmp[0]>100||tmp[1]>100||tmp[2]>100)
+
+	if(tmp[panTorqueSistem]>maxTorque||tmp[dutchTorqueSistem]>maxTorque||
+	        tmp[tiltTorqueSistem]>maxTorque||tmp[ecoModSistem]>1)
 	{
-		values[0]=100;
-		values[1]=100;
-		values[2]=100;
+		values[panTorqueSistem]=maxTorque;
+		values[dutchTorqueSistem]=maxTorque;
+		values[tiltTorqueSistem]=maxTorque;
+		values[ecoModSistem]=1;
 
 		saveInEprom();
 		return;
 	}
 
-	values[0]=tmp[0];
-	values[1]=tmp[1];
-	values[2]=tmp[2];
+	values[ecoModSistem]=tmp[ecoModSistem];
+	eco=(bool)values[ecoModSistem];
+	values[panTorqueSistem]=tmp[panTorqueSistem];
+	values[dutchTorqueSistem]=tmp[dutchTorqueSistem];
+	values[tiltTorqueSistem]=tmp[tiltTorqueSistem];
 
 	action();
-
 }
 void SetMaxTorque::Listener()
 {
@@ -2788,25 +2877,36 @@ void SetMaxTorque::Listener()
 		return;
 	}
 
-	if (getButtonState(pult_Button_Dn) == PRESSED)	Plus();
-	if (getButtonState(pult_Button_Up) == PRESSED)	Minus();
+	if (getButtonState(pult_Button_Dn) == PRESSED)	{  Plus();  }
+
+	if (getButtonState(pult_Button_Up) == PRESSED)	{  Minus(); }
 
 	if (getButtonState(pult_Button_Right) == PRESSED)
-	{
+	    {
+        if (Tek_Count==ecoMod) {
+            setEco();
+            }
+        else{
 		upValue(Tek_Count-1);
-		action();
+		action();}
 		Draw(Tek_Count);
 		return;
-	}
+	    }
 	if (getButtonState(pult_Button_Left) == PRESSED)
 	{
+	    if (Tek_Count==ecoMod) {
+	        setEco();
+	        }
+	    else{
 		downValue(Tek_Count-1);
-		action();
+		action();}
 		Draw(Tek_Count);
 		return;
 	}
 	if (getButtonState(pult_Button_Right) == HOLD)
 	{
+	    if (Tek_Count==ecoMod)
+	        return;
 		upValue(Tek_Count-1);
 		Draw(Tek_Count);
 		action();
@@ -2815,6 +2915,8 @@ void SetMaxTorque::Listener()
 	}
 	if (getButtonState(pult_Button_Left) == HOLD)
 	{
+	    if (Tek_Count==ecoMod)
+	    return;
 		downValue(Tek_Count-1);
 		Draw(Tek_Count);
 		action();
@@ -4347,20 +4449,20 @@ void  SecretMenuView::updateDataFromPult()
 void  SecretMenuView::renderCellString(char* head, float var1, float var2, bool isTwoValueStyle)
 {
 	if(isTwoValueStyle)
-	{
+	    {
 		strcpy(bufferBig,head);
-		sprintf(bufSmall, "%3.2f", var1);
+		sprintf(bufSmall, "%8.2f", var1);
 		strcat(bufferBig, bufSmall);
 		strcat(bufferBig, " : ");
-		sprintf(bufSmall, "%3.2f", var2);
+		sprintf(bufSmall, "%8.2f", var2);
 		strcat(bufferBig, bufSmall);
-	}
+	    }
 	else
-	{
+	    {
 		strcpy(bufferBig,head);
-		sprintf(bufSmall, "%3.2f", var1);
+		sprintf(bufSmall, "%8.2f", var1);
 		strcat(bufferBig, bufSmall);
-	}
+	    }
 }
 
 
@@ -6213,8 +6315,6 @@ void Init_Styles()
 	Style_Error = Style_MenuHeader; // как активна€, но с красным
 	Style_Error.Border_Color = ClrLinen;
 	Style_Error.Font_Color = ClrLinen;
-
-
 	/*ClrCoral //зеленый с белым - активна€
 	ClrDarkSalmon //фон дл€ неактивного
 	ClrDarkOrchid //шрифт неактивного
@@ -6226,14 +6326,10 @@ void Init_Styles()
 	ClrDarkSalmon // бледно-синий дл€ меню
 	ClrDarkTurquoise //бледный дл€ шрифта неактивного меню
 	*/
-
-
 }
 
-
-
 tColor FullColorTable[140] =
-{
+        {
 		{"ClrAliceBlue",            0x00F0F8FF},
 		{"ClrAntiqueWhite",         0x00FAEBD7},
 		{"ClrAqua",                 0x0000FFFF},
@@ -6299,80 +6395,80 @@ tColor FullColorTable[140] =
 		{"ClrLemonChiffon",         0x00FFFACD},
 		{"ClrLightBlue",            0x00ADD8E6},
 		{"ClrLightCoral",           0x00F08080},
-{"ClrLightCyan",            0x00E0FFFF},
-{"ClrLightGoldenrodYe", 0x00FAFAD2},
-{"ClrLightGreen",           0x0090EE90},
-{"ClrLightGrey",            0x00D3D3D3},
-{"ClrLightPink",            0x00FFB6C1},
-{"ClrLightSalmon",          0x00FFA07A},
-{"ClrLightSeaGreen",        0x0020B2AA},
-{"ClrLightSkyBlue",         0x0087CEFA},
-{"ClrLightSlateGray",       0x00778899},
-{"ClrLightSteelBlue",       0x00B0C4DE},
-{"ClrLightYellow",          0x00FFFFE0},
-{"ClrLime",                 0x0000FF00},
-{"ClrLimeGreen",            0x0032CD32},
-{"ClrLinen",                0x00FAF0E6},
-{"ClrMagenta",              0x00FF00FF},
-{"ClrMaroon",               0x00800000},
-{"ClrMediumAquamarine",     0x0066CDAA},
-{"ClrMediumBlue",           0x000000CD},
-{"ClrMediumOrchid",         0x00BA55D3},
-{"ClrMediumPurple",         0x009370DB},
-{"ClrMediumSeaGreen",       0x003CB371},
-{"ClrMediumSlateBlue",      0x007B68EE},
-{"ClrMediumSpringGree",    0x0000FA9A},
-{"ClrMediumTurquoise",      0x0048D1CC},
-{"ClrMediumVioletRed",      0x00C71585},
-{"ClrMidnightBlue",         0x00191970},
-{"ClrMintCream",            0x00F5FFFA},
-{"ClrMistyRose",            0x00FFE4E1},
-{"ClrMoccasin",             0x00FFE4B5},
-{"ClrNavajoWhite",          0x00FFDEAD},
-{"ClrNavy",                 0x00000080},
-{"ClrOldLace",              0x00FDF5E6},
-{"ClrOlive",                0x00808000},
-{"ClrOliveDrab",            0x006B8E23},
-{"ClrOrange",               0x00FFA500},
-{"ClrOrangeRed",            0x00FF4500},
-{"ClrOrchid",               0x00DA70D6},
-{"ClrPaleGoldenrod",        0x00EEE8AA},
-{"ClrPaleGreen",            0x0098FB98},
-{"ClrPaleTurquoise",        0x00AFEEEE},
-{"ClrPaleVioletRed",        0x00DB7093},
-{"ClrPapayaWhip",           0x00FFEFD5},
-{"ClrPeachPuff",            0x00FFDAB9},
-{"ClrPeru",                 0x00CD853F},
-{"ClrPink",                 0x00FFC0CB},
-{"ClrPlum",                 0x00DDA0DD},
-{"ClrPowderBlue",           0x00B0E0E6},
-{"ClrPurple",               0x00800080},
-{"ClrRed",                  0x00FF0000},
-{"ClrRosyBrown",            0x00BC8F8F},
-{"ClrRoyalBlue",            0x004169E1},
-{"ClrSaddleBrown",          0x008B4513},
-{"ClrSalmon",               0x00FA8072},
-{"ClrSandyBrown",           0x00F4A460},
-{"ClrSeaGreen",             0x002E8B57},
-{"ClrSeashell",             0x00FFF5EE},
-{"ClrSienna",               0x00A0522D},
-{"ClrSilver",               0x00C0C0C0},
-{"ClrSkyBlue",              0x0087CEEB},
-{"ClrSlateBlue",            0x006A5ACD},
-{"ClrSlateGray",            0x00708090},
-{"ClrSnow",                 0x00FFFAFA},
-{"ClrSpringGreen",          0x0000FF7F},
-{"ClrSteelBlue",            0x004682B4},
-{"ClrTan",                  0x00D2B48C},
-{"ClrTeal",                 0x00008080},
-{"ClrThistle",              0x00D8BFD8},
-{"ClrTomato",               0x00FF6347},
-{"ClrTurquoise",            0x0040E0D0},
-{"ClrViolet",               0x00EE82EE},
-{"ClrWheat",                0x00F5DEB3},
-{"ClrWhite",                0x00FFFFFF},
-{"ClrWhiteSmoke",           0x00F5F5F5},
-{"ClrYellow",               0x00FFFF00},
-{"ClrYellowGreen",          0x009ACD32},
-};
+        {"ClrLightCyan",            0x00E0FFFF},
+        {"ClrLightGoldenrodYe", 0x00FAFAD2},
+        {"ClrLightGreen",           0x0090EE90},
+        {"ClrLightGrey",            0x00D3D3D3},
+        {"ClrLightPink",            0x00FFB6C1},
+        {"ClrLightSalmon",          0x00FFA07A},
+        {"ClrLightSeaGreen",        0x0020B2AA},
+        {"ClrLightSkyBlue",         0x0087CEFA},
+        {"ClrLightSlateGray",       0x00778899},
+        {"ClrLightSteelBlue",       0x00B0C4DE},
+        {"ClrLightYellow",          0x00FFFFE0},
+        {"ClrLime",                 0x0000FF00},
+        {"ClrLimeGreen",            0x0032CD32},
+        {"ClrLinen",                0x00FAF0E6},
+        {"ClrMagenta",              0x00FF00FF},
+        {"ClrMaroon",               0x00800000},
+        {"ClrMediumAquamarine",     0x0066CDAA},
+        {"ClrMediumBlue",           0x000000CD},
+        {"ClrMediumOrchid",         0x00BA55D3},
+        {"ClrMediumPurple",         0x009370DB},
+        {"ClrMediumSeaGreen",       0x003CB371},
+        {"ClrMediumSlateBlue",      0x007B68EE},
+        {"ClrMediumSpringGree",    0x0000FA9A},
+        {"ClrMediumTurquoise",      0x0048D1CC},
+        {"ClrMediumVioletRed",      0x00C71585},
+        {"ClrMidnightBlue",         0x00191970},
+        {"ClrMintCream",            0x00F5FFFA},
+        {"ClrMistyRose",            0x00FFE4E1},
+        {"ClrMoccasin",             0x00FFE4B5},
+        {"ClrNavajoWhite",          0x00FFDEAD},
+        {"ClrNavy",                 0x00000080},
+        {"ClrOldLace",              0x00FDF5E6},
+        {"ClrOlive",                0x00808000},
+        {"ClrOliveDrab",            0x006B8E23},
+        {"ClrOrange",               0x00FFA500},
+        {"ClrOrangeRed",            0x00FF4500},
+        {"ClrOrchid",               0x00DA70D6},
+        {"ClrPaleGoldenrod",        0x00EEE8AA},
+        {"ClrPaleGreen",            0x0098FB98},
+        {"ClrPaleTurquoise",        0x00AFEEEE},
+        {"ClrPaleVioletRed",        0x00DB7093},
+        {"ClrPapayaWhip",           0x00FFEFD5},
+        {"ClrPeachPuff",            0x00FFDAB9},
+        {"ClrPeru",                 0x00CD853F},
+        {"ClrPink",                 0x00FFC0CB},
+        {"ClrPlum",                 0x00DDA0DD},
+        {"ClrPowderBlue",           0x00B0E0E6},
+        {"ClrPurple",               0x00800080},
+        {"ClrRed",                  0x00FF0000},
+        {"ClrRosyBrown",            0x00BC8F8F},
+        {"ClrRoyalBlue",            0x004169E1},
+        {"ClrSaddleBrown",          0x008B4513},
+        {"ClrSalmon",               0x00FA8072},
+        {"ClrSandyBrown",           0x00F4A460},
+        {"ClrSeaGreen",             0x002E8B57},
+        {"ClrSeashell",             0x00FFF5EE},
+        {"ClrSienna",               0x00A0522D},
+        {"ClrSilver",               0x00C0C0C0},
+        {"ClrSkyBlue",              0x0087CEEB},
+        {"ClrSlateBlue",            0x006A5ACD},
+        {"ClrSlateGray",            0x00708090},
+        {"ClrSnow",                 0x00FFFAFA},
+        {"ClrSpringGreen",          0x0000FF7F},
+        {"ClrSteelBlue",            0x004682B4},
+        {"ClrTan",                  0x00D2B48C},
+        {"ClrTeal",                 0x00008080},
+        {"ClrThistle",              0x00D8BFD8},
+        {"ClrTomato",               0x00FF6347},
+        {"ClrTurquoise",            0x0040E0D0},
+        {"ClrViolet",               0x00EE82EE},
+        {"ClrWheat",                0x00F5DEB3},
+        {"ClrWhite",                0x00FFFFFF},
+        {"ClrWhiteSmoke",           0x00F5F5F5},
+        {"ClrYellow",               0x00FFFF00},
+        {"ClrYellowGreen",          0x009ACD32},
+        };
 

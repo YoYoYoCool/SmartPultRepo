@@ -414,10 +414,14 @@ namespace ExtrenalDevices
             }
 
             void setData()
-            {
+                {
                 axis=dataConverter.getAxis(channelAxis);
-                adcValue=(float)(axis.value);
-            }
+                adcValue=axis.value;
+                }
+
+            inline volatile float &  getAxisVal () {
+                return axis.value;
+                }
 
         private:
             CartoniChannelAxisList channelAxis;

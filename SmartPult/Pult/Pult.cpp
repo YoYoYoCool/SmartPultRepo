@@ -22,7 +22,8 @@
 #include "../ExtrenalDeviceSynchro/PanBar/CartoniPanBar.hpp"
 
 
-#define MAX_TRANSFER_TIMEOUT 100
+#define MAX_TRANSFER_TIMEOUT 150
+#define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 100
 //#define PULT_DEVELOPING_BOARD
 
 
@@ -378,7 +379,7 @@ typedef union PultControlBits {
 		volatile UInt16 joysticOn:1;
 		volatile UInt16 panSuspensionResonatorDisable:1;
 		volatile UInt16 driftStopperOn:1;
-
+		volatile Uint16 ecoMode:1;
 	} bit;
 } PultControlBits;
 
@@ -594,6 +595,12 @@ void Pult::driverTask()
 
 	filesSystemAPI.initFS();
 	motionControlAPI.init();
+	Var elementPan("Pan Speed:",&cartoniPanAxisChannel.getAxisVal());
+	Var elementTilt("Tilt Speed:",&cartoniTiltAxisChannel.getAxisVal());
+	Var elementDutch("Dutch Speed:",&cartoniDutchAxisChannel.getAxisVal());
+	viewLists.setVarList(0, &elementPan);
+	viewLists.setVarList(1, &elementTilt);
+	viewLists.setVarList(2, &elementDutch);
 
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
@@ -990,7 +997,7 @@ void Pult::exchangeAlternativeTask()
             3,
             &cmdListAlt,
             Board_PULT_ALT_UART,
-            MAX_TRANSFER_TIMEOUT,
+            MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK,
             Board_PULTALT_RS485RW
     );
     BasicProtocolMaster protocol(&params);
@@ -2105,6 +2112,10 @@ void Pult::setMaxTorque(UInt32 pan,UInt32 dutch,UInt32 tilt)
 	maxTourqueValues.axis.dutch=dutch/5;
 	maxTourqueValues.axis.tilt=tilt/5;
 	maxTourqueValues.axis.bit15=0;
+}
+
+void Pult::setEcoMode(bool eco) {
+    controlBits.bit.ecoMode=(UInt16)eco;
 }
 
 void Pult::setJoyDeadZone(UInt32 pan,UInt32 dutch,UInt32 tilt,UInt32 zoom)

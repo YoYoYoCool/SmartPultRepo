@@ -1,3 +1,5 @@
+
+
 #ifndef _LCD_CLASSES_H_
 #define _LCD_CLASSES_H_
 
@@ -15,6 +17,8 @@
 #include "../GyConCommon/dataTypes.h"
 #include "../MotionControl/MotionSynchroModule.hpp"
 #include "MemoryControl.hpp"
+
+
 
 extern Pult* p_pult;
 
@@ -291,10 +295,41 @@ public:
 	virtual void Listener(); //будет наследоваться всеми экранными формами для анализа изменения кнопок и данных
 };
 
+enum {
+    ecoModSistem=0,
+    panTorqueSistem,
+    dutchTorqueSistem,
+    tiltTorqueSistem,
+    zoomTorqueSistem
+};
+
+enum {
+    ecoMod=1,
+    panTorque,
+    dutchTorque,
+    tiltTorque,
+    zoomTorque
+};
+
 class SetMaxTorque: public LCD_Menu{
+private:
+    void drawEco() {
+        if (eco)
+            sprintf(bufferNames[ecoModSistem],"ECO MOD ON");
+        else
+            sprintf(bufferNames[ecoModSistem],"ECO MOD OFF");
+    }
+    void setEco() {
+        if (eco) eco=false;
+        else eco=true;
+        values[ecoModSistem]=(UInt32)eco;
+        drawEco();
+        p_pult->setEcoMode(eco);
+        }
 protected:
-	char bufferNames[4][15];
+	char bufferNames[5][15];
 	volatile UInt32 values[4];
+	bool eco;
 
 	virtual inline void saveInEprom();
 
@@ -303,6 +338,7 @@ public:
 	virtual void Draw(byte Active);
 	virtual void DrawVert();
 	virtual void Listener();
+
 
 	virtual void upValue(UInt8 id);
 	virtual void downValue(UInt8 id);
@@ -586,7 +622,8 @@ protected:
 public:
 	virtual void Draw(byte Active); //расчет позиции и рисование
 	virtual void DrawVert(); //рисование вертикального меню
-	LCD_Menu_lcZIF(char* pNam, tMenu_Link* Link, byte Count, byte Orient, byte Menu_Per_Scr, tMenu_Link* subtext_, UInt8 subtextCount_ );
+	LCD_Menu_lcZIF(char* pNam, tMenu_Link* Link, byte Count, byte Orient,
+	byte Menu_Per_Scr, tMenu_Link* subtext_, UInt8 subtextCount_ );
 };
 
 class LCD_Menu_lcMotrors: public LCD_Menu_lcZIF

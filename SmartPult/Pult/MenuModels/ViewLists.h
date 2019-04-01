@@ -19,6 +19,10 @@ public:
 	Var(const char* name, volatile float *valuePtr):name(name),valuePtr(valuePtr){};
     const char* name;
     float getValue()  {return  *valuePtr;}
+
+    void setValuePtr (volatile float value) {
+        valuePtr[0]=value;
+        }
 };
 
 class EditVar: public Var {
@@ -35,6 +39,9 @@ public:
 	ViewLists();
 	List<Var*>* getVarList();
 	List<EditVar*>* getEditVarList();
+	void setVarList(UInt32 id, Var* element) {
+	    varList.set(id, element);
+	    }
 };
 
 
