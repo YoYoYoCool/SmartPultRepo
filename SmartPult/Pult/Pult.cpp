@@ -361,7 +361,7 @@ volatile float inputPoleCntrl        =0.0;
 //-----------------------------------------------------
 
 //Биты управления
-typedef union PultControlBits {
+typedef union PultControlBitsLCD {
 	UInt16 all;
 	struct {
 		volatile UInt16 onOffMotors:1;
@@ -394,7 +394,7 @@ typedef union PultControlBitsA
 } PultControlBitsA;
 
 
-typedef union GyConStateBits {
+typedef union GyConStateBitsLCD {
    UInt16 all;
    struct {
 	   UInt16 panDusFault:1;
@@ -443,12 +443,12 @@ static volatile float slave1PrerolValue             =0.0;
 static volatile float slave2PrerolValue             =0.0;
 static volatile float slave3PrerolValue             =0.0;
 
-static volatile GyConStateBits gyConFaultBits       = {0};
+static volatile GyConStateBitsLCD gyConFaultBits       = {0};
 static volatile float gyConFaultBitsExchange;
 static volatile float headSupplyVoltage=0;
 static SignalsReader signalsReader;
 static ButtonsReader buttonsReader;
-static volatile PultControlBits controlBits = {0};
+static volatile PultControlBitsLCD controlBits = {0};
 static volatile PultControlBitsA controlBitsA = {0};
 static volatile float controlBitsExchange = 0;
 static volatile float controlBitsExchangeA = 0;
@@ -592,7 +592,9 @@ void Pult::driverTask()
     a-=5;
 #endif
 	watchDogTimer.registerKey(WD_KEY2);
+#define weelDigital
 
+#ifdef weelDigital
 	filesSystemAPI.initFS();
 	motionControlAPI.init();
 	Var elementPan("Pan Speed:",&cartoniPanAxisChannel.getAxisVal());
@@ -601,7 +603,7 @@ void Pult::driverTask()
 	viewLists.setVarList(0, &elementPan);
 	viewLists.setVarList(1, &elementTilt);
 	viewLists.setVarList(2, &elementDutch);
-
+#endif
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
 //Обработка аналоговых сигналов
@@ -863,8 +865,8 @@ extern "C"
 
 inline void dataRenderLogic()
 {
-	PultControlBits contBitsTemp;
-	PultControlBits contBitsTempMotion;
+	PultControlBitsLCD contBitsTemp;
+	PultControlBitsLCD contBitsTempMotion;
 
 	contBitsTemp.all=controlBits.all;
 	controlBitsExchange = controlBits.all;
@@ -1284,6 +1286,7 @@ static void joySticksOnOffLogic() {
 		controlBits.bit.joysticOn=0;
 		break;
 	}
+//	if (joyStickOnOffButton)
 	zoomJoy.enable();
 	panJoy.enable();
 	dutchJoy.enable();
@@ -2160,7 +2163,7 @@ void Pult::setZoomDrift(Int32 zoomDrift)
 //-------------------------------------------------------------------------------
 void Pult::setMasterPrerolValue(Int32 value)
 {
-    if(value>=30000){value=30000;}
+    if(value>30000){value=30000;}
     masterPrerolValue=value;
 }
 
@@ -2171,7 +2174,7 @@ UInt32 Pult::getMasterPrerolValue()
 
 void   Pult::setSlave1PrerolValue(Int32 value)
 {
-    if(value>=30000){value=30000;}
+    if(value>30000){value=30000;}
     slave1PrerolValue=value;
 }
 UInt32 Pult::getSlave1PrerolValue()
@@ -2181,7 +2184,7 @@ UInt32 Pult::getSlave1PrerolValue()
 
 void   Pult::setSlave2PrerolValue(Int32 value)
 {
-    if(value>=30000){value=30000;}
+    if(value>30000){value=30000;}
     slave2PrerolValue=value;
 }
 UInt32 Pult::getSlave2PrerolValue()
@@ -2191,7 +2194,7 @@ UInt32 Pult::getSlave2PrerolValue()
 
 void   Pult::setSlave3PrerolValue(Int32 value)
 {
-    if(value>=30000){value=30000;}
+    if(value>30000){value=30000;}
     slave3PrerolValue=value;
 }
 UInt32 Pult::getSlave3PrerolValue()

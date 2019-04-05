@@ -20,8 +20,8 @@
 
 
 typedef enum PultButtonStates {
-    PRESSED = 0,
-	RELESASED,
+    PRESSED = 0, // нажата
+	RELESASED, // отпущена
 	HOLD
 
 } PultButtonStates;
@@ -31,6 +31,7 @@ public:
    volatile bool buttonFix;
    volatile bool clickedFlag;
    volatile bool doubleClickFlag;
+   volatile bool fastBlock;
    volatile PultButtonStates state;
    UInt8 id;
 	PultButton() {
@@ -40,6 +41,7 @@ public:
 		buttonFix = false;
 		clickedFlag = false;
 		doubleClickFlag=false;
+		fastBlock=false;
 	}
 
 	PultButton(UInt8 id) {
@@ -52,8 +54,13 @@ public:
 		this->id = id;
 	}
 
+
 	void update(bool state)
 	{
+	    if (fastBlock) {
+	        this->state=RELESASED;
+	        return;
+	        }
 		if (state == RELESASED)
 		{
 			if (this->state!=RELESASED)

@@ -32,7 +32,7 @@ extern Pult* p_pult;
 
 //typedef uint8_t byte;
 
-typedef union PultControlBits {
+typedef union PultControlBitsLCD {
     UInt16 all;
     struct {
         volatile UInt16 onOffMotors:1;
@@ -53,6 +53,28 @@ typedef union PultControlBits {
 
     }bit;
 };
+
+typedef union GyConStateBitsLCD {
+   UInt16 all;
+   struct {
+       UInt16 panDusFault:1;
+       UInt16 dutchDusFault:1;
+       UInt16 tiltDusFault:1;
+       UInt16 gvFault:1;
+       UInt16 encodersFault:1;
+       UInt16 pultFault:1;
+       UInt16 notConnectedSmartHead:1;
+       UInt16 bit7:1;
+       UInt16 bit8:1;
+       UInt16 bit9:1;
+       UInt16 bit10:1;
+       UInt16 bit11:1;
+       UInt16 stateBits:4;
+    } faultBits;
+};
+
+PultControlBitsLCD controlBits;
+GyConStateBitsLCD gyConFaultBits;
 
 typedef struct
 {
@@ -114,7 +136,13 @@ public:
 	tCell_Style Active_Style, UnActive_Style;
 	char* p_text; //запомним текст
 	bool Rounded; //в круге
-	LCD_Cell() {}
+	LCD_Cell() {
+	Tek_Style = Style_MenuActive;
+    Active_Style = Style_MenuActive;
+    UnActive_Style = Style_MenuUnActive;
+    Rounded = false;
+    Drawed = false;
+    Hided = false;}
 	LCD_Cell (char *text, t_Pos_Size_XY  position) : p_text(text),p_Pos_Size_XY(position) { // делает все тоже самое что и старый конструктор только адекватнее
 	    Tek_Style = Style_MenuActive;
 	    Active_Style = Style_MenuActive;
@@ -146,9 +174,9 @@ public:
 	void SetText(char* ptext) {p_text = ptext;} //сохран€ет текст дл€ себ€
 	void Draw(); //рисует €чейку в стиле Active_Style
 	void Hide(); //рисует €чейку в стиле UnActive_Style
-	void ReDraw(); //рисует €чейку в стиле Active_Style
-	void ReHide(); //рисует €чейку в стиле UnActive_Style
-	void Clean(); //очищает €чейку (рисует пустую)
+	void ReDraw(){Drawed = false; Draw();} //рисует €чейку в стиле Active_Style
+	void ReHide(){  Hided = false; Hide();} //рисует €чейку в стиле UnActive_Style
+	void Clean(){PreDraw();} //очищает €чейку (рисует пустую)
 	virtual void Listener(); //будет наследоватьс€ всеми экранными формами дл€ анализа изменени€ кнопок и данных
 };
 
@@ -281,7 +309,8 @@ public:
 	byte Start, Counter_Cell, Tek_Count, old_position_number; //стартова€ позици€ прорисовки, колич менюшек и номер активной
 	byte Orientation; //ориентаци€ (0 - строки, 1 - столбцы и строки)
 	byte Menu_On_Screen; //сколько пуктов влазит в экран
-	LCD_Cell Cell_Header, Cell_1, Cell_2, Cell_3, Cell_4, Cell_5, Cell_6, Cell_7, Cell_8, Cell_9, Cell_10;
+	LCD_Cell Cell_Header, Cell_1, Cell_2, Cell_3, Cell_4, Cell_5,
+	Cell_6, Cell_7, Cell_8, Cell_9, Cell_10;
 	LCD_Cell* Table_Cell[10]; //набор ссылок на €чейки
 	tMenu_Link* Menu_Link;
 	LCD_Menu(char* pNam, tMenu_Link* Link, byte Count, byte Orient, byte Menu_Per_Scr);
@@ -291,7 +320,12 @@ public:
 	virtual void Draw(byte Active); //расчет позиции и рисование
 	virtual void DrawVert(); //рисование вертикального меню
 	void DrawHoriz(); //рисование горизонтального меню
-	void DrawHeader();
+	void DrawHeader() {
+	    if(Orientation==0) //если ориентаци€ 1*6
+	    {   Cell_Header.FastDraw(0,0,319,30, pName, Cell_UnActive); }
+	    else //ориентаци€ 2*3
+	    {   Cell_Header.FastDraw(0,0,319,30, pName, Cell_UnActive); }
+	}
 	virtual void Listener(); //будет наследоватьс€ всеми экранными формами дл€ анализа изменени€ кнопок и данных
 };
 
@@ -509,20 +543,94 @@ public:
 
 class TurnsViewMenu: public LCD_Menu
 {
+private:
+    bool startInit,initFlag,blockJoy,blockMotors,blockLevelCorrect;
+    int8_t connectCounter;
+    int8_t initCounter;
+    PultControlBitsLCD controlBits;
+    GyConStateBitsLCD gyConFaultBits
 protected:
     volatile float val[3];
-    char  textBuffer[4][30];
-    UInt32 eepromAddress;
-    volatile bool autoOn;
+    char  textBuffer[8][30];
 public:
-	TurnsViewMenu (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress_);
+	TurnsViewMenu (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr);
 	virtual void Draw(byte Active);
 	virtual void DrawVert();
-	virtual void action();
 	virtual void Listener();
-	virtual void updateFromEEPROM();
-	virtual void saveInEEPROM();
-};
+
+private:
+	inline void action();
+	inline void init(Pult* pult) {
+	    controlBits.all=pult->getControlBits();
+	    gyConFaultBits.all=pult->getGyConFaultBits();
+	    if (pult->connectedFlag) {
+	        connectCounter++;
+	        if (connectCounter>10) {
+	            connectCounter=10;
+	            gyConFaultBits.faultBits.notConnectedSmartHead=false;
+	            }
+	        }
+	    else {
+	        connectCounter--;
+	        if (connectCounter<0) {
+	            connectCounter=0;
+	            gyConFaultBits.faultBits.notConnectedSmartHead=true;
+	            }
+	        }
+	    if (!initFlag) {
+            initCounter++;
+            if (initCounter>30) {
+                if (!blockJoy) {
+
+                    }
+                if (!blockMotors) {
+
+                    }
+                if (!blockLevelCorrect) {
+
+                    }
+                }
+            }
+	    }
+	inline void init(bool fault, bool joystic, bool levelCorrect,bool onOffMotors) {
+	        if (fault==0) { //все хорошо ошибок системы нет
+	            if (!joystic) {
+	                if (!levelCorrect)   {
+	                    if(onOffMotors){
+	                        Cell_8.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+	                        sprintf(textBuffer[7],"Function activated");
+	                        p_pult->setDriftStopperMode(true);
+	                        Cell_8.FastDraw(false);;
+	                    }
+	                    else {
+	                        Cell_8.UnActive_Style.Cell_Color=ClrLinen ;
+	                        sprintf(textBuffer[7],"Turn on motor");
+	                        p_pult->setDriftStopperMode(false);
+	                        Cell_8.FastDraw(false);;
+	                    }
+	                }
+	                else {
+	                    Cell_8.UnActive_Style.Cell_Color=ClrLinen ;
+	                    sprintf(textBuffer[7],"Turn off level correct");
+	                    p_pult->setDriftStopperMode(false);
+	                    Cell_8.FastDraw(false);
+	                }
+	            }
+	            else {
+	                Cell_8.UnActive_Style.Cell_Color=ClrLinen ;
+	                sprintf(textBuffer[7],"Turn off joysticks");
+	                p_pult->setDriftStopperMode(false);
+	                Cell_8.FastDraw(false);;
+	            }
+	        }
+	        else {
+	            Cell_8.UnActive_Style.Cell_Color=ClrLinen ;
+	            sprintf(textBuffer[7],"The system has errors");
+	            p_pult->setDriftStopperMode(false);
+	            Cell_8.FastDraw(false);;
+	        }
+	    }
+    };
 
 class SelectMenu: public LCD_Menu
 {

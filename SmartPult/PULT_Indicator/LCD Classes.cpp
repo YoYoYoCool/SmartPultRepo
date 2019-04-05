@@ -35,8 +35,7 @@ tCell_Style Style_Error; //стиль ячейка ошибки
 tContext sContext;
 static volatile UInt32 HourMeter_rawValue=0;
 
-PultControlBits controlBits;
-UInt16 gyConFaultBits;
+
 //#define thisname
 
 
@@ -580,9 +579,8 @@ void pultIndikator_Task(Pult* point_pult)
 	setupOverslangActivatePointer=&setupOverslangActivate;
 	setupOverslangActivatePointer->updateFromEEPROM();
 
-	TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 4, 4, EE_LC_ECO_MOD_ON);
+	TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 7, 7);
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
-	axisTurnsViewMenu.updateFromEEPROM();
 
 	LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);
 	wheelSpeedMenuPointer=&wheelSpeedMenu;
@@ -693,7 +691,7 @@ void pultIndikator_Task(Pult* point_pult)
 
 	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",controlObjectiveMenu,3,0,3);
 	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
-//	lensControlSetup[4].pPointSub=lensControlObjectiveMenuPointer;
+	lensControlSetup[4].pPointSub=lensControlObjectiveMenuPointer;
 
 	LCD_Menu objectiveCreatMenu ("LENS CREAT",objectiveCreat,4,0,4);
 	lensCreatMenuPointer=&objectiveCreatMenu;
@@ -1818,7 +1816,7 @@ void LCD_Main::Serv_Counter(float value, bool isForseUpdate)
 
 }
 
-
+//--------------------------------------------------------------------------------------
 void LCD_Cell::SetRect()
 {
 	pRect.i16XMin = p_Pos_Size_XY.X;
@@ -1867,12 +1865,6 @@ void LCD_Cell::PreDraw()
 		}
 	}
 }
-/*
-void LCD_Cell::SetText(char* ptext)
-{
-	p_text = ptext;
-}*/
-
 
 void LCD_Cell::Draw()
 {
@@ -1893,11 +1885,6 @@ void LCD_Cell::Draw()
 		Drawed = true;
 		Hided = false;
 	}
-}
-
-void LCD_Cell::ReDraw()
-{
-	Drawed = false; Draw();
 }
 
 void LCD_Cell::Hide()
@@ -1922,11 +1909,6 @@ void LCD_Cell::Hide()
 
 }
 
-void LCD_Cell::ReHide()
-{
-	Hided = false; Hide();
-}
-
 void LCD_Cell::FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active)
 {
 	Set_Coord(X, Y, Xsize, Ysize);
@@ -1934,16 +1916,10 @@ void LCD_Cell::FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext
 	if(Active) ReDraw(); else ReHide();
 }
 
-void LCD_Cell::Clean()
-{
-	PreDraw();
-}
-
 void LCD_Cell::Listener()
 {
 	ReDraw();
 	Task_sleep(1500);
-
 	pDispl = pDispl->Parent;
 	pDispl->Focused = true;
 	return;
@@ -2204,13 +2180,6 @@ void LCD_Menu::Draw(byte Active) //расчет позиции и рисование
 	Table_Cell[Active-1]->Draw();
 }
 
-void LCD_Menu::DrawHeader()
-{
-	if(Orientation==0) //если ориентация 1*6
-	{	Cell_Header.FastDraw(0,0,319,30, pName, Cell_UnActive);	}
-	else //ориентация 2*3
-	{	Cell_Header.FastDraw(0,0,319,30, pName, Cell_UnActive);	}
-}
 
 void LCD_Menu::Plus() //обработаем плюсование
 {
@@ -3772,15 +3741,59 @@ void LCD_Menu_WeelSpeed::updateFromEEPROM()
 
 //-------------------- VIEW MENU -------------------------------------------------------------------------
 
-TurnsViewMenu::TurnsViewMenu (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress_):
-        LCD_Menu(pNam, Link, Count,0, Menu_Per_Scr),
-        eepromAddress(eepromAddress_),
-        autoOn(true)
-{
-    for(UInt8 i=0;i!=10;i++)
+TurnsViewMenu::TurnsViewMenu (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr):
+        LCD_Menu(pNam, Link, 8,0, 8){
+    for(UInt8 i=0;i<3;i++)
     {
         val[i]=0.0;
     }
+    t_Pos_Size_XY position={
+                            .X=2,
+                            .Y=32,
+                            .Xsize=157,
+                            .Ysize=27
+    };
+    Cell_1.Set_Coord(position);
+    Cell_1.p_text=&textBuffer[0][0];
+    //-------------------------------
+    position.X+=position.Xsize+2;
+    Cell_2.Set_Coord(position);
+    Cell_2.p_text=&textBuffer[1][0];
+    //-------------------------------
+    position.Y+=position.Ysize+2;
+    position.X=2;
+    Cell_3.Set_Coord(position);
+    Cell_3.p_text=&textBuffer[2][0];
+    //-------------------------------
+    position.X+=position.Xsize+2;
+    Cell_4.Set_Coord(position);  //используется для отображения ошибок
+    sprintf(textBuffer[3],"");
+    Cell_4.p_text=&textBuffer[3][0];
+    //-------------------------------
+    position.X=2;
+    position.Y+=position.Ysize+2;
+    position.Xsize=315;
+    Cell_5.Set_Coord(position); // используется для надписи джойстик вкл/откл
+    sprintf(textBuffer[4],"");
+    Cell_5.p_text=&textBuffer[4][0];
+    //-------------------------------
+    position.Y+=position.Ysize+2;
+    Cell_6.Set_Coord(position); //используется для отображения цветом ГВ вкл/отк
+    sprintf(textBuffer[5],"");
+    Cell_6.p_text=&textBuffer[5][0];
+    //-------------------------------
+    position.Y+=position.Ysize+2;
+    Cell_7.Set_Coord(position); //используется для отображения цветом моторы вкл/отк
+    sprintf(textBuffer[6],"");
+    Cell_7.p_text=&textBuffer[6][0];
+    //-------------------------------
+    position.Y+=position.Ysize+2;
+    position.Ysize=60;
+    Cell_8.Set_Coord(position);//информационное поле описывает состояние
+    sprintf(textBuffer[7],"");
+    Cell_8.p_text=&textBuffer[7][0];
+    Cell_8.UnActive_Style.pFont=g_psFontCmsc22;
+
 }
 
 void TurnsViewMenu::Draw(byte Active)
@@ -3792,10 +3805,10 @@ void TurnsViewMenu::Draw(byte Active)
 
 void TurnsViewMenu::DrawVert()
 {
-    Int16 StepY;
-    p_Pos_Size_XY.X = 30; p_Pos_Size_XY.Y = 35;
-    p_Pos_Size_XY.Xsize = 250; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
-    StepY = p_Pos_Size_XY.Ysize + 5;
+//    Int16 StepY;
+//    p_Pos_Size_XY.X = 30; p_Pos_Size_XY.Y = 35;
+//    p_Pos_Size_XY.Xsize = 250; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
+//    StepY = p_Pos_Size_XY.Ysize + 5;
 
     sprintf(textBuffer[0],"PAN: %1.6f",     val[0]);
     sprintf(textBuffer[1],"DUTCH: %1.6f",   val[1]);
@@ -3805,11 +3818,15 @@ void TurnsViewMenu::DrawVert()
     for(UInt8 i=0;i<Menu_On_Screen;i++)
     {
         textBuffer[i][29]=0;
-        Table_Cell[Start+i-1]->FastDraw(p_Pos_Size_XY.X,p_Pos_Size_XY.Y+StepY*(i),
+/*        Table_Cell[Start+i-1]->FastDraw(p_Pos_Size_XY.X,p_Pos_Size_XY.Y+StepY*(i),
                                         p_Pos_Size_XY.Xsize,p_Pos_Size_XY.Ysize,
                                         textBuffer[i], Cell_UnActive);
+        p_Pos_Size_XY.Y+=p_Pos_Size_XY.Ysize;*/
+        Table_Cell[i]->FastDraw(false);
         if( (Start+i) == Counter_Cell) break;
     }
+    /*Cell_11.FastDraw(false);
+    Cell_12.FastDraw(false);*/
 
 }
 
@@ -3858,92 +3875,15 @@ void  TurnsViewMenu::Listener()
     {
         pDispl = pDispl->Parent;
         pDispl->Focused = true;
-        autoOn=false;
- //       saveInEEPROM();
-        p_pult->setDriftStopperMode(autoOn);
+        p_pult->setDriftStopperMode(false);
         return;
     }
     controlBits.all = p_pult->getControlBits();//получаем контрольные биты
-    gyConFaultBits= p_pult->getGyConFaultBits();
-        if (gyConFaultBits==0) { //все хорошо ошибок системы нет
-            if (!controlBits.bit.joysticOn) {
-                  if (!controlBits.bit.levelCorrect)   {
-                      if(controlBits.bit.onOffMotors){
-        //                  if (controlBits.bit.) ClrDarkSlateBlue
-                          Table_Cell[3]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-                         // Table_Cell[3]->Active_Style.Cell_Color=ClrDarkSlateBlue ;
-                          sprintf(textBuffer[3],"Function activated");
-                          autoOn=true;
-                          p_pult->setDriftStopperMode(autoOn);
-                          Draw(Tek_Count);
-                      }
-                      else {
-                          Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
-                         // Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
-                          sprintf(textBuffer[3],"Turn on motor");
-                          autoOn=false;
-                          p_pult->setDriftStopperMode(autoOn);
-                          Draw(Tek_Count);
-                      }
-                  }
-                  else {
-                      Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
-                     // Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
-                      sprintf(textBuffer[3],"Turn off level correct");
-                      autoOn=false;
-                      p_pult->setDriftStopperMode(autoOn);
-                      Draw(Tek_Count);
-                  }
-            }
-            else {
-                Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
-              //  Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
-                sprintf(textBuffer[3],"Turn off joysticks");
-                autoOn=false;
-                p_pult->setDriftStopperMode(autoOn);
-                Draw(Tek_Count);
-                }
-            }
-        else {
-            Table_Cell[3]->UnActive_Style.Cell_Color=ClrLinen ;
-          //  Table_Cell[3]->Active_Style.Cell_Color=ClrLinen ;
-            sprintf(textBuffer[3],"The system has errors");
-            autoOn=false;
-            p_pult->setDriftStopperMode(autoOn);
-            Draw(Tek_Count);
-            }
-/*    if (getButtonState(pult_Button_Select) == PRESSED) //выпиливаем за ненадобностью
-    {
-        autoOn=!autoOn;
-        saveInEEPROM();
-        p_pult->setDriftStopperMode(autoOn);
-        Draw(Tek_Count);
-    }*/
-
+    gyConFaultBits.all= p_pult->getGyConFaultBits();
+    if(startInit) init(p_pult);
+    init ((bool)gyConFaultBits.all,controlBits.bit.joysticOn,controlBits.bit.levelCorrect,controlBits.bit.onOffMotors);
     action();
 }
-
-
-void  TurnsViewMenu::updateFromEEPROM()
-{
-    //выпелино на осовании новой логике работы пульта
-/*    UInt32 tmp=EE_Working::Read(eepromAddress);
-
-    if(tmp>1)
-    {
-        saveInEEPROM();
-        autoOn=true;
-        return;
-    }
-    autoOn=tmp;
-    p_pult->setDriftStopperMode(autoOn);
-    action();*/
-}
-void  TurnsViewMenu::saveInEEPROM()
-{
-//    EE_Working::Write(eepromAddress, autoOn);
-}
-
 
 
 //-------------------- SELECT MENU -------------------------------------------------------------------------
