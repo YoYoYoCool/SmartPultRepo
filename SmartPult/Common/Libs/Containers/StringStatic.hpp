@@ -19,6 +19,8 @@ private:
 public:
     inline StringStatic():String(buf, maxLen+1) {;};
     inline StringStatic(const char* str):String(buf, maxLen+1, str) {;};
+    inline StringStatic(const char* str,size_t length):length(length),
+            String(buf, maxLen+1, str) {;};
 
 };
 

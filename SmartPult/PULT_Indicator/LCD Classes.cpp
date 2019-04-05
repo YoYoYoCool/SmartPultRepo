@@ -196,18 +196,13 @@ enum {PanWheelSpeedSistem=0,
     TiltWheelSpeedSistem,
     DutchWheelSpeedSistem};
 
-tMenu_Link profileMenuText[11]={
+tMenu_Link profileMenuText[6]={
 		{"PROFILE 1", NULL},
 		{"PROFILE 2", NULL},
 		{"PROFILE 3", NULL},
 		{"PROFILE 4", NULL},
 		{"PROFILE 5", NULL},
 		{"RST CURRENT PROFILE", NULL},
-		{"PROFILE 6", NULL},
-		{"PROFILE 7", NULL},
-		{"PROFILE 8", NULL},
-		{"PROFILE 9", NULL},
-		{"PROFILE 10",NULL}
 
 };
 enum {ProfileProfileMenu=1,
@@ -1367,11 +1362,6 @@ void LCD_Main::Draw() //рисование
 		motionPlayMode.UnActive_Style.pFont=g_psFontCmsc18;
 		motionMixMode.Active_Style.pFont=g_psFontCmsc18;
 		motionMixMode.UnActive_Style.pFont=g_psFontCmsc18;
-
-//		renderDateString(limitTimeString,10,4000);
-//		renderDateString(counterTimeString,10,4100);
-		//updateMotionState();
-		//updateMotionTrackNumber();
 
 		motionTrackNumber.FastDraw	(140,80,105,30,motionTrackNumberString, Cell_Active);
 		motionState.FastDraw		(140,110,105,30,motionStateString, Cell_Active);

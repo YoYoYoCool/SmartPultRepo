@@ -33,7 +33,7 @@ public:
         outBytes.write<const char>(&lensObjective.name()[0], lensObjective.name().getLength());//пишем имя
         char endStr='\0';
         outBytes.write<char>(endStr);
-        writeAxis(lensObjective.zoom(), outBytes);//пишем зум
+        writeAxis(lensObjective.zoomMetric(), outBytes);//пишем зум
         writeAxis(lensObjective.iris(), outBytes);//пишем диафрагму
         writeAxis(lensObjective.focus(), outBytes);//пишем фокус
         uint16_t sizeWritedCount=outBytes.getWritedCount();

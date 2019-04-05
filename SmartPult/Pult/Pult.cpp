@@ -227,24 +227,24 @@ ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_PAN,
-       // 0.046, &panJoySpeedResistor,
-        1,&dummySpecRes,
+        1.0, &panJoySpeedResistor,
+       // &dummySpecRes,
         0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_TILT,
-     //   0.05, &tiltJoySpeedResistor,
-        1,&dummySpecRes,
+        1.0, &tiltJoySpeedResistor,
+        //&dummySpecRes,
         0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_DUTCH,
-     //   0.01, &dutchJoySpeedResistor,
-        1,&dummySpecRes,
+        1.0, &dutchJoySpeedResistor,
+        //&dummySpecRes,
         0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel

@@ -16,6 +16,10 @@
 
 namespace LensDb {
 
+enum {
+    longString=5
+};
+
 struct LensPoint {
     float position;
     float percent;
@@ -23,8 +27,9 @@ struct LensPoint {
 
 class LensAxis {
 public:
-    LensAxis(Containers::List<LensPoint>& pointsList) :
-        pointsList(pointsList) {
+    LensAxis(Containers::List<LensPoint>& pointsList, bool measurementSystem) :
+        pointsList(pointsList),
+        measurementSystem(measurementSystem){
     };
     inline void setPoint(uint32_t pointId, LensPoint& point) {
         pointsList.set(pointId, point);
@@ -41,6 +46,8 @@ public:
     inline size_t getSize() { return pointsList.getSize(); }
 private:
     Containers::List<LensPoint>& pointsList;
+    bool measurementSystem;
+
 };
 
 template<size_t maxPoints>
@@ -48,7 +55,7 @@ class LensAxisStatic : public LensAxis {
 private:
     Containers::ListStatic<LensPoint, maxPoints> pointsList;
 public:
-    LensAxisStatic() : LensAxis(pointsList) {
+    LensAxisStatic(bool measurementSystem=false) : LensAxis(pointsList,measurementSystem) {
     }
 };
 
@@ -60,7 +67,11 @@ public:
             LensAxis& zoom,
             LensAxis& iris,
             LensAxis& focus) : _name(name),
-            _zoom(zoom), _iris(iris), _focus(focus){;};
+            _zoom(zoom), 
+            _iris(iris), 
+            _focus(focus){
+        
+    }
 
     inline LensAxis& zoom()    {return _zoom; };
     inline LensAxis& iris()    {return _iris; };

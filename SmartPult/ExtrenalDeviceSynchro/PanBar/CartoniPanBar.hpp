@@ -403,7 +403,7 @@ namespace ExtrenalDevices
                 rez-=0.1;    }
                 }
                 else
-                rez=rez*K*getSpeed();
+                rez=rez*(getSpeed()+0.5);//задатчик смещения нуля
                 if (rez>maxValue) {
                     rez=maxValue;}
                 if (rez<-maxValue){

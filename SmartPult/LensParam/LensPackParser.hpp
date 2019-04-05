@@ -43,7 +43,7 @@ public:
         inBytes.read<uint8_t>(sizeName);
         inBytes.read<char>(name,sizeName );// читаем имя
         lensObjective.name().setLength(sizeName);
-        readAxis(lensObjective.zoom(),inBytes);
+        readAxis(lensObjective.zoomMetric(),inBytes);
         readAxis(lensObjective.iris(),inBytes);
         readAxis(lensObjective.focus(),inBytes);
         return checkCrc(&pack[0],inBytes.readedCount());
