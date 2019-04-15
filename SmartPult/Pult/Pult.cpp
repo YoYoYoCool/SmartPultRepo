@@ -163,6 +163,14 @@ static Resistor* resistors[15] = {&panJoySpeedResistor, &panJoyFluidResistor, &p
 								  &focusResistor,
 								  &dutchWheelResistor,
 								  &dutchPedalResistor};
+// виртуальные кнопки
+static PultButton virtualButtonJoysticOff;
+
+#define virtualButton 1
+
+PultButton* virtualButtons[virtualButton] = {&virtualButtonJoysticOff
+
+};
 
 // нопки 1 - 16
 
@@ -1459,6 +1467,22 @@ PultButton* Pult::getButton(PultButtons btn) {
 	} else {
 		return NULL;
 	}
+}
+
+PultButton* Pult::getButton_1_16(uint8_t ID) {
+    if (ID<BUTTONS_1_16_COUNT) {
+        return buttons_1_16[ID];
+    } else {
+        return NULL;
+    }
+}
+
+PultButton* Pult::getButtonVirtual(uint8_t ID) {
+    if (ID<virtualButton) {
+        return virtualButtons[ID];
+    } else {
+        return NULL;
+    }
 }
 
 void Pult::setAxisSetting(PultAxisSettings setting, float value) {

@@ -99,10 +99,10 @@ public:
         fastBlockJoystic(false),fastBlockLevelCorrect(false),startInit(false), abort(false), startAbort(false),
         kalibrate(false),startKolibrate(false)
             {
-            /*joyStickButtonStatus=p_pult->getUkButton(joyStickOnOffButtonID);
-            levelCorrectButtonStatus=p_pult->getUkButton(levelCorrectButtonID);
-            motorButtonStatus=p_pult->getUkButton(motorOnOffButtonID);
-            virtualJoyStickOnOffButtonStatus=p_pult->getUkVirtualButton(virtualJoyStickOnOffButtonID);*/
+            joyStickButtonStatus=p_pult->getButton_1_16(joyStickOnOffButtonID);
+            levelCorrectButtonStatus=p_pult->getButton_1_16(levelCorrectButtonID);
+            motorButtonStatus=p_pult->getButton_1_16(motorOnOffButtonID);
+            virtualJoyStickOnOffButtonStatus=p_pult->getButtonVirtual(virtualJoyStickOnOffButtonID);
             panVal=p_pult->getPanDriftFactorUk();
             tiltVal=p_pult->getTiltDriftFactorUk();
             dutchVal=p_pult->getDutchDriftFactorUk();
@@ -209,7 +209,7 @@ public:
             }
         if (getButtonState(pult_Button_ESC) == PRESSED)// здесь добавить drift stoper off
             {
-            if (!abort) {
+            if ((!abort)&&(!startAbort)) {
                 startAbort=true;
                 return;
                 }
@@ -246,10 +246,10 @@ public:
 private:
 
     void exit() {
-//        joyStickButtonStatus->hardRelesased=false;
-//        virtualJoyStickOnOffButtonStatus->state=RELESASED;
-//        levelCorrectButtonStatus->hardRelesased=false;
-//        motorButtonStatus->hardPressed=false;
+        joyStickButtonStatus->hardRelesased=false;
+        virtualJoyStickOnOffButtonStatus->state=RELESASED;
+        levelCorrectButtonStatus->hardRelesased=false;
+        motorButtonStatus->hardPressed=false;
         init=false;
         startInit=false;
         abort=false;
@@ -292,14 +292,12 @@ private:
             }
         }
 
-
-
     inline void initLogic() {
-       /* if(!joyStickButtonStatus->hardRelesased) {
+        if(!joyStickButtonStatus->hardRelesased) {
             Table_Cell[statusJoystic]->p_text=(char*)joyStickBlockStartString;
             Table_Cell[statusJoystic]->FastDraw(false);
             joyStickButtonStatus->hardRelesased=true;
-          //  virtualJoyStickOnOffButtonStatus->state=PRESSED;
+            virtualJoyStickOnOffButtonStatus->state=PRESSED;
             Task_sleep(timeSleep);
 
             Table_Cell[statusJoystic]->p_text=(char*)joyStickBlockOkString;
@@ -314,7 +312,7 @@ private:
         if (!levelCorrectButtonStatus->hardRelesased) {
             Table_Cell[statusLevelCorrect]->p_text=(char*)GVBlockStartString;
             Table_Cell[statusLevelCorrect]->FastDraw(false);
-         //   levelCorrectButtonStatus->hardRelesased=true;
+            levelCorrectButtonStatus->hardRelesased=true;
             Task_sleep(statusLevelCorrect);
 
             Table_Cell[statusLevelCorrect]->p_text=(char*)GVBlockOkString;
@@ -329,7 +327,7 @@ private:
         if (!motorButtonStatus->hardPressed) {
             Table_Cell[statusMotors]->p_text=(char*)motorBlockStartString;
             Table_Cell[statusMotors]->FastDraw(false);
-       //     motorButtonStatus->hardPressed=true;
+            motorButtonStatus->hardPressed=true;
             Task_sleep(timeSleep);
             Table_Cell[statusMotors]->p_text=(char*)motorBlockOkString;
             Table_Cell[statusMotors]->FastDraw(false);
@@ -343,22 +341,20 @@ private:
             Table_Cell[infotmEdit]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
             Cell_8.UnActive_Style.pFont=g_psFontCmsc22;
             Table_Cell[infotmEdit]->p_text=(char*)activatedString;
-          //  p_pult->setDriftStopperMode(true);
+            p_pult->setDriftStopperMode(true);
             Table_Cell[infotmEdit]->FastDraw(false);
             init=true;
             return;
             }
-        startInit=false;*/
+        startInit=false;
         }
 
-
-
     inline void abortLogic () {
-       /* if (init) {
+        if (init) {
             Table_Cell[infotmEdit]->UnActive_Style.Cell_Color=ClrLinen;
             Cell_8.UnActive_Style.pFont=g_psFontCmsc22;
             Table_Cell[infotmEdit]->p_text=(char*)interraptString;
-      //      p_pult->setDriftStopperMode(false);
+            p_pult->setDriftStopperMode(false);
             Table_Cell[infotmEdit]->FastDraw(false);
             init=false;
             Task_sleep(timeSleep);
@@ -367,8 +363,8 @@ private:
         if (joyStickButtonStatus->hardRelesased) {
             Table_Cell[statusJoystic]->p_text=(char*)joyStickUnblokStartString;
             Table_Cell[statusJoystic]->FastDraw(false);
-         //   joyStickButtonStatus->hardRelesased=false;
-         //   virtualJoyStickOnOffButtonStatus->state=RELESASED;
+            joyStickButtonStatus->hardRelesased=false;
+            virtualJoyStickOnOffButtonStatus->state=RELESASED;
             Task_sleep(timeSleep);
 
             Table_Cell[statusJoystic]->p_text=(char*)joyStickUnblokOkString;
@@ -383,7 +379,7 @@ private:
         if (levelCorrectButtonStatus->hardRelesased) {
             Table_Cell[statusLevelCorrect]->p_text=(char*)levelCorrectUnblokStartString;
             Table_Cell[statusLevelCorrect]->FastDraw(false);
-         //   levelCorrectButtonStatus->hardRelesased=false;
+            levelCorrectButtonStatus->hardRelesased=false;
             Task_sleep(timeSleep);
 
             Table_Cell[statusLevelCorrect]->p_text=(char*)levelCorrectUnblokOkString;
@@ -398,7 +394,7 @@ private:
         if (motorButtonStatus->hardPressed) {
             Table_Cell[statusMotors]->p_text=(char*)motorUnblokStartString;
             Table_Cell[statusMotors]->FastDraw(false);
-         //   motorButtonStatus->hardPressed=false;
+            motorButtonStatus->hardPressed=false;
             Task_sleep(timeSleep);
 
             Table_Cell[statusMotors]->p_text=(char*)motorUnblokOkString;
@@ -413,7 +409,7 @@ private:
         Table_Cell[infotmEdit]->p_text=(char*)interruptedString;
         Table_Cell[infotmEdit]->FastDraw(false);
         abort=true;
-        startAbort=false;*/
+        startAbort=false;
         }
     };
 }

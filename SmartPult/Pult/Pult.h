@@ -230,6 +230,8 @@ public:
 	volatile UInt32 transferDelay;
 	Pult(Semaphore_Handle* s,Semaphore_Handle* sA);
 	PultButton* getButton(PultButtons btn); //Возвращает кнопку btn
+	PultButton* getButton_1_16(uint8_t ID); //Возвращает кнопку передней панели
+	PultButton* getButtonVirtual(uint8_t ID); //Возвращает виртуальную кнопку
 	void startTransmitAxisSettings(); //Начать периодическую передачу настроек
 	void setAxisSetting(PultAxisSettings setting, float value); //Установить значение настройки
 	void stopTransmitAxisSettings(); //Остановить периодическую передачу настроек
