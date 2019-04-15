@@ -396,14 +396,14 @@ namespace ExtrenalDevices
                 float rez=filter.calculate(adcValue);
                 rez=deadZone(rez, deadZoneValue);
                 if (channelAxis==CH_ZOOM) {
-                rez=rez*K;
-                if (rez>0) {
-                    rez+=0.1;}
-                if (rez<0) {
-                rez-=0.1;    }
-                }
+                    rez=rez*K;
+                    if (rez>0)
+                        rez+=0.1;
+                    if (rez<0)
+                        rez-=0.1;
+                    }
                 else
-                rez=rez*(getSpeed()+0.5);//задатчик смещения нуля
+//                rez=rez*(getSpeed()+0.5);//задатчик смещения нуля
                 if (rez>maxValue) {
                     rez=maxValue;}
                 if (rez<-maxValue){

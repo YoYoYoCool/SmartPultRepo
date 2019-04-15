@@ -1294,11 +1294,17 @@ static void joySticksOnOffLogic() {
 		controlBits.bit.joysticOn=0;
 		break;
 	}
-//	if (joyStickOnOffButton)
-	zoomJoy.enable();
-	panJoy.enable();
-	dutchJoy.enable();
-	tiltJoy.enable();
+	if (virtualButtonJoysticOff.state==RELESASED) {
+	    zoomJoy.enable();
+	    panJoy.enable();
+	    dutchJoy.enable();
+	    tiltJoy.enable();}
+	else {
+	    zoomJoy.disable();
+	    panJoy.disable();
+	    dutchJoy.disable();
+	    tiltJoy.disable();
+	}
 }
 
 static UInt8 panSensId = 0;
