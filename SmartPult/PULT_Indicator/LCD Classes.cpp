@@ -1,6 +1,7 @@
 
 
 #include "../Board.h"
+#include "TurnsViewMenu.hpp"
 #include "LCD Classes.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "driverlib/rom.h"
@@ -504,7 +505,7 @@ SetStartFluid* setStartFluidPointer;
 SetJoyDeadZone* setJoyDeadZoneMenuPointer;
 SetMotionPrerol* setMotionPrerolPointer;
 FolowingModeMenu* folowingModePointer;
-TurnsViewMenu* axisTurnsViewMenuPointer;
+LCD::TurnsViewMenu* axisTurnsViewMenuPointer;
 
 
 //EE_Working EE_Work;
@@ -579,7 +580,7 @@ void pultIndikator_Task(Pult* point_pult)
 	setupOverslangActivatePointer=&setupOverslangActivate;
 	setupOverslangActivatePointer->updateFromEEPROM();
 
-	TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 7, 7);
+	LCD::TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 7, 7);
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
 
 	LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);

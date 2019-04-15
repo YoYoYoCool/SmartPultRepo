@@ -371,6 +371,9 @@ public:
     float getPanDriftFactor();
     float getDutchDriftFactor();
     float getTiltDriftFactor();
+    float* getPanDriftFactorUk();
+    float* getDutchDriftFactorUk();
+    float* getTiltDriftFactorUk();
     //------------------------------------------------------------------------
     void setDriftStopperMode(bool val);
     //------------------------------------------------------------------------

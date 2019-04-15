@@ -2222,6 +2222,20 @@ float Pult::getTiltDriftFactor()
 {
     return (float)tiltDriftFactor; //   /100
 }
+float* Pult::getPanDriftFactorUk()
+{
+    return (float*)&panDriftFactor;
+}
+
+float* Pult::getDutchDriftFactorUk()
+{
+    return (float*)&dutchDriftFactor; //   /100
+}
+
+float* Pult::getTiltDriftFactorUk()
+{
+    return (float*)&tiltDriftFactor; //   /100
+}
 
 //-------------------------------------------------------------------------------
 UInt16 Pult::getControlBits ()

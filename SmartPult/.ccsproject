@@ -9,7 +9,7 @@
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
 	<templateProperties value="id=com_ti_rtsc_tirtostivac_example_88.projectspec.uartlogging_TivaTM4C129XNCZAD,type=rtsc,products=com.ti.rtsc.TIRTOStivac,xdcToolsVersion=3.30.04.52_core,target=ti.targets.arm.elf.M4F,platform=ti.platforms.tiva:TM4C129XNCZAD,buildProfile=release,isHybrid=true,"/>
-	<isTargetManual value="false"/>
+	<isTargetManual value="true"/>
 	<origin value="E:/ProjectFirmware/Parralax/GyroPultWorkspace/GyroPultAmigo"/>
 	<connection value="common/targetdb/connections/Stellaris_ICDI_Connection.xml"/>
 </projectOptions>

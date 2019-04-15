@@ -31,7 +31,9 @@ public:
    volatile bool buttonFix;
    volatile bool clickedFlag;
    volatile bool doubleClickFlag;
-   volatile bool fastBlock;
+   volatile bool hardRelesased;
+   volatile bool hardPressed;
+   volatile bool hardHold;
    volatile PultButtonStates state;
    UInt8 id;
 	PultButton() {
@@ -41,7 +43,9 @@ public:
 		buttonFix = false;
 		clickedFlag = false;
 		doubleClickFlag=false;
-		fastBlock=false;
+		hardRelesased=false;
+		hardPressed=false;
+		hardHold=false;
 	}
 
 	PultButton(UInt8 id) {
@@ -51,16 +55,27 @@ public:
 		buttonFix = false;
 		clickedFlag = false;
 		doubleClickFlag=false;
+        hardRelesased=false;
+        hardPressed=false;
+        hardHold=false;
 		this->id = id;
 	}
 
 
 	void update(bool state)
 	{
-	    if (fastBlock) {
+	    if (hardRelesased) {
 	        this->state=RELESASED;
 	        return;
 	        }
+        if (hardPressed) {
+            this->state=PRESSED;
+            return;
+            }
+        if (hardHold) {
+            this->state=HOLD;
+            return;
+            }
 		if (state == RELESASED)
 		{
 			if (this->state!=RELESASED)
