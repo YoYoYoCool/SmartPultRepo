@@ -548,7 +548,7 @@ private:
     int8_t connectCounter;
     int8_t initCounter;
     PultControlBitsLCD controlBits;
-    GyConStateBitsLCD gyConFaultBits
+    GyConStateBitsLCD gyConFaultBits;
 protected:
     volatile float val[3];
     char  textBuffer[8][30];
