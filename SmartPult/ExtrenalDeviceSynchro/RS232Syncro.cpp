@@ -56,6 +56,11 @@ namespace ExtrSyncroization
                     else{lockTransmitionTask=false;}
                     mode=mode_;
                     break;
+                case EXT_DEV_WHEEL:
+                    if(!(uartDriver->updateUartParams(115200, 30))){lockTransmitionTask=true;}
+                    else{lockTransmitionTask=false;}
+                    mode=mode_;
+                    break;
                 default:
                 break;
             }
@@ -85,10 +90,9 @@ namespace ExtrSyncroization
                         motionTransmiter.transmit();
                         break;
                 }
-
             }
         }
-}
+    }
 
 //--------------------------------------
 //---------------ExtrenalDeviceSyncronization

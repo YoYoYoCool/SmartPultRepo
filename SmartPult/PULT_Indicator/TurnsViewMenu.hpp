@@ -226,7 +226,6 @@ public:
             return;
             }
 
-
         if (startAbort) {
             abortLogic();
             return;

@@ -675,7 +675,7 @@ public:
         res*=revers;
         if (!enabled) res = 0.0;
 
-        if(res>0.2||res<-0.2)//  if(res!=0.0)
+        if(res>0.2||res<-0.2)
         {
         	joyUsed=true;
         }

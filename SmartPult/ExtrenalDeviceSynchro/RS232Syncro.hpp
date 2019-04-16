@@ -14,14 +14,15 @@ namespace ExtrSyncroization
 {
 
     enum ExtrenalDeviceMode
-    {
+        {
         EXT_DEV_MOTION=0,
         EXT_DEV_PAN_BAR,
-    };
+        EXT_DEV_WHEEL
+        };
     enum dbl
-    {
+        {
         DATA_BUFFER_LEN=100
-    };
+        };
 
     class ExtrenalDevieExchDriver
     {
@@ -33,7 +34,6 @@ namespace ExtrSyncroization
             static MotionSynchroTransmiter motionTransmiter;
             static ExtrenalDevices::CartoniDataConverter dataConverter;
 
-            //Pan bar API
         private:
             static UInt8 dataBuffer[DATA_BUFFER_LEN];
             static ExtrenalDeviceMode mode;

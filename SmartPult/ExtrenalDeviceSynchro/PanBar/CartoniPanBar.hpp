@@ -115,24 +115,16 @@ namespace ExtrenalDevices
     {
         volatile bool isActive;
         volatile float value;
-
     };
 
     class CartoniDataConverter
     {
         public:
             CartoniDataConverter(Semaphore_Handle* dataCopySem):
-                sem(dataCopySem)/*,
-                pan     ({false, 0}),
-                dutch   ({false, 0}),
-                tilt    ({false, 0}),
-                zoom    ({false, 0}),
-                iris    ({false, 0}),
-                focus   ({false, 0})*/
-
-            {
+                sem(dataCopySem)
+                {
                  resetAllData();
-            }
+                }
 
             void clk1MS()
             {
@@ -352,7 +344,7 @@ namespace ExtrenalDevices
             }
             virtual void calculate(float adcValue)
             {
-                value =(float)(axis.value);
+                value =(volatile float)(axis.value);
                 value *=K;
                 if (value>maxValue)
                     value=maxValue;
@@ -391,8 +383,8 @@ namespace ExtrenalDevices
 
                 }
 
-            float getCurrentAdcValue()
-            {
+             virtual float getCurrentAdcValue()
+                 {
                 float rez=filter.calculate(adcValue);
                 rez=deadZone(rez, deadZoneValue);
                 if (channelAxis==CH_ZOOM) {
@@ -411,7 +403,7 @@ namespace ExtrenalDevices
                 if(!this->isEnable) {rez=0.0;}// ne zabit' razkomentirovat'
                 if(!axis.isActive)  {rez=0.0;}
                 return rez;
-            }
+                }
 
             void setData()
                 {

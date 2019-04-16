@@ -617,7 +617,7 @@ void Pult::driverTask()
 //Обработка аналоговых сигналов
 		UInt32* result = signalsReader.read();
 		switch(joysticsConfig)
-		{
+		    {
 			case JOYSTIC_REVERS_JOY_CONFIG:
 				panJoyChannel.setRef(result[SIGNAL_DUTCH]);
 				dutchJoyChannel.setRef(result[SIGNAL_PAN]);
@@ -632,7 +632,7 @@ void Pult::driverTask()
 				tiltJoyChannel.setRef(result[SIGNAL_TILT]);
 				zoomJoyChannel.setRef(result[SIGNAL_ZOOM]);
 				break;
-		}
+		    }
 
 		panExtern1Channel.setRef(result[SIGNAL_PAN_WHEEL]);
 		tiltExtern1Channel.setRef(result[SIGNAL_TILT_WHEEL]);
@@ -2304,7 +2304,6 @@ void   Pult::setSynchroSource(UInt32 value)
             ExtrSyncroization::ExtrenalDevieExchDriver::selectMode(ExtrSyncroization::EXT_DEV_PAN_BAR);
             break;
         case 0:
-        default:
             ExtrSyncroization::ExtrenalDevieExchDriver::selectMode(ExtrSyncroization::EXT_DEV_MOTION);
             break;
     }
