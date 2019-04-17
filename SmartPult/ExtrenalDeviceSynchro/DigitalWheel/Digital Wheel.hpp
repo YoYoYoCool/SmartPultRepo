@@ -11,9 +11,9 @@
 #include "stddef.h"
 #include "stdint.h"
 #include "stdio.h"
-#include "Protocol.hpp"
+//#include "Protocol.hpp"
 
-namespace ExtrSyncroization {
+namespace ExtrenalDevices {
 
 
 
@@ -37,22 +37,22 @@ public:
                  Resistor* speedControl,
                  float deadZone,
                  float T):maxValue(speedMax), JoyChanel(K, offset,speedControl,deadZone, T),
-                 isActive(true), isEnable(true), speedWheel(0.0)
+                 isActive(true), speedWheel(0.0)
                  {
-
-    }
+                    isEnable   =true;
+                 }
 
     volatile float * getUKSpeedIn () {return &adcValue;}
 
 
 
     virtual float getCurrentAdcValue() {
-        speedWheel=adcValue[0];
+        speedWheel=adcValue;
         speedWheel/=delitelSpeed;
-        if (isEnable) {
+        if (!isEnable) {
             speedWheel=0.0;
             return speedWheel;}
-        if (isActive) {
+        if (!isActive) {
             speedWheel=0.0;
             return speedWheel;}
         if (speedWheel>maxValue)

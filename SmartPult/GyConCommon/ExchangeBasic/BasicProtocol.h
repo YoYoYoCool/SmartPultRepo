@@ -50,7 +50,8 @@ typedef struct BasicCmdList {
 } BasicCmdList;
 
 typedef struct BasicProtocolParams {
-	BasicProtocolParams(UInt8 address, BasicCmdList* cmdList, UInt8 uartId, UInt16 recieveTimeout, UInt8 txEnablePin):
+	BasicProtocolParams(UInt8 address, BasicCmdList* cmdList,
+	                    UInt8 uartId, UInt16 recieveTimeout, UInt8 txEnablePin):
 		address(address),
 		cmdList(cmdList),
 		uartId(uartId),

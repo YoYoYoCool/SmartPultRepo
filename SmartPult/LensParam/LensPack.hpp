@@ -20,18 +20,24 @@ class LensPack {
 private:
     uint8_t* packBuf;
     size_t packBufSize;
-public:
-    LensPack(uint8_t* packBuf, size_t packBufSize) : packBuf(packBuf), packBufSize(packBufSize) {
+    size_t packBufMaxSize;
 
-    }
+public:
+    LensPack(uint8_t* packBuf, size_t packBufSize) : packBuf(packBuf),
+    packBufMaxSize(packBufSize),
+    packBufSize(0) {
+
+        }
+
     inline uint8_t& operator[](uint32_t index) {
         debugAssert(index<packBufSize);
         return packBuf[index];
-    }
+        }
+
     inline size_t getSize() {
         return packBufSize;
-    }
-};
+        }
+    };
 
 template<size_t maxPackSize>
 class LensPackStatic : public LensPack
@@ -39,7 +45,7 @@ class LensPackStatic : public LensPack
 private:
     uint8_t packBuf[maxPackSize];
 public:
-    LensPackStatic() : LensPack(packBuf, maxPackSize) {
+    LensPackStatic() : LensPack(&packBuf[0], maxPackSize) {
     }
 };
 

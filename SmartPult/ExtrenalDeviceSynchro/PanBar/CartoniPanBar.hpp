@@ -344,7 +344,7 @@ namespace ExtrenalDevices
             }
             virtual void calculate(float adcValue)
             {
-                value =(volatile float)(axis.value);
+                value =(float)(axis.value);
                 value *=K;
                 if (value>maxValue)
                     value=maxValue;

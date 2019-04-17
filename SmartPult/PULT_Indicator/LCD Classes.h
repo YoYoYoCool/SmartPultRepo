@@ -52,7 +52,7 @@ typedef union PultControlBitsLCD {
         volatile UInt16 driftStopperOn:1;
 
     }bit;
-};
+}PultControlBitsLCD;
 
 typedef union GyConStateBitsLCD {
    UInt16 all;
@@ -71,7 +71,7 @@ typedef union GyConStateBitsLCD {
        UInt16 bit11:1;
        UInt16 stateBits:4;
     } faultBits;
-};
+}GyConStateBitsLCD;
 
 PultControlBitsLCD controlBits;
 GyConStateBitsLCD gyConFaultBits;

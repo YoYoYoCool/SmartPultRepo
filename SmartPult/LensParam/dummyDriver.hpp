@@ -9,6 +9,7 @@
 #define LENSPARAM_DUMMYDRIVER_HPP_
 
 #include "LensPack.hpp"
+#include "LensDriver.hpp"
 
 namespace LensDb
 {

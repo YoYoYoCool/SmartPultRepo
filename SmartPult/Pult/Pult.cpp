@@ -20,7 +20,8 @@
 #include "../PultGlobalDefinitions.h"
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
 #include "../ExtrenalDeviceSynchro/PanBar/CartoniPanBar.hpp"
-
+#include "../ExtrenalDeviceSynchro/DigitalWheel/Digital Wheel.hpp"
+//#include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
 
 #define MAX_TRANSFER_TIMEOUT 150
 #define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 100
@@ -278,6 +279,14 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         0.0000307,
         1.0
 );
+/*
+ExtrenalDevices::WheelChannel wheelPan (230.0,1.0,&dummySpecRes,0.02,0.015);
+
+ExtrenalDevices::WheelChannel wheelDutch (230.0,1.0,&dummySpecRes,0.02,0.015);
+
+ExtrenalDevices::WheelChannel wheelTilt (230.0,1.0,&dummySpecRes,0.02,0.015);
+
+ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &wheelPan, &wheelDutch, &wheelTilt };*/
 
 //--------------------------------------------------------------------
 
@@ -293,8 +302,16 @@ JoyChannels panChannals     (panChannelsArray,3);
 JoyChannels dutchChannals   (dutchChannelsArray,4);
 JoyChannels tiltChannals    (tiltChannelsArray,3);
 JoyChannels zoomChannals    (zoomChannelsArray,2);
+/*
+JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&wheelPan};
+JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&wheelDutch};
+JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&wheelTilt};
+JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
 
-
+JoyChannels panChannals     (panChannelsArray,4);
+JoyChannels dutchChannals   (dutchChannelsArray,5);
+JoyChannels tiltChannals    (tiltChannelsArray,4);
+JoyChannels zoomChannals    (zoomChannelsArray,2);*/
 
 									//joystics
 
@@ -600,18 +617,27 @@ void Pult::driverTask()
     a-=5;
 #endif
 	watchDogTimer.registerKey(WD_KEY2);
-#define weelDigital
+//#define weelDigital
 
 #ifdef weelDigital
+	volatile float * speedPanWheel = wheelPan.getUKSpeedIn();
+	volatile float * speedDutchWheel = wheelDutch.getUKSpeedIn();
+	volatile float * speedTiltWheel = wheelTilt.getUKSpeedIn();
+	speedPanWheel[0]=900.0;
+	speedDutchWheel[0]=1900.0;
+	speedTiltWheel[0]=1500.0;
+#endif
 	filesSystemAPI.initFS();
 	motionControlAPI.init();
+
+
 	Var elementPan("Pan Speed:",&cartoniPanAxisChannel.getAxisVal());
 	Var elementTilt("Tilt Speed:",&cartoniTiltAxisChannel.getAxisVal());
 	Var elementDutch("Dutch Speed:",&cartoniDutchAxisChannel.getAxisVal());
 	viewLists.setVarList(0, &elementPan);
 	viewLists.setVarList(1, &elementTilt);
 	viewLists.setVarList(2, &elementDutch);
-#endif
+
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
 //Обработка аналоговых сигналов
