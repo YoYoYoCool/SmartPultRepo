@@ -204,8 +204,8 @@ static PultButton* buttons_17_32[BUTTONS_17_32_COUNT] = {&gvAccButton, &motionPl
 
 //Кнопки 33-
 #define BUTTONS_33_48_COUNT 16
-static PultButton cameraStartButton(28), sa17(29), in35, in36, in37, in38, in39, in40, in41, in42, in43, in44, inp45, inp46, inp47;
-static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa17, &in35, &in36, &in37, &in38, &in39, &in40, &in41, &in42, &in43, &in44, &inp45, &inp46, &inp47,&tb4};
+static PultButton cameraStartButton(28), sa17(29), in35, shaker, in37, in38, in39, in40, in41, in42, in43, in44, inp45, inp46, inp47;
+static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa17, &in35, &shaker, &in37, &in38, &in39, &in40, &in41, &in42, &in43, &in44, &inp45, &inp46, &inp47,&tb4};
 
 
 static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
@@ -1430,8 +1430,14 @@ static void controlLogic() {
     controlBits.bit.levelCorrect = levelCorrectButton.isPressed();
     controlBits.bit.levelSetup = dutchLevelSetupButton.isPressed();
     controlBits.bit.gvCalibration = gvCalibrationButton.isPressed();
-	controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
 
+#define amigo
+#ifdef amigo
+    controlBits.bit.fastLevelCorrect = shaker.isPressed();
+#else
+    controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
+
+#endif
 	if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 3; setUpTiltLimitsFlag = false;};
 	if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
 	if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
