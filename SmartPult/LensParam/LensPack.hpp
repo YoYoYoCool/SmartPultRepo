@@ -34,6 +34,10 @@ public:
         return packBuf[index];
         }
 
+    inline void setPackBufSize (size_t packBufSize) {
+        this->packBufSize=packBufSize;
+        }
+
     inline size_t getSize() {
         return packBufSize;
         }

@@ -20,8 +20,9 @@
 #include "../PultGlobalDefinitions.h"
 #include "../ExtrenalDeviceSynchro/RS232Syncro.hpp"
 #include "../ExtrenalDeviceSynchro/PanBar/CartoniPanBar.hpp"
+#include "../ExtrenalDeviceSynchro/DigitalWheel/Protocol.hpp"
 #include "../ExtrenalDeviceSynchro/DigitalWheel/Digital Wheel.hpp"
-//#include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
+#include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
 
 #define MAX_TRANSFER_TIMEOUT 150
 #define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 100
@@ -279,14 +280,14 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         0.0000307,
         1.0
 );
-/*
+
 ExtrenalDevices::WheelChannel wheelPan (230.0,1.0,&dummySpecRes,0.02,0.015);
 
 ExtrenalDevices::WheelChannel wheelDutch (230.0,1.0,&dummySpecRes,0.02,0.015);
 
 ExtrenalDevices::WheelChannel wheelTilt (230.0,1.0,&dummySpecRes,0.02,0.015);
 
-ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &wheelPan, &wheelDutch, &wheelTilt };*/
+ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &wheelPan, &wheelDutch, &wheelTilt };
 
 //--------------------------------------------------------------------
 
@@ -1036,14 +1037,26 @@ void Pult::exchangeAlternativeTask()
             MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK,
             Board_PULTALT_RS485RW
     );
-    BasicProtocolMaster protocol(&params);
+    /*BasicProtocolMaster protocol(&params);
     protocol.writeCmdId = 0;
-    protocol.askCmdId = 1;
+    protocol.askCmdId = 1;*/
     GPIO_write(Board_PULTALT_RS485RW, Board_RS485_WRITE_MODE);
+    ExtrenalDevices::DigitalWheelManager digitalWheelManager(&params);
 
     while(true)
-    {
-        //      Wait synchronization
+        {
+        digitalWheelManager.exchenge(WheelProtocol::WHEEL_TILT, WheelProtocol::WHEEL_SPEED_REQUEST);
+        uint8_t a;
+        uint8_t b;
+        uint8_t c;
+        a=6;
+        b=9;
+        c=a+b;
+        a+=b;
+        c+=a;
+        a+=c;
+        Task_sleep(50);
+        /*//      Wait synchronization
         if(motionControlAPI.isActive())
         {
             if(!Semaphore_pend( *exchangeAltSem,BIOS_WAIT_FOREVER)) {  }
@@ -1059,8 +1072,8 @@ void Pult::exchangeAlternativeTask()
             {
                 outputPoleCntrl=inputPoleCntrl;
             }
+        }*/
         }
-    }
 }
 
 static volatile bool gtaComplite=false;
@@ -1431,7 +1444,7 @@ static void controlLogic() {
     controlBits.bit.levelSetup = dutchLevelSetupButton.isPressed();
     controlBits.bit.gvCalibration = gvCalibrationButton.isPressed();
 
-#define amigo
+//#define amigo
 #ifdef amigo
     controlBits.bit.fastLevelCorrect = shaker.isPressed();
 #else
