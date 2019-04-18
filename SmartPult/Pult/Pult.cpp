@@ -1037,26 +1037,17 @@ void Pult::exchangeAlternativeTask()
             MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK,
             Board_PULTALT_RS485RW
     );
-    /*BasicProtocolMaster protocol(&params);
+    BasicProtocolMaster protocol(&params);
     protocol.writeCmdId = 0;
-    protocol.askCmdId = 1;*/
+    protocol.askCmdId = 1;
     GPIO_write(Board_PULTALT_RS485RW, Board_RS485_WRITE_MODE);
-    ExtrenalDevices::DigitalWheelManager digitalWheelManager(&params);
+//    ExtrenalDevices::DigitalWheelManager digitalWheelManager(&params);
 
     while(true)
         {
-        digitalWheelManager.exchenge(WheelProtocol::WHEEL_TILT, WheelProtocol::WHEEL_SPEED_REQUEST);
-        uint8_t a;
-        uint8_t b;
-        uint8_t c;
-        a=6;
-        b=9;
-        c=a+b;
-        a+=b;
-        c+=a;
-        a+=c;
-        Task_sleep(50);
-        /*//      Wait synchronization
+  //      digitalWheelManager.exchenge(WheelProtocol::WHEEL_PAN, WheelProtocol::WHEEL_SPEED_REQUEST);
+
+        //      Wait synchronization
         if(motionControlAPI.isActive())
         {
             if(!Semaphore_pend( *exchangeAltSem,BIOS_WAIT_FOREVER)) {  }
@@ -1072,7 +1063,7 @@ void Pult::exchangeAlternativeTask()
             {
                 outputPoleCntrl=inputPoleCntrl;
             }
-        }*/
+        }
         }
 }
 

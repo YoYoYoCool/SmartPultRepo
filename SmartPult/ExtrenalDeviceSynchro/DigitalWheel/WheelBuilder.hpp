@@ -25,7 +25,7 @@ public:
     }
 
     inline void buildPack (TData & paket) {
-        ExchangeLib::OutSerial outBytes(&pack[0], pack.getSize());
+        ExchangeLib::OutSerial outBytes(&pack[0], pack.getMaxSize());
         outBytes.write<TData>(paket);
         pack.setPackBufSize(outBytes.getWritedCount());
         }

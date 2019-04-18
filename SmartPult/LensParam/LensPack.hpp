@@ -41,6 +41,10 @@ public:
     inline size_t getSize() {
         return packBufSize;
         }
+
+    inline size_t getMaxSize() {
+        return packBufMaxSize;
+        }
     };
 
 template<size_t maxPackSize>

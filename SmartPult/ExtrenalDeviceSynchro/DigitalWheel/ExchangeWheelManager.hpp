@@ -38,7 +38,7 @@ public:
         protokol.creatPaket(wheelId, comandID);
         driver.write(&protokol.pack()[0],protokol.pack().getSize());
         Task_sleep(5);
-        driver.read(&_pack[0], 9);
+        driver.read(&_pack[0], 14);
         if (comandID==WheelProtocol::WHEEL_SPEED_REQUEST) {
             if (protokol.createDataSpeed()) {
                 speedWheel=protokol.getSpeed();

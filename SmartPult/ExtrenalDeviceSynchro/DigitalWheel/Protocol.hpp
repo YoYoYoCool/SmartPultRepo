@@ -97,11 +97,13 @@ public:
 	            .header.packetLen=sizeof(WheelSimplePackTX),
 	            .body.readCommand=comand
 	            };
-
 	        paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
+
 	        paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
 
 	        ExtrenalDevices::DigitalWheelBuilder<WheelSimplePackTX> builder(_packOut);
+	        builder.buildPack(paket);
+
 	        return true;
 	        }
 
