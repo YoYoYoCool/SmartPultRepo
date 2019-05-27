@@ -1,7 +1,7 @@
 
 
 #include "../Board.h"
-#include "TurnsViewMenu.hpp"
+
 #include "LCD Classes.h"
 #include "drivers/kentec320x240x16_ssd2119.h"
 #include "driverlib/rom.h"
@@ -18,6 +18,11 @@
 //#include "LCD Lens.hpp"
 /*
 #include "../LensParam/LensParam.hpp"*/
+
+#include "TurnsViewMenu.hpp"
+#include "WheelMenu.hpp"
+
+
 
 #define VERTICAL_LEN 200
 Pult* p_pult;
@@ -293,7 +298,7 @@ tMenu_Link lensControlSetup[6]={
 		{"MOTOR MAPPING", NULL},
 		{"MOTOR MODELS", NULL},
 		{"CAMERA MODEL", NULL},
-		{"ZOOM SENS", NULL},
+		{"ZOOM SENSITIVITY", NULL},
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
 };
@@ -497,7 +502,8 @@ SwitchMotorAction* lensControlMotorActionSelectPointer;
 LCD_Main* mainScreenPointer;
 HourMeterMenu* hourMeterMenuPointer;
 
-LCD_Menu_WeelSpeed* wheelSpeedMenuPointer;
+//LCD_Menu_WeelSpeed* wheelSpeedMenuPointer;
+LCD::LCDWheelMenu* wheelSpeedMenuPointer;
 SelectMenuSpiderSelect* tiltSpiderSelectMenuPointer;
 SelectMenuSpiderSelect* panSpiderSelectMenuPointer;
 SetMaxTorque* setMaxTorqueMenuPointer;
@@ -583,9 +589,10 @@ void pultIndikator_Task(Pult* point_pult)
 	LCD::TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 7, 7);
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
 
-	LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);
+	//LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);
+	LCD::LCDWheelMenu wheelSpeedMenu;
 	wheelSpeedMenuPointer=&wheelSpeedMenu;
-	wheelSpeedMenuPointer->updateFromEEPROM();
+//	wheelSpeedMenuPointer->updateFromEEPROM();
 
 	SelectMenuSpiderSelect tiltSpiderSelectMenu("SUSPENSION RESONANCE", tiltSpiderSelectText, 2, 2,EE_LC_TILT_SUSPENSION_RES_TYPE,EE_LC_TILT_SUSPENSION_EDIT_FREQ,SUSPENSION_RESONANCE_CHANNEL_TILT);
 	tiltSpiderSelectMenuPointer=&tiltSpiderSelectMenu;
@@ -3664,18 +3671,18 @@ void LCD_Menu_WeelSpeed::Listener()
 		Draw(Tek_Count);
 		if(Tek_Count==PanWheelSpeed)
 		{
-			p_pult->setPanWeelSpeed(values[PanWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
+			p_pult->setPanWheelSpeed(values[PanWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
 		}
 		if(Tek_Count==TiltWheelSpeed)
 		{
-			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
+			p_pult->setTiltWheelSpeed(values[TiltWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
 		if(Tek_Count==DutchWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[DutchWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
+			p_pult->setDutchWheelSpeed(values[DutchWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
 		}
 
 	}
@@ -3687,18 +3694,18 @@ void LCD_Menu_WeelSpeed::Listener()
 		Draw(Tek_Count);
 		if(Tek_Count==PanWheelSpeed)
 		{
-			p_pult->setPanWeelSpeed(values[PanWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
+			p_pult->setPanWheelSpeed(values[PanWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
 		}
 		if(Tek_Count==TiltWheelSpeed)
 		{
-			p_pult->setTiltWeelSpeed(values[TiltWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
+			p_pult->setTiltWheelSpeed(values[TiltWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
 		}
 		if(Tek_Count==DutchWheelSpeed)
 		{
-			p_pult->setDutchWeelSpeed(values[DutchWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
+			p_pult->setDutchWheelSpeed(values[DutchWheelSpeedSistem]);
+			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
 		}
 	}
 
@@ -3710,9 +3717,9 @@ void LCD_Menu_WeelSpeed::updateFromEEPROM()
 
 	UInt32 v[3];
 
-	v[0]=EE_Working::Read(EE_LC_PAN_WEEL_SPEED);
-	v[1]=EE_Working::Read(EE_LC_TILT_WEEL_SPEED);
-	v[2]=EE_Working::Read(EE_LC_DUTCH_WEEL_SPEED);
+	v[0]=EE_Working::Read(EE_LC_WHEEL_ANALOG_DATA);
+	v[1]=EE_Working::Read(EE_LC_WHEEL_DIGITAL_DATA);
+	v[2]=EE_Working::Read(EE_LC_DUTCH_WHEEL_SPEED);
 
 	values[0]=*((float*)(&v[0]));
 	values[1]=*((float*)(&v[1]));
@@ -3727,17 +3734,17 @@ void LCD_Menu_WeelSpeed::updateFromEEPROM()
 		{
 			values[0]=0;
 			values[1]=0;
-			values[3]=0;
-			EE_Working::Write(EE_LC_PAN_WEEL_SPEED,	0);
-			EE_Working::Write(EE_LC_TILT_WEEL_SPEED,	0);
-			EE_Working::Write(EE_LC_DUTCH_WEEL_SPEED,	0);
+			values[2]=0;
+			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,	0);
+			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,	0);
+			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,	0);
 			break;
 		}
 	}
 
-	p_pult->setPanWeelSpeed(values[0]);
-	p_pult->setTiltWeelSpeed(values[1]);
-	p_pult->setDutchWeelSpeed(values[2]);
+	p_pult->setPanWheelSpeed(values[0]);
+	p_pult->setTiltWheelSpeed(values[1]);
+	p_pult->setDutchWheelSpeed(values[2]);
 }
 
 //-------------------- SELECT MENU -------------------------------------------------------------------------
@@ -4750,7 +4757,7 @@ void loadEepromValueFromPult()
 	switchAxesPointer->updateFromEEPROM();
 	lensControlMotorTypeSelectPointer->updateFromEEPROM();
 	lensControlMotorActionSelectPointer->updateFromEEPROM();
-	wheelSpeedMenuPointer->updateFromEEPROM();
+//	wheelSpeedMenuPointer->updateFromEEPROM();
 	setMaxTorqueMenuPointer->updateFromEeprom();
 	tiltSpiderSelectMenuPointer->updateFromEEPROM();
 	setupOverslangActivatePointer->updateFromEEPROM();

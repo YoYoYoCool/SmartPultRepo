@@ -134,9 +134,7 @@ public:
 	BasicProtocolMaster(BasicProtocolParams* params):
 		BasicProtocol(params) {
 	}
-//	BasicProtocol() {
-//
-//	}
+
 
 	virtual bool transaction(UInt8 myAddr, UInt8 theirAddr) {
 		bool res = false;

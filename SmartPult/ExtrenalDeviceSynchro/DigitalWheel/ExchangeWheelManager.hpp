@@ -16,41 +16,76 @@
 
 namespace ExtrenalDevices {
 
+enum {maxCounter=3};
+
 
 class DigitalWheelManager {
 
 
 private:
-    WheelProtocol::WheelProtacol protokol;
-    Rs485Driver driver;
-    LensDb::LensPackStatic<50> _pack;
+    WheelProtocol::WheelProtacol & protokol;
+    Rs485Driver2 & driver;
+    LensDb::LensPack & packIn;
     int32_t speedWheel;
+    int8_t counter;
+    bool conect;
+    WheelProtocol::WheelsType wheelId;
 
 public:
 
-    DigitalWheelManager (BasicProtocolParams * params) :
-    driver(params->uartId, 115200, 5, params->txEnablePin),
-    protokol(_pack){
-
+    DigitalWheelManager (Rs485Driver2 & driver, WheelProtocol::WheelProtacol & protokol,
+                         WheelProtocol::WheelsType wheelId, LensDb::LensPack & packIn) :
+    driver(driver),
+    protokol(protokol),
+    wheelId(wheelId),
+    packIn(packIn){
+        counter=0;
+        speedWheel=0;
+        conect=false;
         }
 
-    void exchenge (WheelProtocol::WheelsType wheelId, WheelProtocol::ReadCommand comandID  ) {
+    void exchenge (WheelProtocol::ReadCommand comandID  ) {
         protokol.creatPaket(wheelId, comandID);
-        driver.write(&protokol.pack()[0],protokol.pack().getSize());
-        Task_sleep(5);
-        driver.read(&_pack[0], 14);
+        driver.write((UInt8*)&protokol.pack()[0],protokol.pack().getSize());
+        driver.read((UInt8*)&packIn[0], 14);
         if (comandID==WheelProtocol::WHEEL_SPEED_REQUEST) {
             if (protokol.createDataSpeed()) {
+                counter++;
+                if (counter>maxCounter) {
+                conect=true;
                 speedWheel=protokol.getSpeed();
+                counter=maxCounter; }
                 }
-            return;
+            else {
+                counter--;
+                if (counter<0) {
+                    counter=0;
+                    speedWheel=0.0;
+                    conect=false;
+                    }
+                }
             }
         }
 
+    int32_t getSpeed() {
+        return speedWheel;
+        }
+
+    bool getConnect () { return conect; }
+
 private:
 
+    void updateWheelPanData () {
 
+        }
 
+    void updateWheelRollData () {
+
+        }
+
+    void updateWheelTiltData () {
+
+        }
 
 };
 

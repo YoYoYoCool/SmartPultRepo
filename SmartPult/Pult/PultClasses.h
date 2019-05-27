@@ -523,10 +523,10 @@ public:
 	void setDeadZone(float dz)	{	deadZoneValue=dz;}
 	float getDeadZone()			{	return deadZoneValue;}
 	void relativeInvers()
-	{
+	    {
 		K0=-K0;
 		K=-K;
-	}
+	    }
 
 	void setRef(UInt32 ref)
 	{

@@ -42,37 +42,36 @@ enum {
 
 const char * emptyString ='\0';
 const char * errorString= "ERROR";
-const char * sistemOkString="SISTEM OK";
-const char * inicializationString="INICIALIZATION";
-const char * sistemHaveErrorString="SISTEM HAVE ERROR";
-const char * waitJoyStickStatusString="WAIT JOYSTICK STATUS";
-const char * waitLevelCorrectStatusString="WAIT LEVEL CORRECT STATUS";
-const char * waitMotorsStatusString="WAIT MOTORS STATUS";
+const char * sistemOkString="SYSTEM OK";
+const char * inicializationString="INITIALIZATION";
+const char * sistemHaveErrorString="SYSTEM ERROR";
+const char * waitJoyStickStatusString="JOYSTICKS STATUS...";
+const char * waitLevelCorrectStatusString="LEVEL CORRECT STATUS...";
+const char * waitMotorsStatusString="MOTORS STATUS...";
 const char * motorsOnString = "MOTORS ON";
 const char * motorsOffString ="MOTORS OFF";
 const char * levelCorrectOnString = "LEVEL CORRECT ON";
 const char * levelCorrectOffString = "LEVEL CORRECT OFF";
-const char * joyStrickOnString = "JOYSTIC ON";
-const char * joyStrickOffString = "JOYSTIC OFF";
-const char * joyStickBlockStartString="JOYSTICK BLOCK START";
-const char * joyStickBlockOkString="JOYSTICK BLOCK OK";
-const char * joyStickBlockString = "JOYSTICK HARD OFF";
-const char * GVBlockStartString="LEVEL CORRECT BLOCK START";
-const char * GVBlockOkString="LEVEL CORRECT OK";
-const char * GVBlockString="LEVEL CORRECT HARD OFF";
-const char * motorBlockStartString="MOTORS BLOCK START";
-const char * motorBlockOkString="MOTORS BLOCK OK";
-const char * motorHardBlockString="MOTORS HARD ON";
+const char * joyStrickOnString = "JOYSTICKS ON";
+const char * joyStrickOffString = "JOYSTICKS OFF";
+const char * joyStickBlockStartString="BLOCKING JOYSTICKS...";
+const char * joyStickBlockOkString="FINISHED BLOCKING";
+const char * joyStickBlockString = "JOYSTICKS BLOCKED";
+const char * GVBlockStartString="BLOCKING LEVEL CORRECT...";
+const char * GVBlockOkString="FINISHED BLOCKING";
+const char * GVBlockString="LEVEL CORRECT BLOCKED";
+const char * motorBlockStartString="BLOCKING MOTORS...";
+const char * motorBlockOkString="FINISHED BLOCKING";
+const char * motorHardBlockString="MOTORS FORCED ON";
 const char * activatedString ="ACTIVATED";
-const char * interraptString = "ABORTING";
-const char * joyStickUnblokStartString = "JOYSTICK UNBLOCK START";
-const char * joyStickUnblokOkString = "JOYSTICK UBLOCK OK";
-const char * levelCorrectUnblokStartString = "GV UNBLOCK START";
-const char * levelCorrectUnblokOkString = "GV UNBLOCK OK";
-const char * motorUnblokStartString = "MOTORS UNBLOCK START";
-const char * motorUnblokOkString = "MOTORS UNBLOCK OK";
+const char * interraptString = "ABORTING...";
+const char * joyStickUnblokStartString = "UNBLOCKING JOYSTICKS...";
+const char * joyStickUnblokOkString = "FINISHED UNBLOCKING";
+const char * levelCorrectUnblokStartString = "UNBLOCKING GV...";
+const char * levelCorrectUnblokOkString = "FINISHED UNBLOCKING";
+const char * motorUnblokStartString = "UNBLOCKING MOTORS...";
+const char * motorUnblokOkString = "FINISHED UNBLOCKING";
 const char * interruptedString = "ABORTED";
-
 
 
 

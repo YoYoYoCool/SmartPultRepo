@@ -20,7 +20,7 @@ namespace WheelProtocol {
  enum WheelsType
 	{
         WHEEL_PAN = 	0,
-		WHEEL_DUTCH = 	1,
+		WHEEL_ROLL = 	1,
 		WHEEL_TILT = 	2,
 		WHEEL_MAX
     };
@@ -79,10 +79,9 @@ private:
 	    LensDb::LensPack & packIn;
 	    int32_t speed;
 
-
 public:
 	    WheelProtacol (LensDb::LensPack & pack):  packIn(pack){
-
+	        speed=0;
 	    }
 	    inline bool creatPaket(WheelsType wheelNumber, ReadCommand comand) {
 	        if (wheelNumber>=WHEEL_MAX)
@@ -100,10 +99,20 @@ public:
 	        paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
 
 	        paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
+/*
+	        paket.body.bodyCrc=0;
+	        paket.body.readCommand=0;
+
+	        paket.header.crc=0;
+	        paket.header.marker=0;
+	        paket.header.packetLen=0;
+	        paket.header.wheelType=(WheelsType)0;*/
 
 	        ExtrenalDevices::DigitalWheelBuilder<WheelSimplePackTX> builder(_packOut);
 	        builder.buildPack(paket);
 
+	        for (uint8_t i =0; i<14; i++ )
+	            packIn[i]=0;
 	        return true;
 	        }
 
@@ -113,6 +122,7 @@ public:
 	        }
 
 	    inline bool createDataSpeed () {
+
 	        WheelSimplePackRXSpeed paketInSpeed;
 	        ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser(packIn);
 	        parser.parsePack(paketInSpeed);
@@ -132,41 +142,44 @@ public:
 
         inline int32_t getSpeed () {
             return speed;
+            speed=0.0;
         }
+
+
 
 
 private:
 
         inline uint16_t findCrc(uint8_t* pack, size_t crcPos)
-                            {
-                            if(crcPos>16)   {       crcPos=16;  }
-                            uint16_t TMP;
-                            uint16_t crcl;
-                            uint16_t crch;
-                            uint16_t crc = 0xffff;
+        {
+            if(crcPos>16)   {       crcPos=16;  }
+            uint16_t TMP;
+            uint16_t crcl;
+            uint16_t crch;
+            uint16_t crc = 0xffff;
 
-                            crcl = crc;
-                            crch = (crc >> 8);
-                            for (uint16_t i = 0; i < crcPos; i++)
-                            {
-                                uint16_t dataTmp = pack[i];
-                                dataTmp = (dataTmp ^ crcl);
-                                TMP = (dataTmp << 4);
-                                dataTmp = (TMP ^ dataTmp);
-                                TMP = (dataTmp >> 5);
-                                TMP &= 0x07;
-                                crcl = crch;
-                                crch = (dataTmp ^ TMP);
-                                TMP = (dataTmp << 3);
-                                crcl = (crcl ^ TMP);
-                                TMP = (dataTmp >> 4);
-                                TMP &= 0x0F;
-                                crcl = (crcl ^ TMP);
-                            }
+            crcl = crc;
+            crch = (crc >> 8);
+            for (uint16_t i = 0; i < crcPos; i++)
+            {
+                uint16_t dataTmp = pack[i];
+                dataTmp = (dataTmp ^ crcl);
+                TMP = (dataTmp << 4);
+                dataTmp = (TMP ^ dataTmp);
+                TMP = (dataTmp >> 5);
+                TMP &= 0x07;
+                crcl = crch;
+                crch = (dataTmp ^ TMP);
+                TMP = (dataTmp << 3);
+                crcl = (crcl ^ TMP);
+                TMP = (dataTmp >> 4);
+                TMP &= 0x0F;
+                crcl = (crcl ^ TMP);
+            }
 
-                            crc = (crch << 8) + (crcl & 0x00FF);
-                            return crc;
-                            }
+            crc = (crch << 8) + (crcl & 0x00FF);
+            return crc;
+        }
 
 
 	};

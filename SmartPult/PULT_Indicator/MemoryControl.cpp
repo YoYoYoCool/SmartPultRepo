@@ -93,8 +93,8 @@
     const EepromDefault cameraStartDefault      =  {       0,               0,                  7};             //71
     const EepromDefault overslangDefault        =  {       0,               1,                  1};             //72
 
-    const EepromDefault panWheelSpeedDefault    =  {       0,      0x3d4cccc3,         0x3f800001};             //73
-    const EepromDefault tiltWheelSpeedDefault   =  {       0,      0x3d4ccccF,         0x3f800001};             //74
+    const EepromDefault analogWheelData         =  {       0,      0x00050505,         0xffffffff};             //73
+    const EepromDefault digitalWheelata          =  {       0,     0xBEB880A4,         0xffffffff};             //74
     const EepromDefault tiltResonTypeDefault    =  {       0,               0,                  0};             //75
     const EepromDefault tiltResonFreqDefault    =  {       0,      0x40B3332D,         0x41100000};             //76
 
@@ -107,7 +107,7 @@
     const EepromDefault tiltJoyDzDefault        =  {       0,              7,                200};             //82
     const EepromDefault zoomJoyDzDefault        =  {       0,              7,                200};             //83
 
-    const EepromDefault dutchWheelSpeedDefault  =  {       0,      0x3d4ccccF,         0x3f800001};             //84
+    const EepromDefault dutchWheelSpeedDefault  =  {       0,      0xffffffff,         0xffffffff};             //84
 
     const EepromDefault panResonanceTypeDefault =  {       0,               0,                  2};             //85
     const EepromDefault panResonanceFreqDefault =  {       0,      0x40BFFFF9,         0x41100000};             //86
@@ -125,7 +125,7 @@
     const EepromDefault prerolSlave2Default     =  {       0,               0,             30000};              //95
     const EepromDefault prerolSlave3Default     =  {       0,               0,            300000};              //96
 
-    const EepromDefault driftStopperOnDefault   =  {       0,               0,                 1};              //97
+    const EepromDefault ecoModeDefault          =  {       0,               0,                 1};              //97
     const EepromDefault panFolowingDefault      =  {       0,               0,                 62};              //98
     const EepromDefault CRCDefault              =  {       0,      0,         0};                               //99
 
@@ -217,8 +217,8 @@
          &cameraStartDefault,
          &overslangDefault,
 
-         &panWheelSpeedDefault,
-         &tiltWheelSpeedDefault,
+         &analogWheelData,
+         &digitalWheelata,
          &tiltResonTypeDefault,
          &tiltResonFreqDefault,
 
@@ -249,7 +249,7 @@
          &prerolSlave2Default,
          &prerolSlave3Default,
 
-         &driftStopperOnDefault,
+         &ecoModeDefault,
          &panFolowingDefault,
          &CRCDefault
     };

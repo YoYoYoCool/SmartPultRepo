@@ -136,6 +136,7 @@ public:
 	tCell_Style Active_Style, UnActive_Style;
 	char* p_text; //запомним текст
 	bool Rounded; //в круге
+
 	LCD_Cell() {
 	Tek_Style = Style_MenuActive;
     Active_Style = Style_MenuActive;

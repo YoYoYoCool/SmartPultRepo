@@ -11,67 +11,73 @@
 #include "stddef.h"
 #include "stdint.h"
 #include "stdio.h"
+#include "Libs/TrigonometricFunction.hpp"
 //#include "Protocol.hpp"
 
 namespace ExtrenalDevices {
-
-
 
 enum {
     delitelSpeed=100
 };
 
-
-
-struct AxisData
-{
-    volatile bool isActive;
-    volatile float value;
-};
+enum {transmissionMax=4};
 
 class WheelChannel:public JoyChanel {
+private:
+
+    const float maxValue;
+    float speedWheel;
+    uint8_t transmission;
+    bool connect;
+    uint8_t counter;
+
 public:
+
+    Trigonametric::Trigonometric triganometric;
 
     WheelChannel(float speedMax,
                  float K,
                  Resistor* speedControl,
                  float deadZone,
                  float T):maxValue(speedMax), JoyChanel(K, offset,speedControl,deadZone, T),
-                 isActive(true), speedWheel(0.0)
-                 {
+                  speedWheel(0.0), triganometric(0)
+                    {
+                    transmission=0;
                     isEnable   =true;
-                 }
-
-    volatile float * getUKSpeedIn () {return &adcValue;}
-
-
+                    connect=false;
+                    counter=0;
+                    }
 
     virtual float getCurrentAdcValue() {
-        speedWheel=adcValue;
-        speedWheel/=delitelSpeed;
-        if (!isEnable) {
-            speedWheel=0.0;
-            return speedWheel;}
-        if (!isActive) {
-            speedWheel=0.0;
-            return speedWheel;}
+        speedWheel=triganometric.updateData(speedWheel);
+        if (!isEnable)
+            return 0.0;
+        if (!connect)
+            return 0.0;
         if (speedWheel>maxValue)
             speedWheel=maxValue;
         if (speedWheel<-maxValue)
             speedWheel=-maxValue;
         return speedWheel;
+        }
 
-    }
-private:
+    void setSpeed (float speedWheel) {
+        this->speedWheel=speedWheel;
+        this->speedWheel*=0.01;
+        }
 
-    const float maxValue;
-    float speedWheel;
+inline void setConnect(bool connect) {
+    this->connect=connect;
 
-protected:
-    volatile float * getUKSpeedOut () {return &speedWheel;}
 
-public:
-    bool isActive;
+}
+
+
+
+
+
+
+
 
 };
 

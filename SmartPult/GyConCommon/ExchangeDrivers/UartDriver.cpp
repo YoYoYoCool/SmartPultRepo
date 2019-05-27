@@ -71,6 +71,9 @@ Int16 UartDriver::read(UInt8* buf, UInt16 size) {
 	return realRead;
 }
 
+
+
+
 Int16 UartDriver::write(UInt8* buf, UInt16 size) {
 //	UARTTiva_Object*  object = (UARTTiva_Object*)uart->object;
 //	UInt16 txTimeout = ((((size*8*10*1000))>>2)/baud) + 1;

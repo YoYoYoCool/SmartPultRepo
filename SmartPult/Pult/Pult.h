@@ -333,9 +333,18 @@ public:
     bool motionTransferModeActivate();
 //    bool motionTransferModeActivateByValue(UInt32 delay);
     //------------------------------------------------------------------------
-    void setPanWeelSpeed(float val);
-    void setTiltWeelSpeed(float val);
-    void setDutchWeelSpeed(float val);
+    void setPanWheelSpeed(float val);
+    void setTiltWheelSpeed(float val);
+    void setDutchWheelSpeed(float val);
+    void enablePanAnalogWheel();
+    void enableTiltAnalogWheel();
+    void enableRollAnalogWheel();
+    void enablePadal();
+    void disablePanAnalogWheel();
+    void disableTiltAnalogWheel();
+    void disableRollAnalogWheel();
+    void disablePadal();
+
     //------------------------------------------------------------------------
     float getCalibrationOffset(CalibratedJoyChannel ch);
     void  setCalibrationOffset(CalibratedJoyChannel ch, UInt32 offset);
@@ -386,6 +395,28 @@ public:
     void setPanFolowingMode(FolowingModeConfigData val);
     //------------------------------------------------------------------------
     UInt32 getTimeToStart();
+    //-----------------------------------------------------------------------------
+    void digitalWheelPanStepLeft();
+    void digitalWheelTiltStepLeft();
+    void digitalWheelRollStepLeft();
+    void digitalWheelPanStepRight();
+    void digitalWheelTiltStepRight();
+    void digitalWheelRollStepRight();
+    int8_t digitalWheelPanGetFunction();
+    int8_t digitalWheelTiltGetFunction();
+    int8_t digitalWheelRollGetFunction();
+    void digitalWhellPanEnable();
+    void digitalWhellPanDisable();
+    void digitalWhellTiltEnable();
+    void digitalWhellTiltDisable();
+    void digitalWhellRollEnable();
+    void digitalWhellRollDisable();
+    void digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll);
+    void disableAllDigitalWheel();
+
+
+
+
 };
 
 
