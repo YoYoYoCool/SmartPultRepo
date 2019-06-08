@@ -36,4 +36,25 @@ public:
 	void reset(void);
 	bool updateUartParams(UInt32 baud_, UInt16 readTimeout_);
 };
+
+class UartDriver2 {
+private:
+    const UInt8 uartId;
+    UInt32 baud;
+    UInt16 readTimeout;
+    UInt16 fifoTimeout;
+    const UInt16 writeTimeout;
+    volatile UART_Params uartParams;
+    UARTTiva_params uartTivaParams;
+protected:
+    volatile UART_Handle uart;
+public:
+    UartDriver2(UInt8 uartId, UInt32 baud, UInt16 readTimeout);
+
+     Int16 read(UInt8* pack, UInt16 size);
+
+     virtual Int16 write(UInt8* pack, UInt16 size);
+    void reset(void);
+    bool updateUartParams(UInt32 baud_, UInt16 readTimeout_);
+};
 #endif /* RTIUARTBLOCKDRIVER_H_ */

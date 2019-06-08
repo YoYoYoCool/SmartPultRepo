@@ -315,6 +315,7 @@ public:
 	LCD_Cell* Table_Cell[10]; //набор ссылок на €чейки
 	tMenu_Link* Menu_Link;
 	LCD_Menu(char* pNam, tMenu_Link* Link, byte Count, byte Orient, byte Menu_Per_Scr);
+
 	LCD_Menu();
 	void Plus();void Minus();void Right();void Left(); //навигаци€
 	void Select(); //выбор

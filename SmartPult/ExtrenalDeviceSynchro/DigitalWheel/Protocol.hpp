@@ -32,6 +32,10 @@ namespace WheelProtocol {
     	WHEEL_MAX_COMAND
     };
 
+    enum {
+        longDataSpeed=14
+    };// длинна ответного пакета
+
 	enum HeaderMarker	{	HEADER_MARKER			 =0xAA55 };
 	enum HeaderLen		{	HEADER_LEN				 =7		 };
 	enum ReadCommandSize{   READ_COMMAND_SIZE        =1      };
@@ -60,7 +64,7 @@ namespace WheelProtocol {
         volatile uint32_t       speed;
     };
 
-	struct __attribute__((packed)) WheelSimplePackTX
+	struct __attribute__((packed)) WheelSimplePackTXSpeed
 	{
 		WheelSimplePackHeader 	header;
 		WheelSimplePackDataTX 	body;
@@ -72,83 +76,96 @@ namespace WheelProtocol {
         WheelSimplePackDataRXSpeed   body;
     };
 
+    struct PaketDataOut {
+        WheelsType wheelNumber;
+        ReadCommand comand;
+        uint8_t * buffer;
+        uint8_t longBufOut;
+        uint8_t longBufInput;
+        };
+
+    struct PaketDataSpeedInput {
+        WheelsType wheelNumber;
+        ReadCommand comand;
+        uint8_t * buffer;
+        int32_t * dataInput;
+        uint8_t longDataBuf;
+        };
+
+
+
+    enum {
+
+        invalidQuestion=-3,
+        invalidHeaderCRC,
+        invalidWheelNumber,
+        invalidBodyCRC,
+        createData
+    };
+
+
+
 class WheelProtacol {
 
-private:
-	    LensDb::LensPackStatic<50> _packOut;
-	    LensDb::LensPack & packIn;
-	    int32_t speed;
 
 public:
-	    WheelProtacol (LensDb::LensPack & pack):  packIn(pack){
-	        speed=0;
-	    }
-	    inline bool creatPaket(WheelsType wheelNumber, ReadCommand comand) {
-	        if (wheelNumber>=WHEEL_MAX)
-	            return false;
 
-	        if ((comand>=WHEEL_MAX_COMAND)||(comand<=0))
-	            return false;
+	    inline int8_t creatPaketOut(PaketDataOut & dataSettings) {
+	        if ((dataSettings.wheelNumber>=WHEEL_MAX)||(dataSettings.wheelNumber<0))
+	            return invalidWheelNumber;
 
-	        WheelSimplePackTX paket ={
-	            .header.marker=HEADER_MARKER,
-	            .header.wheelType=wheelNumber,
-	            .header.packetLen=sizeof(WheelSimplePackTX),
-	            .body.readCommand=comand
-	            };
-	        paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
+	        if (dataSettings.comand==WHEEL_SPEED_REQUEST) {
+	            dataSettings.longBufOut=sizeof(WheelSimplePackTXSpeed);
+	            dataSettings.longBufInput=sizeof(WheelSimplePackRXSpeed);
+	            WheelSimplePackTXSpeed paket ={
+	                                           .header.marker=HEADER_MARKER,
+	                                           .header.wheelType=dataSettings.wheelNumber,
+	                                           .header.packetLen=sizeof(WheelSimplePackTXSpeed),
+	                                           .body.readCommand=dataSettings.comand
+	                                            };
+	            paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
 
-	        paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
-/*
-	        paket.body.bodyCrc=0;
-	        paket.body.readCommand=0;
+	            paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
 
-	        paket.header.crc=0;
-	        paket.header.marker=0;
-	        paket.header.packetLen=0;
-	        paket.header.wheelType=(WheelsType)0;*/
+	            ExtrenalDevices::DigitalWheelBuilder<WheelSimplePackTXSpeed> builder;
+	            builder.buildPack(paket,dataSettings.buffer);
 
-	        ExtrenalDevices::DigitalWheelBuilder<WheelSimplePackTX> builder(_packOut);
-	        builder.buildPack(paket);
-
-	        for (uint8_t i =0; i<14; i++ )
-	            packIn[i]=0;
-	        return true;
+	            return createData;
+	            }
+	        return invalidQuestion;
 	        }
 
 
-	    inline LensDb::LensPack& pack () {
-	        return _packOut;
+	    inline int8_t createDataInput (PaketDataSpeedInput & dataSettings) {
+	        if (dataSettings.comand==WHEEL_SPEED_REQUEST) {
+	            WheelSimplePackRXSpeed paketInSpeed;
+	            ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser;
+	            parser.parsePack(paketInSpeed,dataSettings.buffer);
+
+	            uint16_t headCRC = findCrc((uint8_t*)(&(paketInSpeed.header.marker)), HEADER_LEN-2);
+	            if (headCRC!=paketInSpeed.header.crc)
+	                return invalidHeaderCRC;
+
+	            if (paketInSpeed.header.wheelType!=dataSettings.wheelNumber)
+	                return invalidWheelNumber;
+
+	            uint16_t bodyCRC = findCrc((uint8_t*)(&(paketInSpeed.body.readCommand)), paketInSpeed.header.packetLen-HEADER_LEN-2);
+	            if (bodyCRC!=paketInSpeed.body.bodyCrc)
+	                return invalidBodyCRC;
+
+	            dataSettings.dataInput[0]=paketInSpeed.body.speed;
+	            return createData;
+	            }
+	        return invalidQuestion;
 	        }
 
-	    inline bool createDataSpeed () {
-
-	        WheelSimplePackRXSpeed paketInSpeed;
-	        ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser(packIn);
-	        parser.parsePack(paketInSpeed);
-	        uint16_t headCRC = findCrc((uint8_t*)(&(paketInSpeed.header.marker)), HEADER_LEN-2);
-	        if (headCRC!=paketInSpeed.header.crc) return false;
-
-	        if (paketInSpeed.header.marker!=HEADER_MARKER) return false;
-
-	        if (packIn.getSize()!=paketInSpeed.header.packetLen) return false;
-
-	        uint16_t bodyCRC = findCrc((uint8_t*)(&(paketInSpeed.body.readCommand)), paketInSpeed.header.packetLen-HEADER_LEN-2);
-
-	        if (bodyCRC!=paketInSpeed.body.bodyCrc) return false;
-	        speed=paketInSpeed.body.speed;
-	        return true;
-	        }
-
-        inline int32_t getSpeed () {
-            return speed;
-            speed=0.0;
-        }
 
 
 
 
 private:
+
+
 
         inline uint16_t findCrc(uint8_t* pack, size_t crcPos)
         {

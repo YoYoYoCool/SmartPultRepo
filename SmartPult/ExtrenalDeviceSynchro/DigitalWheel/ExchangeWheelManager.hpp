@@ -16,7 +16,22 @@
 
 namespace ExtrenalDevices {
 
-enum {maxCounter=3};
+enum {maxCounter=1000,
+};
+
+struct DataOut {
+    int32_t* dataInput;
+    uint8_t* longData;
+    bool validatData;
+    };
+
+enum {
+    invalidCreatPaket=-5,
+    invalidDriverTx,
+    invalidDriverRx,
+    invalidCreatData,
+    exchengeOk=1
+};
 
 
 class DigitalWheelManager {
@@ -25,67 +40,79 @@ class DigitalWheelManager {
 private:
     WheelProtocol::WheelProtacol & protokol;
     Rs485Driver2 & driver;
-    LensDb::LensPack & packIn;
-    int32_t speedWheel;
-    int8_t counter;
+    LensDb::LensPackStatic<30> packInput;
+    LensDb::LensPackStatic<30> packOutput;
+    int32_t dataInput;
+    int16_t counter;
     bool conect;
-    WheelProtocol::WheelsType wheelId;
+    WheelProtocol::PaketDataOut dataTx;
+    WheelProtocol::PaketDataSpeedInput dataRx;
+    DataOut & dataOut;
+
 
 public:
 
     DigitalWheelManager (Rs485Driver2 & driver, WheelProtocol::WheelProtacol & protokol,
-                         WheelProtocol::WheelsType wheelId, LensDb::LensPack & packIn) :
+                         WheelProtocol::WheelsType wheelId, DataOut & dataOut) :
     driver(driver),
     protokol(protokol),
-    wheelId(wheelId),
-    packIn(packIn){
+    dataOut(dataOut){
         counter=0;
-        speedWheel=0;
-        conect=false;
+        dataTx.buffer=&packOutput[0];
+        dataTx.wheelNumber=wheelId;
+        dataTx.longBufOut=0;
+        dataRx.buffer=&packInput[0];
+        dataRx.dataInput=&dataInput;
+        dataRx.wheelNumber=wheelId;
+        dataOut.dataInput=dataRx.dataInput;
+        dataOut.longData=&dataRx.longDataBuf;
+        dataOut.validatData=false;
         }
 
-    void exchenge (WheelProtocol::ReadCommand comandID  ) {
-        protokol.creatPaket(wheelId, comandID);
-        driver.write((UInt8*)&protokol.pack()[0],protokol.pack().getSize());
-        driver.read((UInt8*)&packIn[0], 14);
-        if (comandID==WheelProtocol::WHEEL_SPEED_REQUEST) {
-            if (protokol.createDataSpeed()) {
-                counter++;
-                if (counter>maxCounter) {
-                conect=true;
-                speedWheel=protokol.getSpeed();
-                counter=maxCounter; }
-                }
-            else {
-                counter--;
-                if (counter<0) {
-                    counter=0;
-                    speedWheel=0.0;
-                    conect=false;
-                    }
-                }
-            }
+    inline int8_t exchenge (WheelProtocol::ReadCommand comandID  ) {
+        dataTx.comand=comandID;
+        dataRx.comand=comandID;
+        int8_t exchengeData = protokol.creatPaketOut(dataTx);
+        if (exchengeData!=WheelProtocol::createData) {
+            resetData();
+            return invalidCreatPaket;}
+        if (driver.write(dataTx.buffer,dataTx.longBufOut)<dataTx.longBufOut) {
+            resetData();
+            return invalidDriverTx;}
+        Task_sleep(1);
+        if(driver.read(dataRx.buffer,dataTx.longBufInput)<dataTx.longBufInput) {
+            resetData();
+            return invalidDriverRx;}
+        exchengeData = protokol.createDataInput(dataRx);
+        if (exchengeData!=WheelProtocol::createData)  {
+            resetData();
+            return invalidCreatPaket;   }
+        dataOut.validatData=true;
+        return exchengeOk;
+
         }
 
-    int32_t getSpeed() {
-        return speedWheel;
+    inline DataOut getData() {
+        return dataOut;
         }
 
-    bool getConnect () { return conect; }
+    inline bool getConnect () { return conect; }
 
 private:
+    inline void  resetData () {
+        dataOut.dataInput[0]=0;
+        dataOut.longData=0;
+        dataOut.validatData=false;
+    }
 
-    void updateWheelPanData () {
+
+    inline void TXD () {
+        }
+
+    inline void RXD () {
 
         }
 
-    void updateWheelRollData () {
-
-        }
-
-    void updateWheelTiltData () {
-
-        }
 
 };
 

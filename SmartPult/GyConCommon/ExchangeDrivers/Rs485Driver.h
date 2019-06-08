@@ -22,14 +22,14 @@ public:
 
 
 
-class Rs485Driver2: public UartDriver  {
+class Rs485Driver2: public UartDriver2  {
 private:
     const UInt8 txEnablePin;
     UInt16 txDelay;
 public:
     Rs485Driver2(UInt8 uartId, UInt32 baud, UInt16 readTimeout, UInt8 txEnablePin);
 
-    virtual Int16 write(UInt8* pack, UInt16 size);
+   virtual Int16 write(UInt8* pack, UInt16 size);
 };
 
 

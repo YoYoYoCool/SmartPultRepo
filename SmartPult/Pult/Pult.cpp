@@ -25,7 +25,8 @@
 #include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
 #include "LensParam/LensPack.hpp"
 
-#define MAX_TRANSFER_TIMEOUT 350
+//#define MAX_TRANSFER_TIMEOUT 350
+#define MAX_TRANSFER_TIMEOUT 100
 #define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 5
 //#define PULT_DEVELOPING_BOARD
 
@@ -282,11 +283,11 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         1.0
 );
 
-ExtrenalDevices::WheelChannel digitalWheelPan (230.0,1.0,&dummySpecRes,0.02,0.015);
+ExtrenalDevices::WheelChannel digitalWheelPan (230.0,1.0,&panJoySpeedResistor);
 
-ExtrenalDevices::WheelChannel digitalWheelRoll (230.0,1.0,&dummySpecRes,0.02,0.015);
+ExtrenalDevices::WheelChannel digitalWheelRoll (230.0,1.0,&dutchJoySpeedResistor);
 
-ExtrenalDevices::WheelChannel digitalWheelTilt (230.0,1.0,&dummySpecRes,0.02,0.015);
+ExtrenalDevices::WheelChannel digitalWheelTilt (230.0,1.0,&tiltJoySpeedResistor);
 
 ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &digitalWheelRoll, &digitalWheelTilt };
 
@@ -634,8 +635,8 @@ void Pult::driverTask()
 	motionControlAPI.init();
 
 
-	Var elementPan("Pan Speed:",&cartoniPanAxisChannel.getAxisVal());
-	Var elementTilt("Tilt Speed:",&cartoniTiltAxisChannel.getAxisVal());
+	Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
+	Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
 	Var elementDutch("Dutch Speed:",&cartoniDutchAxisChannel.getAxisVal());
 	viewLists.setVarList(0, &elementPan);
 	viewLists.setVarList(1, &elementTilt);
@@ -1043,30 +1044,29 @@ void Pult::exchangeAlternativeTask()
 
 
     GPIO_write(Board_PULTALT_RS485RW, Board_RS485_WRITE_MODE);
-    LensDb::LensPackStatic<50> _pack;
-    WheelProtocol::WheelProtacol protokol(_pack);
+    WheelProtocol::WheelProtacol protokol;
+    ExtrenalDevices::DataOut panData;
+    ExtrenalDevices::DataOut roolData;
+    ExtrenalDevices::DataOut tiltData;
     Rs485Driver2 driverWhell(params.uartId, 115200, params.recieveTimeout, params.txEnablePin);
-    ExtrenalDevices::DigitalWheelManager digitalWheelPanManager(driverWhell,protokol,WheelProtocol::WHEEL_PAN,_pack);
-    ExtrenalDevices::DigitalWheelManager digitalWheelRollManager(driverWhell,protokol,WheelProtocol::WHEEL_ROLL,_pack);
-    ExtrenalDevices::DigitalWheelManager digitalWheelTiltManager(driverWhell,protokol,WheelProtocol::WHEEL_TILT,_pack);
+    ExtrenalDevices::DigitalWheelManager digitalWheelPanManager(driverWhell,protokol,WheelProtocol::WHEEL_PAN,panData);
+    ExtrenalDevices::DigitalWheelManager digitalWheelRollManager(driverWhell,protokol,WheelProtocol::WHEEL_ROLL,roolData);
+    ExtrenalDevices::DigitalWheelManager digitalWheelTiltManager(driverWhell,protokol,WheelProtocol::WHEEL_TILT,tiltData);
 
     while(true)
         {
         digitalWheelPanManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
-        digitalWheelPan.setConnect(digitalWheelPanManager.getConnect());
-        digitalWheelPan.setSpeed(digitalWheelPanManager.getSpeed());
+        digitalWheelPan.setConnect(panData.validatData);
+        digitalWheelPan.setSpeed(panData.dataInput[0]);
+        Task_sleep(1);
 
-
-        digitalWheelTiltManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
+/*        digitalWheelTiltManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
         digitalWheelTilt.setConnect(digitalWheelTiltManager.getConnect());
         digitalWheelTilt.setSpeed(digitalWheelTiltManager.getSpeed());
 
-
         digitalWheelRollManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
         digitalWheelRoll.setConnect(digitalWheelRollManager.getConnect());
-        digitalWheelRoll.setSpeed(digitalWheelRollManager.getSpeed());
-
-
+        digitalWheelRoll.setSpeed(digitalWheelRollManager.getSpeed());*/
 
         }
 }
@@ -1667,7 +1667,12 @@ void Pult::updateWarningsList()
 {
 	warnings.getRunStrWarnings()->removeAll();
 
-	if(!connectedFlag){	warnings.getRunStrWarnings()->add(&headDisconnectedWarning);}
+	if(!connectedFlag){
+	    warnings.getRunStrWarnings()->add(&headDisconnectedWarning);}
+	if (gyConFaultBits.all!=0) {
+	    int a=0;
+	    a++;
+	    }
 	if(gyConFaultBits.faultBits.panDusFault!=0){	warnings.getRunStrWarnings()->add(&pDusFail);}
 	if(gyConFaultBits.faultBits.dutchDusFault!=0){	warnings.getRunStrWarnings()->add(&dDusFail);}
 	if(gyConFaultBits.faultBits.tiltDusFault!=0){	warnings.getRunStrWarnings()->add(&tDusFail);}
@@ -2098,25 +2103,25 @@ void Pult::disableRollAnalogWheel()   {  dutchExtern1Channel.disable();   }
 
 void Pult::disablePadal()       {  dutchExtern2Channel.disable();   }
 
-void Pult::digitalWheelPanStepLeft() {    digitalWheelPan.triganometric.stepLeft();    }
+void Pult::digitalWheelPanStepLeft() {    digitalWheelPan.channal.stepLeft();     }
 
-void Pult::digitalWheelTiltStepLeft(){    digitalWheelTilt.triganometric.stepLeft();    }
+void Pult::digitalWheelTiltStepLeft(){   digitalWheelTilt.channal.stepLeft();      }
 
-void Pult::digitalWheelRollStepLeft(){    digitalWheelRoll.triganometric.stepLeft();    }
+void Pult::digitalWheelRollStepLeft(){     digitalWheelRoll.channal.stepLeft();    }
 
-void Pult::digitalWheelPanStepRight(){    digitalWheelPan.triganometric.stepRight();    }
+void Pult::digitalWheelPanStepRight(){     digitalWheelPan.channal.stepRight();    }
 
-void Pult::digitalWheelTiltStepRight(){    digitalWheelTilt.triganometric.stepRight();    }
+void Pult::digitalWheelTiltStepRight(){    digitalWheelTilt.channal.stepRight();  }
 
-void Pult::digitalWheelRollStepRight(){    digitalWheelRoll.triganometric.stepRight();    }
+void Pult::digitalWheelRollStepRight(){     digitalWheelRoll.channal.stepRight();  }
 
-int8_t Pult:: digitalWheelPanGetFunction() {      return digitalWheelPan.triganometric.getFunction(); }
+int8_t Pult:: digitalWheelPanGetFunction() {      return digitalWheelPan.channal.getFunction(); }
 
-int8_t Pult::digitalWheelTiltGetFunction() {      return digitalWheelTilt.triganometric.getFunction(); }
+int8_t Pult::digitalWheelTiltGetFunction() {      return digitalWheelTilt.channal.getFunction(); }
 
-int8_t Pult::digitalWheelRollGetFunction() {      return digitalWheelRoll.triganometric.getFunction(); }
+int8_t Pult::digitalWheelRollGetFunction() {      return digitalWheelRoll.channal.getFunction(); }
 
-void Pult::digitalWhellPanEnable()         {   digitalWheelPan.enable(); }
+void Pult::digitalWhellPanEnable()         {   digitalWheelPan.enable();  }
 
 void Pult::digitalWhellPanDisable()        {   digitalWheelPan.disable(); }
 
@@ -2135,9 +2140,11 @@ void Pult::disableAllDigitalWheel()  {
      }
 
 void Pult::digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll) {
-     digitalWheelPan.triganometric.setFunction(pan);
-     digitalWheelTilt.triganometric.setFunction(tilt);
-     digitalWheelRoll.triganometric.setFunction(roll);
+
+
+     digitalWheelPan.channal.setFunction(pan);
+     digitalWheelTilt.channal.setFunction(tilt);
+     digitalWheelRoll.channal.setFunction(roll);
      }
 
 

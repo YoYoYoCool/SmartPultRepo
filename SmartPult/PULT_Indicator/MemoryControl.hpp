@@ -99,9 +99,9 @@ enum EEPROM_Filds
 
 struct EepromDefault
 {
-    uint32_t max;
-    uint32_t def;
     uint32_t min;
+    uint32_t def;
+    uint32_t max;
 };
 
 
@@ -183,7 +183,7 @@ class EE_Working
             return CRC;
         }
 
-        static void validateProfile()
+        static void validateProfileOld()
         {
             uint32_t crc;
             uint32_t findedCrc;
@@ -221,6 +221,10 @@ class EE_Working
 
 
     public:
+
+        static inline void refactoringEEPROM () {
+
+            }
 
         static inline uint32_t Write(uint8_t EE_num, uint32_t data)
         {
@@ -277,7 +281,7 @@ class EE_Working
         static inline void setProfile  (uint32_t profileNumber)
         {
                 profileID=profileNumber;
-                validateProfile();
+                validateProfileOld();
                 EEPROMProgram(&profileNumber,PROFILE_INFO, 4);
         }
         static inline bool setDefaultProfile (uint32_t profileNumber)
@@ -299,7 +303,7 @@ class EE_Working
                 EEPROMRead(&ret, PROFILE_INFO, 4);
                 if(ret>=MAX_PROFILE_COUNT){ret=0;}
                 profileID=ret;
-                validateProfile();
+                validateProfileOld();
                 return ret;
         }
         static inline void    cleanEEPROM()

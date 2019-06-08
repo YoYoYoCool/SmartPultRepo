@@ -10,13 +10,13 @@
 
     uint32_t EE_Working::profileID=0;
 
-    const EepromDefault pkDefault               =  {       0,      1,         100};     //0
-    const EepromDefault dkDefault               =  {       0,      1,         100};     //1
-    const EepromDefault tkDefault               =  {       0,      1,         100};     //2
+    const EepromDefault pkDefault               =  {       0,      1,         100};     //0 koafFirst
+    const EepromDefault dkDefault               =  {       0,      1,         100};     //1 foafSecond
+    const EepromDefault tkDefault               =  {       0,      1,         100};     //2 koafThird
     const EepromDefault piDefault               =  {       0,      1,         100};     //3
     const EepromDefault diDefault               =  {       0,      1,         100};     //4
     const EepromDefault tiDefault               =  {       0,      1,         100};     //5
-    const EepromDefault brightnessDefault       =  {       0,      1,       100};     //6
+    const EepromDefault brightnessDefault       =  {       0,      1,         100};     //6
 
     const EepromDefault panEqlLine0Default      =  {       0,      0x001C0009,         0x00e60084};     //7
     const EepromDefault panEqlLine1Default      =  {       0,      0x00400018,         0x00e60084};     //8
@@ -67,9 +67,9 @@
     const EepromDefault shadowSettings9Default  =  {       0xC1A000BE,      0x3170A3D7,         0x41A000BE};    //49
 
     const EepromDefault joyConfigDefault        =  {       0,               0,                  2};             //50
-    const EepromDefault motors1ModelDefault     =  {       0,      0,         0};                               //51
-    const EepromDefault motors2ModelDefault     =  {       0,      0,         0};                               //52
-    const EepromDefault motors3ModelDefault     =  {       0,      0,         0};                               //53
+    const EepromDefault motors1ModelDefault     =  {       0,      0,         0};                               //51    не используются
+    const EepromDefault motors2ModelDefault     =  {       0,      0,         0};                               //52    не используются
+    const EepromDefault motors3ModelDefault     =  {       0,      0,         0};                               //53    не используются
     const EepromDefault motors1TypeDefault      =  {       0,               0,                  1};             //54
     const EepromDefault motors2TypeDefault      =  {       0,               0,                  1};             //55
     const EepromDefault motors3TypeDefault      =  {       0,               0,                  1};             //56
@@ -123,10 +123,10 @@
     const EepromDefault synchroSourceDefault    =  {       0,               0,                 1};              //93
     const EepromDefault prerolSlave1Default     =  {       0,               0,             30000};              //94
     const EepromDefault prerolSlave2Default     =  {       0,               0,             30000};              //95
-    const EepromDefault prerolSlave3Default     =  {       0,               0,            300000};              //96
+    const EepromDefault prerolSlave3Default     =  {       0,               0,             30000};              //96
 
     const EepromDefault ecoModeDefault          =  {       0,               0,                 1};              //97
-    const EepromDefault panFolowingDefault      =  {       0,               0,                 62};              //98
+    const EepromDefault panFolowingDefault      =  {       0,               0,                 2};              //98
     const EepromDefault CRCDefault              =  {       0,      0,         0};                               //99
 
 

@@ -30,18 +30,21 @@ txEnablePin(txEnablePin) {
 	return txCount;
 }
 
+//----------------------------------------------------------------------------------------------
 
  Rs485Driver2::Rs485Driver2(UInt8 uartId, UInt32 baud, UInt16 readTimeout, UInt8 txEnablePin):
- UartDriver(uartId, baud, readTimeout),
+ UartDriver2(uartId, baud, readTimeout),
  txEnablePin(txEnablePin) {
  }
 
-  Int16 Rs485Driver2::write(UInt8* pack, UInt16 size) {
+
+
+ Int16 Rs485Driver2::write(UInt8* pack, UInt16 size) {
      GPIO_write(txEnablePin, Rs485Driver_RS485_WRITE_MODE);
-     Int16 txCount = UartDriver::write(pack, size);
+     Int16 txCount = UartDriver2::write(pack, size);
      UARTTiva_HWAttrs const *hwAttrs = (UARTTiva_HWAttrs *)((UART_Handle)uart)->hwAttrs;
      while (UARTBusy(hwAttrs->baseAddr)) {
-         //Task_sleep(1);
+
      }
      GPIO_write(txEnablePin, Rs485Driver_RS485_READ_MODE);
      return txCount;

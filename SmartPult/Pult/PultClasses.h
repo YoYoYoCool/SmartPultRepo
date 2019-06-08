@@ -148,6 +148,7 @@ private:
 class Resistor {
 public:
 float offset;
+float adcValue;
 volatile float K;
 volatile float K0;
 volatile float value;
@@ -171,6 +172,7 @@ volatile float value;
 		value = 0;
 	}
     virtual void calculate(UInt32 adcValue) {
+        this->adcValue=(float)adcValue;
     	value = K*((float)adcValue - offset);
     }
     void setInversOrientation()

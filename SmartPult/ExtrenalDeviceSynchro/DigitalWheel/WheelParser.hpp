@@ -16,18 +16,14 @@ namespace ExtrenalDevices {
 template <typename TData>
 class DigitalWheelParser    {
     private:
-        LensDb::LensPack & pack;
+
 
     public:
-        DigitalWheelParser(LensDb::LensPack & pack):pack(pack) {
 
-        }
-
-        inline bool parsePack (TData & paket) {
-            ExchangeLib::InSerial inBytes(&pack[0],50);
+        inline bool parsePack (TData & paket, uint8_t * buf) {
+            ExchangeLib::InSerial inBytes(buf,sizeof(TData)+1);
             inBytes.read<TData>(paket);
-            pack.setPackBufSize(inBytes.readedCount());
-        }
+            }
     };
 
 

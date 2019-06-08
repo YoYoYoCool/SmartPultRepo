@@ -7,12 +7,17 @@
 
 #ifndef EXTRENALDEVICESYNCHRO_DIGITALWHEEL_DIGITAL_WHEEL_HPP_
 #define EXTRENALDEVICESYNCHRO_DIGITALWHEEL_DIGITAL_WHEEL_HPP_
+
+
+
+
 #include <Pult/PultClasses.h>
 #include "stddef.h"
 #include "stdint.h"
 #include "stdio.h"
-#include "Libs/TrigonometricFunction.hpp"
-//#include "Protocol.hpp"
+#include "Libs/StandartElement/AttAmpStaticChannel.hpp"
+#include "Libs/StandartElement/AttAmpDinamicChannel.hpp"
+
 
 namespace ExtrenalDevices {
 
@@ -22,38 +27,95 @@ enum {
 
 enum {transmissionMax=4};
 
+
+
+Schematic::AttAmpSettings settingsDummi = {
+    .amplifierSettings.Vcc=12.0,
+    .amplifierSettings.Vee=-12.0,
+    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=15.7,
+    .attenuatorSettings.Vcc=0.0,
+    .attenuatorSettings.Vee=0.0,
+    .attenuatorSettings.deadZone=0.0,
+    .attenuatorSettings.attenuationK=0.002,
+    };
+
+Schematic::AttAmpSettings settingsFirst = {
+    .amplifierSettings.Vcc=12.0,
+    .amplifierSettings.Vee=-12.0,
+    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=15.7,
+    .attenuatorSettings.Vcc=0.0,
+    .attenuatorSettings.Vee=0.0,
+    .attenuatorSettings.deadZone=0.0,
+    .attenuatorSettings.attenuationK=0.002,
+    };
+
+Schematic::AttAmpSettings settingsSecond = {
+    .amplifierSettings.Vcc=120.0,
+    .amplifierSettings.Vee=-120.0,
+    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=15.7,
+    .attenuatorSettings.Vcc=0.0,
+    .attenuatorSettings.Vee=0.0,
+    .attenuatorSettings.deadZone=0.0,
+    .attenuatorSettings.attenuationK=0.02,
+    };
+
+Schematic::AttAmpSettings settingsThird = {
+    .amplifierSettings.Vcc=230.0,
+    .amplifierSettings.Vee=-230.0,
+    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=4.0,
+    .attenuatorSettings.Vcc=0.0,
+    .attenuatorSettings.Vee=0.0,
+    .attenuatorSettings.deadZone=0.0,
+    .attenuatorSettings.attenuationK=0.2,
+    };
+
+
+Schematic::AttAmpSettings * settings[transmissionMax] = {  &settingsDummi,
+                                                           &settingsFirst,
+                                                           &settingsSecond,
+                                                           &settingsThird    };
+
 class WheelChannel:public JoyChanel {
 private:
 
     const float maxValue;
     float speedWheel;
-    uint8_t transmission;
     bool connect;
     uint8_t counter;
+    float speedWheel2;
 
 public:
 
-    Trigonametric::Trigonometric triganometric;
+
+    Schematic::AttAmpDinamicChannal<transmissionMax> channal;
 
     WheelChannel(float speedMax,
                  float K,
-                 Resistor* speedControl,
-                 float deadZone,
-                 float T):maxValue(speedMax), JoyChanel(K, offset,speedControl,deadZone, T),
-                  speedWheel(0.0), triganometric(0)
+                 Resistor* speedControl):maxValue(speedMax), JoyChanel(K, offset,speedControl,0.01, 0.015)
                     {
-                    transmission=0;
-                    isEnable   =true;
+                    speedWheel=0.0,
+                    isEnable   =false;
                     connect=false;
                     counter=0;
+                    for (uint8_t i=0; i<transmissionMax; i++) {
+                        channal.setup(i,settings[i]);}
+
                     }
 
-    virtual float getCurrentAdcValue() {
-        speedWheel=triganometric.updateData(speedWheel);
+    inline virtual float getCurrentAdcValue() {
         if (!isEnable)
             return 0.0;
-        if (!connect)
-            return 0.0;
+        /*if (!connect)
+            return 0.0;*/
+        speedWheel=channal.updateData(speedWheel,speedControl->adcValue);
         if (speedWheel>maxValue)
             speedWheel=maxValue;
         if (speedWheel<-maxValue)
@@ -61,23 +123,20 @@ public:
         return speedWheel;
         }
 
-    void setSpeed (float speedWheel) {
-        this->speedWheel=speedWheel;
-        this->speedWheel*=0.01;
+    inline volatile float & getSpeedWheel () {
+        return speedWheel;
         }
 
-inline void setConnect(bool connect) {
-    this->connect=connect;
 
 
-}
+    inline void setSpeed (float speedWheel) {
+        this->speedWheel=speedWheel;
+        this->speedWheel*=0.001;
+        }
 
-
-
-
-
-
-
+    inline void setConnect(bool connect) {
+        this->connect=connect;
+        }
 
 };
 

@@ -17,17 +17,14 @@ namespace ExtrenalDevices {
 template <typename TData>
 class DigitalWheelBuilder {
 private:
-    LensDb::LensPack & pack;
+
 
 public:
-    DigitalWheelBuilder(LensDb::LensPack & pack):pack(pack) {
 
-    }
-
-    inline void buildPack (TData & paket) {
-        ExchangeLib::OutSerial outBytes(&pack[0], pack.getMaxSize());
+    inline void buildPack (TData & paket,  uint8_t *buf) {
+        ExchangeLib::OutSerial outBytes(buf, sizeof(TData)+1);
         outBytes.write<TData>(paket);
-        pack.setPackBufSize(outBytes.getWritedCount());
+
         }
 
     };
