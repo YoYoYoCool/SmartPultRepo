@@ -196,6 +196,7 @@ public:
             Draw(Tek_Count);
             Focused = false;
             }
+        DrawVert();
         if (getButtonState(pult_Button_Select) == PRESSED) {
             if (abort) {
                 abort=false;
@@ -233,12 +234,6 @@ public:
         if (abort) {
             abortWork();
             }
-
-
-
-
-        DrawVert();
-
         }
 
 private:

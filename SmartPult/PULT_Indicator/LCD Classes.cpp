@@ -151,7 +151,7 @@ tMenu_Link tuningMenuText[8]={
 		{"SUSPENTION RESONANCE",NULL},
 		{"MAX TORQUE",NULL},
 		{"JOYSTICK DEADZONE",NULL},
-		{"FRONT RAMP",NULL},
+//		{"FRONT RAMP",NULL},
 		{"TOTAL RUNTIME",NULL},
 		{"PREROL",NULL},
 		{"SYNCHRO SOURCE",NULL},
@@ -160,7 +160,7 @@ tMenu_Link tuningMenuText[8]={
 enum {SuspensionResonansTuningMenu=1,
     MaxTorqueTuningMenu,
     JoysticDeadZoneTuningMenu,
-    FrontRampTuningMenu,
+//    FrontRampTuningMenu,
     TotalRuntimeTuningMenu,
     PrerolTuningMenu,
     SynchroSourceTuningMenu,
@@ -169,7 +169,7 @@ enum {SuspensionResonansTuningMenu=1,
 enum {SuspensionResonansTuningMenuSistem=0,
     MaxTorqueTuningMenuSistem,
     JoysticDeadZoneTuningMenuSistem,
-    FrontRampTuningMenuSistem,
+//    FrontRampTuningMenuSistem,
     TotalRuntimeTuningMenuSistem,
     PrerolTuningMenuSistem,
     SynchroSourceTuningMenuSistem,
@@ -503,11 +503,11 @@ LCD_Main* mainScreenPointer;
 HourMeterMenu* hourMeterMenuPointer;
 
 //LCD_Menu_WeelSpeed* wheelSpeedMenuPointer;
-LCD::LCDWheelMenu* wheelSpeedMenuPointer;
+LCD::LCDWheelMenu* wheelMenuPointer;
 SelectMenuSpiderSelect* tiltSpiderSelectMenuPointer;
 SelectMenuSpiderSelect* panSpiderSelectMenuPointer;
 SetMaxTorque* setMaxTorqueMenuPointer;
-SetStartFluid* setStartFluidPointer;
+//SetStartFluid* setStartFluidPointer;
 SetJoyDeadZone* setJoyDeadZoneMenuPointer;
 SetMotionPrerol* setMotionPrerolPointer;
 FolowingModeMenu* folowingModePointer;
@@ -536,6 +536,7 @@ void pultIndikator_Task(Pult* point_pult)
 	motionLogicController.setMotionSynchroModule(&(ExtrSyncroization::ExtrenalDevieExchDriver::motionTransmiter));
 	watchDogTimer.registerKey(WD_KEY3);
 //	EE_Working::cleanEEPROM();
+	EE_Working::refactoringEEPROM();
 	EE_Working::getProfile();
 
 	Pwm pwmBright(GyConBoard_BrightPwm,10000);
@@ -590,8 +591,8 @@ void pultIndikator_Task(Pult* point_pult)
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
 
 	//LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);
-	LCD::LCDWheelMenu wheelSpeedMenu;
-	wheelSpeedMenuPointer=&wheelSpeedMenu;
+	LCD::LCDWheelMenu wheelMenu;
+	wheelMenuPointer=&wheelMenu;
 //	wheelSpeedMenuPointer->updateFromEEPROM();
 
 	SelectMenuSpiderSelect tiltSpiderSelectMenu("SUSPENSION RESONANCE", tiltSpiderSelectText, 2, 2,EE_LC_TILT_SUSPENSION_RES_TYPE,EE_LC_TILT_SUSPENSION_EDIT_FREQ,SUSPENSION_RESONANCE_CHANNEL_TILT);
@@ -606,9 +607,9 @@ void pultIndikator_Task(Pult* point_pult)
 	setMaxTorqueMenuPointer=&setMaxTorqueMenu;
 	setMaxTorqueMenu.updateFromEeprom();
 
-	SetStartFluid setStartFluidMenu("FRONT RAMP");
+	/*SetStartFluid setStartFluidMenu("FRONT RAMP");
 	setStartFluidPointer=&setStartFluidMenu;
-	setStartFluidMenu.updateFromEeprom();
+	setStartFluidMenu.updateFromEeprom();*/
 
 	SetJoyDeadZone setJoyDeadZoneMenu("DEADZONE");
 	setJoyDeadZoneMenuPointer=&setJoyDeadZoneMenu;
@@ -639,8 +640,8 @@ void pultIndikator_Task(Pult* point_pult)
 
 
 
-	LCD_Menu tuningMenu("TUNING",  tuningMenuText, 8, 0, 8	);
-	tuningMenuPointer=&tuningMenu;
+	LCD_Menu tuningMenu("TUNING",  tuningMenuText, 7, 0, 7	);
+/*	tuningMenuPointer=&tuningMenu;
 	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
 	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
 	tuningMenuText[2].pPointSub=&setJoyDeadZoneMenu;
@@ -648,7 +649,16 @@ void pultIndikator_Task(Pult* point_pult)
 	tuningMenuText[4].pPointSub=&hourMeterMenu;
 	tuningMenuText[5].pPointSub=&motionPrerolMenu;
 	tuningMenuText[6].pPointSub=&syncroSouce;
-	tuningMenuText[7].pPointSub=&axisTurnsViewMenu;
+	tuningMenuText[7].pPointSub=&axisTurnsViewMenu;*/
+
+	tuningMenuPointer=&tuningMenu;
+	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
+	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
+	tuningMenuText[2].pPointSub=&setJoyDeadZoneMenu;
+	tuningMenuText[3].pPointSub=&hourMeterMenu;
+	tuningMenuText[4].pPointSub=&motionPrerolMenu;
+	tuningMenuText[5].pPointSub=&syncroSouce;
+	tuningMenuText[6].pPointSub=&axisTurnsViewMenu;
 
 	FolowingModeMenu folowingModeMenu("FOLOWING MODE");
 	folowingModePointer=&folowingModeMenu;
@@ -661,7 +671,7 @@ void pultIndikator_Task(Pult* point_pult)
 	setupMenuText[1].pPointSub=&profileMenu;
 	setupMenuText[2].pPointSub=&switchAxesMenu;
 	setupMenuText[3].pPointSub=&setupOverslangActivate;
-	setupMenuText[4].pPointSub=&wheelSpeedMenu;
+	setupMenuText[4].pPointSub=&wheelMenu;
 	setupMenuText[6].pPointSub=&tuningMenu;
 	setupMenuText[7].pPointSub=&folowingModeMenu;
 
@@ -2693,22 +2703,6 @@ void SetJoyDeadZone::Listener()
 
 }
 //----------------------------------------------------------------------------------------------------------
-/*
-enum {
-    ecoModSistem=0,
-    panTorqueSistem,
-    dutchTorqueSistem,
-    tiltTorqueSistem,
-    zoomTorqueSistem
-};
-
-enum {
-    ecoMod=1,
-    panTorque,
-    dutchTorque,
-    tiltTorque,
-    zoomTorque
-};*/
 
 #define maxTorque 100
 
@@ -4757,7 +4751,7 @@ void loadEepromValueFromPult()
 	switchAxesPointer->updateFromEEPROM();
 	lensControlMotorTypeSelectPointer->updateFromEEPROM();
 	lensControlMotorActionSelectPointer->updateFromEEPROM();
-//	wheelSpeedMenuPointer->updateFromEEPROM();
+	wheelMenuPointer->readEEPROM();
 	setMaxTorqueMenuPointer->updateFromEeprom();
 	tiltSpiderSelectMenuPointer->updateFromEEPROM();
 	setupOverslangActivatePointer->updateFromEEPROM();

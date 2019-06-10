@@ -93,7 +93,8 @@ enum EEPROM_Filds
     EE_LC_MOTION_SLAVE3_PREROL,
     EE_LC_ECO_MOD_ON,
     EE_LC_PAN_FOLOWING_SETTINGS,
-    EE_LC_PROFILE_CRC
+    EE_LC_PROFILE_CRC_OLD,
+    EE_LC_PROFILE_CRC_NEW
 
 };
 
@@ -128,7 +129,7 @@ class EE_Working
 
             WordToByteBM eeValue;
 
-            for(uint16_t i=0;i!=EE_LC_PROFILE_CRC;i++)
+            for(uint16_t i=0;i!=EE_LC_PROFILE_CRC_NEW;i++)
             {
                 eeValue.all=Read(i);
                 for (uint16_t i = 0; i !=4; i++)
@@ -151,6 +152,40 @@ class EE_Working
             CRC = (CRCH << 8) + (CRCL & 0x00FF);
             return CRC;
         }
+
+        static inline uint32_t finedProfileCRC(EEPROM_Filds addresCRC)
+                {
+                    uint16_t TMP, CRCL, CRCH, CRC = 0xffff;
+                    CRCL = CRC;
+                    CRCH = (CRC >> 8);
+
+                    WordToByteBM eeValue;
+
+                    for(uint16_t i=0;i!=addresCRC;i++)
+                    {
+                        eeValue.all=Read(i);
+                        for (uint16_t i = 0; i !=4; i++)
+                        {
+                            int16_t dataTmp = eeValue.bytes[i];
+                            dataTmp = (dataTmp ^ CRCL);
+                            TMP = (dataTmp << 4);
+                            dataTmp = (TMP ^ dataTmp);
+                            TMP = (dataTmp >> 5);
+                            TMP &= 0x07;
+                            CRCL = CRCH;
+                            CRCH = (dataTmp ^ TMP);
+                            TMP = (dataTmp << 3);
+                            CRCL = (CRCL ^ TMP);
+                            TMP = (dataTmp >> 4);
+                            TMP &= 0x0F;
+                            CRCL = (CRCL ^ TMP);
+                        }
+                    }
+                    CRC = (CRCH << 8) + (CRCL & 0x00FF);
+                    return CRC;
+                }
+
+
         static inline uint32_t finedCalibrationCRC()
         {
             uint16_t TMP, CRCL, CRCH, CRC = 0xffff;
@@ -188,17 +223,17 @@ class EE_Working
             uint32_t crc;
             uint32_t findedCrc;
 
-            EEPROMRead(&crc, (uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC*4), 4);
+            EEPROMRead(&crc, (uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC_NEW*4), 4);
             findedCrc=finedProfileCRC();
             if(findedCrc!=crc)
             {
-                for(uint32_t i=0;i!=EE_LC_PROFILE_CRC;i++)
+                for(uint32_t i=0;i!=EE_LC_PROFILE_CRC_NEW;i++)
                 {
                     EEPROMProgram((uint32_t*)(&getSettingsLimits((EEPROM_Filds)i).def),(uint32_t)(EEStartAdress+(profileID*EECount*4) + i*4), 4);
                 }
             }
             findedCrc=finedProfileCRC();
-            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC*4), 4);
+            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC_NEW*4), 4);
         }
 
         static void validateCalibrationData()
@@ -223,6 +258,13 @@ class EE_Working
     public:
 
         static inline void refactoringEEPROM () {
+            uint32_t crc;
+            for (uint8_t profileId=0; profileId<5; profileId++) {
+                EEPROMRead(&crc, (uint32_t)(EEStartAdress+(profileId*EECount*4) + EE_LC_PROFILE_CRC_OLD*4), 4);
+                if (crc==(uint32_t)finedProfileCRC(EE_LC_PROFILE_CRC_OLD)) {
+                    Write(EE_LC_PROFILE_CRC_OLD,0xFFFFFFFF);
+                    }
+                }
 
             }
 
@@ -235,10 +277,10 @@ class EE_Working
                rezult = EEPROMProgram(&data,(uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_num*4), 4);
 
                if(rezult==0)
-               {
+                   {
                    crc= finedProfileCRC();
-                   EEPROMProgram(&crc,(uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC*4), 4);
-               }
+                   EEPROMProgram(&crc,(uint32_t)(EEStartAdress+(profileID*EECount*4) + EE_LC_PROFILE_CRC_NEW*4), 4);
+                   }
                return rezult;
         }
 
@@ -289,12 +331,12 @@ class EE_Working
            // uint32_t crc;
             uint32_t findedCrc;
             profileID=profileNumber;
-            for(uint32_t i=0;i!=EE_LC_PROFILE_CRC;i++)
+            for(uint32_t i=0;i!=EE_LC_PROFILE_CRC_OLD;i++)
             {
                 EEPROMProgram((uint32_t*)(&getSettingsLimits((EEPROM_Filds)i).def),(uint32_t)(EEStartAdress+(profileNumber/*profileID*/*EECount*4) + i*4), 4);
             }
             findedCrc=finedProfileCRC();
-            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileNumber/*profileID*/*EECount*4) + EE_LC_PROFILE_CRC*4), 4);
+            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileNumber/*profileID*/*EECount*4) + EE_LC_PROFILE_CRC_OLD*4), 4);
             return true;
         }
         static inline uint32_t  getProfile()

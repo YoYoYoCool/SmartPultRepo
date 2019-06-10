@@ -89,61 +89,22 @@ public:
         settingsDataIO.longDataInput=&dataOut.longData;
         int8_t exchengeData = protokol.creatPaketOut(settingsDataIO);
         if (exchengeData!=ProtocolWheel::createData) {
-            if (wheedId==ProtocolWheel::wheelPan) {
-                int a =0;
-                a++;
-            }
             resetData(dataOut);
             return invalidCreatPaket;}
         if (driver.write(settingsDataIO.bufferTX,settingsDataIO.longDataTX)<settingsDataIO.longDataTX) {
-            if (wheedId==ProtocolWheel::wheelPan) {
-                            int a =0;
-                            a++;
-                        }
             resetData(dataOut);
             return invalidDriverTx;}
         Task_sleep(1);
         if(driver.read(settingsDataIO.bufferRX,settingsDataIO.longDataRX)<settingsDataIO.longDataRX) {
-            if (wheedId==ProtocolWheel::wheelPan) {
-                            int a =0;
-                            a++;
-                        }
             resetData(dataOut);
             return invalidDriverRx;}
         exchengeData = protokol.createDataInput(settingsDataIO);
         if (exchengeData!=ProtocolWheel::createData)  {
-            if (wheedId==ProtocolWheel::wheelPan) {
-                            int a =0;
-                            a++;
-                        }
             resetData(dataOut);
             return invalidCreatPaket;   }
         dataOut.validatData=true;
         return exchengeOk;
         }
-
-/*    inline int8_t exchenge (WheelProtocol::ReadCommand comandID  ) {
-        dataTx.comand=comandID;
-        dataRx.comand=comandID;
-        int8_t exchengeData = protokol.creatPaketOut(dataTx);
-        if (exchengeData!=WheelProtocol::createData) {
-            resetData();
-            return invalidCreatPaket;}
-        if (driver.write(dataTx.buffer,dataTx.longBufOut)<dataTx.longBufOut) {
-            resetData();
-            return invalidDriverTx;}
-        Task_sleep(1);
-        if(driver.read(dataRx.buffer,dataTx.longBufInput)<dataTx.longBufInput) {
-            resetData();
-            return invalidDriverRx;}
-        exchengeData = protokol.createDataInput(dataRx);
-        if (exchengeData!=WheelProtocol::createData)  {
-            resetData();
-            return invalidCreatPaket;   }
- //       dataOut.validatData=true;
-        return exchengeOk;
-        }*/
-
 
 
 private:

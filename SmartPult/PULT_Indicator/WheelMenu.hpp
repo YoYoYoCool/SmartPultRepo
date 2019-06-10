@@ -740,7 +740,7 @@ private:
 public:
 
     LCDWheelMenu():activeForm(&analogWheelForm),analogWheelForm(analogData),degitalWheelForm(digitalData) {
-        ReadEEPROM();
+        readEEPROM();
         analogWheelForm.update();
         degitalWheelForm.update();
         }
@@ -775,7 +775,7 @@ public:
             }
         }
 
-    void ReadEEPROM() {
+    void readEEPROM() {
         uint32_t v[3];
         v[0]=EE_Working::Read(EE_LC_WHEEL_ANALOG_DATA);
         v[1]=EE_Working::Read(EE_LC_WHEEL_DIGITAL_DATA);

@@ -127,7 +127,108 @@
 
     const EepromDefault ecoModeDefault          =  {       0,               0,                 1};              //97
     const EepromDefault panFolowingDefault      =  {       0,               0,                 2};              //98
-    const EepromDefault CRCDefault              =  {       0,      0,         0};                               //99
+    const EepromDefault empty[100]              =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //99
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //100
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //101
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //102
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //103
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //104
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //105
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //106
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //107
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //108
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //109
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //110
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //111
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //112
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //113
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //114
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //115
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //116
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //117
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //118
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //119
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //120
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //121
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //122
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //123
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //124
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //125
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //126
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //127
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //128
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //129
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //130
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //131
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //132
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //133
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //134
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //135
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //136
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //137
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //138
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //139
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //140
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //141
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //142
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //143
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //144
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //145
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //146
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //147
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //148
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //149
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //150
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //151
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //152
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //153
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //154
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //155
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //156
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //157
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //158
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //159
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //160
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //161
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //162
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //163
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //164
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //165
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //166
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //167
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //168
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //169
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //170
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //171
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //172
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //173
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //174
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //175
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //176
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //177
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //178
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //179
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //180
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //181
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //182
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //183
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //184
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //185
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //186
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //187
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //188
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //189
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //190
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //191
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //192
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //193
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //194
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //195
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //196
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //197
+                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //198
+
+    const EepromDefault CRCDefault              =  {       0,      0,         0};                               //199
 
 
 
@@ -251,6 +352,106 @@
 
          &ecoModeDefault,
          &panFolowingDefault,
+         &empty[0],
+         &empty[1],
+         &empty[2],
+         &empty[3],
+         &empty[4],
+         &empty[5],
+         &empty[6],
+         &empty[7],
+         &empty[8],
+         &empty[9],
+         &empty[10],
+         &empty[11],
+         &empty[12],
+         &empty[13],
+         &empty[14],
+         &empty[15],
+         &empty[16],
+         &empty[17],
+         &empty[18],
+         &empty[19],
+         &empty[20],
+         &empty[21],
+         &empty[22],
+         &empty[23],
+         &empty[24],
+         &empty[25],
+         &empty[26],
+         &empty[27],
+         &empty[28],
+         &empty[29],
+         &empty[30],
+         &empty[31],
+         &empty[32],
+         &empty[33],
+         &empty[34],
+         &empty[35],
+         &empty[36],
+         &empty[37],
+         &empty[38],
+         &empty[39],
+         &empty[40],
+         &empty[41],
+         &empty[42],
+         &empty[43],
+         &empty[44],
+         &empty[45],
+         &empty[46],
+         &empty[47],
+         &empty[48],
+         &empty[49],
+         &empty[50],
+         &empty[51],
+         &empty[52],
+         &empty[53],
+         &empty[54],
+         &empty[55],
+         &empty[56],
+         &empty[57],
+         &empty[58],
+         &empty[59],
+         &empty[60],
+         &empty[61],
+         &empty[62],
+         &empty[63],
+         &empty[64],
+         &empty[65],
+         &empty[66],
+         &empty[67],
+         &empty[68],
+         &empty[69],
+         &empty[70],
+         &empty[71],
+         &empty[72],
+         &empty[73],
+         &empty[74],
+         &empty[75],
+         &empty[76],
+         &empty[77],
+         &empty[78],
+         &empty[79],
+         &empty[80],
+         &empty[81],
+         &empty[82],
+         &empty[83],
+         &empty[84],
+         &empty[85],
+         &empty[86],
+         &empty[87],
+         &empty[88],
+         &empty[89],
+         &empty[90],
+         &empty[91],
+         &empty[92],
+         &empty[93],
+         &empty[94],
+         &empty[95],
+         &empty[96],
+         &empty[97],
+         &empty[98],
+         &empty[99],
          &CRCDefault
     };
 
