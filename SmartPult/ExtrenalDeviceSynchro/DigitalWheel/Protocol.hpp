@@ -14,20 +14,20 @@
 #include "WheelBuilder.hpp"
 #include "WheelParser.hpp"
 
-namespace WheelProtocol {
+namespace ProtocolWheel {
 
 
  enum WheelsType
 	{
-        WHEEL_PAN = 	0,
-		WHEEL_ROLL = 	1,
-		WHEEL_TILT = 	2,
-		WHEEL_MAX
+        wheelPan = 	0,
+		wheelRoll = 	1,
+		wheelTilt = 	2,
+		wheelMax
     };
 
     enum ReadCommand
 	{
-    	WHEEL_SPEED_REQUEST=1,
+    	wheelSpeedRequest=1,
     	WHEEL_SPEED_RESPONSE=2,
     	WHEEL_MAX_COMAND
     };
@@ -76,22 +76,16 @@ namespace WheelProtocol {
         WheelSimplePackDataRXSpeed   body;
     };
 
-    struct PaketDataOut {
+    struct SettingsDataIO {
         WheelsType wheelNumber;
         ReadCommand comand;
-        uint8_t * buffer;
-        uint8_t longBufOut;
-        uint8_t longBufInput;
-        };
-
-    struct PaketDataSpeedInput {
-        WheelsType wheelNumber;
-        ReadCommand comand;
-        uint8_t * buffer;
+        uint8_t * bufferTX;
+        uint8_t * bufferRX;
+        uint8_t longDataTX;
+        uint8_t longDataRX;
         int32_t * dataInput;
-        uint8_t longDataBuf;
+        uint8_t * longDataInput;
         };
-
 
 
     enum {
@@ -105,18 +99,18 @@ namespace WheelProtocol {
 
 
 
-class WheelProtacol {
+class WheelProtocol {
 
 
 public:
 
-	    inline int8_t creatPaketOut(PaketDataOut & dataSettings) {
-	        if ((dataSettings.wheelNumber>=WHEEL_MAX)||(dataSettings.wheelNumber<0))
+	    inline int8_t creatPaketOut(SettingsDataIO & dataSettings) {
+	        if ((dataSettings.wheelNumber>=wheelMax)||(dataSettings.wheelNumber<0))
 	            return invalidWheelNumber;
 
-	        if (dataSettings.comand==WHEEL_SPEED_REQUEST) {
-	            dataSettings.longBufOut=sizeof(WheelSimplePackTXSpeed);
-	            dataSettings.longBufInput=sizeof(WheelSimplePackRXSpeed);
+	        if (dataSettings.comand==wheelSpeedRequest) {
+	            dataSettings.longDataTX=sizeof(WheelSimplePackTXSpeed);
+	            dataSettings.longDataRX=sizeof(WheelSimplePackRXSpeed);
 	            WheelSimplePackTXSpeed paket ={
 	                                           .header.marker=HEADER_MARKER,
 	                                           .header.wheelType=dataSettings.wheelNumber,
@@ -128,7 +122,7 @@ public:
 	            paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
 
 	            ExtrenalDevices::DigitalWheelBuilder<WheelSimplePackTXSpeed> builder;
-	            builder.buildPack(paket,dataSettings.buffer);
+	            builder.buildPack(paket,dataSettings.bufferTX);
 
 	            return createData;
 	            }
@@ -136,11 +130,11 @@ public:
 	        }
 
 
-	    inline int8_t createDataInput (PaketDataSpeedInput & dataSettings) {
-	        if (dataSettings.comand==WHEEL_SPEED_REQUEST) {
+	    inline int8_t createDataInput (SettingsDataIO & dataSettings) {
+	        if (dataSettings.comand==wheelSpeedRequest) {
 	            WheelSimplePackRXSpeed paketInSpeed;
 	            ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser;
-	            parser.parsePack(paketInSpeed,dataSettings.buffer);
+	            parser.parsePack(paketInSpeed,dataSettings.bufferRX);
 
 	            uint16_t headCRC = findCrc((uint8_t*)(&(paketInSpeed.header.marker)), HEADER_LEN-2);
 	            if (headCRC!=paketInSpeed.header.crc)
@@ -154,13 +148,11 @@ public:
 	                return invalidBodyCRC;
 
 	            dataSettings.dataInput[0]=paketInSpeed.body.speed;
+	            dataSettings.longDataInput[0]=1; // Размерность данных
 	            return createData;
 	            }
 	        return invalidQuestion;
 	        }
-
-
-
 
 
 private:

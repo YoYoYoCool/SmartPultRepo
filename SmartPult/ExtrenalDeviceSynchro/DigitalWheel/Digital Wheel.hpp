@@ -91,6 +91,8 @@ private:
     bool connect;
     uint8_t counter;
     float speedWheel2;
+    int32_t speedWheelRaw;
+    bool inputRaw;
 
 public:
 
@@ -105,12 +107,17 @@ public:
                     isEnable   =false;
                     connect=false;
                     counter=0;
+                    inputRaw=true;
                     for (uint8_t i=0; i<transmissionMax; i++) {
                         channal.setup(i,settings[i]);}
 
                     }
 
     inline virtual float getCurrentAdcValue() {
+        if (inputRaw) {
+            speedWheel=speedWheelRaw;
+            speedWheel*=0.001;
+            }
         if (!isEnable)
             return 0.0;
         /*if (!connect)
@@ -127,7 +134,13 @@ public:
         return speedWheel;
         }
 
+    inline void setUseSpeedRaw (bool inputRaw) {
+        this->inputRaw = inputRaw;
+        }
 
+    inline int32_t * getSpeedWheelRaw () {
+        return &speedWheelRaw;
+    }
 
     inline void setSpeed (float speedWheel) {
         this->speedWheel=speedWheel;

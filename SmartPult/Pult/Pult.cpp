@@ -1044,29 +1044,35 @@ void Pult::exchangeAlternativeTask()
 
 
     GPIO_write(Board_PULTALT_RS485RW, Board_RS485_WRITE_MODE);
-    WheelProtocol::WheelProtacol protokol;
+    ProtocolWheel::WheelProtocol protokol;
     ExtrenalDevices::DataOut panData;
-    ExtrenalDevices::DataOut roolData;
     ExtrenalDevices::DataOut tiltData;
+    ExtrenalDevices::DataOut rollData;
+    LensDb::LensPackStatic<30> packRx;
+    LensDb::LensPackStatic<30> packTx;
+    panData.dataInput=digitalWheelPan.getSpeedWheelRaw();
+    tiltData.dataInput=digitalWheelTilt.getSpeedWheelRaw();
+    rollData.dataInput=digitalWheelRoll.getSpeedWheelRaw();
+
     Rs485Driver2 driverWhell(params.uartId, 115200, params.recieveTimeout, params.txEnablePin);
-    ExtrenalDevices::DigitalWheelManager digitalWheelPanManager(driverWhell,protokol,WheelProtocol::WHEEL_PAN,panData);
-    ExtrenalDevices::DigitalWheelManager digitalWheelRollManager(driverWhell,protokol,WheelProtocol::WHEEL_ROLL,roolData);
-    ExtrenalDevices::DigitalWheelManager digitalWheelTiltManager(driverWhell,protokol,WheelProtocol::WHEEL_TILT,tiltData);
+    ExtrenalDevices::DigitalWheelManager digitalWheelManager(driverWhell,protokol,packRx,packTx);
+/*    ExtrenalDevices::DigitalWheelManager digitalWheelRollManager(driverWhell,protokol,ProtocolWheel::WHEEL_ROLL,roolData);
+    ExtrenalDevices::DigitalWheelManager digitalWheelTiltManager(driverWhell,protokol,ProtocolWheel::WHEEL_TILT,tiltData);*/
+//    ExtrenalDevices::DigitalWheelManager digitalWheelManager (driverWhell,protokol);
+
 
     while(true)
         {
-        digitalWheelPanManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
-        digitalWheelPan.setConnect(panData.validatData);
-        digitalWheelPan.setSpeed(panData.dataInput[0]);
+
+        digitalWheelManager.exchenge(ProtocolWheel::wheelPan,ProtocolWheel::wheelSpeedRequest,panData);
         Task_sleep(1);
 
-/*        digitalWheelTiltManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
-        digitalWheelTilt.setConnect(digitalWheelTiltManager.getConnect());
-        digitalWheelTilt.setSpeed(digitalWheelTiltManager.getSpeed());
+        digitalWheelManager.exchenge(ProtocolWheel::wheelRoll,ProtocolWheel::wheelSpeedRequest,rollData);
+        Task_sleep(1);
 
-        digitalWheelRollManager.exchenge(WheelProtocol::WHEEL_SPEED_REQUEST);
-        digitalWheelRoll.setConnect(digitalWheelRollManager.getConnect());
-        digitalWheelRoll.setSpeed(digitalWheelRollManager.getSpeed());*/
+        digitalWheelManager.exchenge(ProtocolWheel::wheelTilt,ProtocolWheel::wheelSpeedRequest,tiltData);
+        Task_sleep(1);
+
 
         }
 }
