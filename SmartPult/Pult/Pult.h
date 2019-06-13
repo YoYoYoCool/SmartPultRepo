@@ -413,8 +413,17 @@ public:
     void digitalWhellRollDisable();
     void digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll);
     void disableAllDigitalWheel();
+    void digitalWhellSetPanDeadZone(float deadZone);
+    void digitalWhellSetTiltDeadZone(float deadZone);
+    void digitalWhellSetRollDeadZone(float deadZone);
+    void analogWhellSetPanDeadZone(float deadZone);
+    void analogWhellSetTiltDeadZone(float deadZone);
+    void analogWhellSetRollDeadZone(float deadZone);
+    //------------------------------------------------------------
 
+    void setZIFRevers(bool zoom, bool focus, bool iris);
 
+    //------------------------------------------------------------
 
 
 };

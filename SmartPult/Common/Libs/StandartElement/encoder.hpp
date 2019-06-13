@@ -29,21 +29,23 @@ public:
 
         }
 
-    void stepLeft() {
+    inline void decrement() {
         count--;
         if (count<0)
             count=maxRisk;
-        }
+            }
 
-    void stepRight() {
+    inline void increment() {
         count++;
         if (count>maxRisk)
             count=0;
-        }
+            }
 
-    inline int16_t  getActualPosition() {       return count;      }
+    inline void setMaxRisk(int16_t maxRisk) {   this->maxRisk=maxRisk;  }
 
-    inline void setActualPosition(int16_t ActualPosition) {count=ActualPosition;}
+    inline int16_t  getActualPosition () {       return count;      }
+
+    inline void setActualPosition (int16_t ActualPosition) {count=ActualPosition;}
 
     inline int16_t getMaxRisk () {  return maxRisk; }
 

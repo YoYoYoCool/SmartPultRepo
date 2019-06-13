@@ -94,6 +94,7 @@ enum EEPROM_Filds
     EE_LC_ECO_MOD_ON,
     EE_LC_PAN_FOLOWING_SETTINGS,
     EE_LC_PROFILE_CRC_OLD,
+    EE_LC_ZIF_REVERS,
     EE_LC_PROFILE_CRC_NEW=199
 
 };
@@ -331,12 +332,12 @@ class EE_Working
            // uint32_t crc;
             uint32_t findedCrc;
             profileID=profileNumber;
-            for(uint32_t i=0;i!=EE_LC_PROFILE_CRC_OLD;i++)
+            for(uint32_t i=0;i!=EE_LC_PROFILE_CRC_NEW;i++)
             {
-                EEPROMProgram((uint32_t*)(&getSettingsLimits((EEPROM_Filds)i).def),(uint32_t)(EEStartAdress+(profileNumber/*profileID*/*EECount*4) + i*4), 4);
+                EEPROMProgram((uint32_t*)(&getSettingsLimits((EEPROM_Filds)i).def),(uint32_t)(EEStartAdress+(profileNumber*EECount*4) + i*4), 4);
             }
             findedCrc=finedProfileCRC();
-            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileNumber/*profileID*/*EECount*4) + EE_LC_PROFILE_CRC_OLD*4), 4);
+            EEPROMProgram(&findedCrc,(uint32_t)(EEStartAdress+(profileNumber*EECount*4) + EE_LC_PROFILE_CRC_NEW*4), 4);
             return true;
         }
         static inline uint32_t  getProfile()

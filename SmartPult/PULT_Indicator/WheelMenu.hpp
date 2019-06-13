@@ -23,9 +23,6 @@
 namespace LCD {
 
 
-
-
-
 union WheelAnalog {
     uint32_t all;
     __attribute__((__packed__)) struct {
@@ -50,6 +47,17 @@ union WheelDigital {
         volatile uint8_t digitalWheelTiltTransmission :3;
         volatile uint8_t digitalWheelRollTransmission :3;
         volatile uint32_t NU :17;
+        }data;
+    };
+
+
+union WheelDeadZone {
+    uint32_t all;
+    __attribute__((__packed__)) struct {
+        volatile uint16_t panDeadZone :10;
+        volatile uint16_t tiltDeadZone :10;
+        volatile uint16_t rollDeadZone :10;
+        volatile uint8_t NU :2;
         }data;
     };
 
@@ -287,7 +295,7 @@ private:
             speedPan-=stepSpeed;
             if (speedPan<speedMin) {     speedPan=speedMin; }
             p_pult->setPanWheelSpeed(speedPan);
-            sprintf(&textPanSpeed[0],"WHEEL SPEED PAN:" "%1.2f", speedPan);
+            sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
             wheelSpeedPan.ReDraw();
             float speed = speedPan;
             speed*=100;
@@ -299,7 +307,7 @@ private:
             if (speedTilt<speedMin)
                 speedTilt=speedMin;
             p_pult->setTiltWheelSpeed(speedTilt);
-            sprintf(&textTiltSpeed[0],"WHEEL SPEED TILT:" "%1.2f", speedTilt);
+            sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
             wheelSpeedTilt.ReDraw();
             float speed = speedTilt;
             speed*=100;
@@ -310,7 +318,7 @@ private:
             if (speedRoll<speedMin)
                 speedRoll=speedMin;
             p_pult->setDutchWheelSpeed(speedRoll);
-            sprintf(&textRollSpeed[0],"WHEEL SPEED ROLL:" "%1.2f", speedRoll);
+            sprintf(&textRollSpeed[0],"ROLL SPEED:" "%1.2f", speedRoll);
             wheelSpeedRoll.ReDraw();
             float speed = speedRoll;
             speed*=100;
@@ -356,7 +364,7 @@ private:
             if (speedPan>speedMax)
                 speedPan=speedMax;
             p_pult->setPanWheelSpeed(speedPan);
-            sprintf(&textPanSpeed[0],"WHEEL SPEED PAN:" "%1.2f", speedPan);
+            sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
             wheelSpeedPan.ReDraw();
             float speed = speedPan;
             speed*=100;
@@ -367,7 +375,7 @@ private:
             if (speedTilt>speedMax)
                 speedTilt=speedMax;
             p_pult->setTiltWheelSpeed(speedTilt);
-            sprintf(&textTiltSpeed[0],"WHEEL SPEED TILT:" "%1.2f", speedTilt);
+            sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
             wheelSpeedTilt.ReDraw();
             float speed = speedTilt;
             speed*=100;
@@ -378,7 +386,7 @@ private:
             if (speedRoll>speedMax)
                 speedRoll=speedMax;
             p_pult->setDutchWheelSpeed(speedRoll);
-            sprintf(&textRollSpeed[0],"WHEEL SPEED ROLL:" "%1.2f", speedRoll);
+            sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
             wheelSpeedRoll.ReDraw();
             float speed = speedRoll;
             speed*=100;
@@ -431,9 +439,9 @@ private:
         }
 
     void printData () {
-        sprintf(&textPanSpeed[0],"WHEEL SPEED PAN:" "%1.2f", speedPan);
-        sprintf(&textTiltSpeed[0],"WHEEL SPEED TILT:" "%1.2f", speedTilt);
-        sprintf(&textRollSpeed[0],"WHEEL SPEED ROLL:" "%1.2f", speedRoll);
+        sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
+        sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
+        sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
         }
 
 };
@@ -445,29 +453,29 @@ enum {nameWheelID=3};
 const char * headerDigitalWheel = "DIGITAL WHEEL MENU";
 const char * pointerDigital = "<-";
 
-const char * whellPanOff = "TRANSMISSION PAN: OFF";
-const char * whellPanSqrt = "TRANSMISSION PAN: FIRST";
-const char * whellPanLine = "TRANSMISSION PAN: SECOND";
-const char * whellPanSqr = "TRANSMISSION PAN: THIRD";
-const char * whellPanCub = "TRANSMISSION PAN: CUB";
+const char * whellPanOff  = "PAN RANGE: OFF";
+const char * whellPanSlow = "PAN RANGE: SLOW";
+const char * whellPanMiddle = "PAN RANGE: MIDDLE";
+const char * whellPanFast  = "PAN RANGE: FAST";
+const char * whellPanFull  = "PAN RANGE: FULL";
 
-char * panText [digitalWheelText] = {(char *)whellPanOff, (char *)whellPanSqrt, (char *) whellPanLine,(char *)whellPanSqr, (char *)whellPanCub} ;
+char * panText [digitalWheelText] = {(char *)whellPanOff, (char *)whellPanSlow, (char *) whellPanMiddle,(char *)whellPanFast, (char *)whellPanFull} ;
 
-const char * whellTiltOff = "TRANSMISSION TILT: OFF";
-const char * whellTiltSqrt = "TRANSMISSION TILT: FIRST";
-const char * whellTiltLine = "TRANSMISSION TILT: SECOND";
-const char * whellTiltSqr = "TRANSMISSION TILT: THIRD";
-const char * whellTiltCub = "TRANSMISSION TILT: CUB";
+const char * whellTiltOff  = "TILT RANGE: OFF";
+const char * whellTiltSlow = "TILT RANGE: SLOW";
+const char * whellTiltMiddle = "TILT RANGE: MIDDLE";
+const char * whellTiltFast  = "TILT RANGE: FAST";
+const char * whellTiltFull  = "TILT RANGE: FULL";
 
-char * tiltText[digitalWheelText] = {(char *)whellTiltOff,(char *)whellTiltSqrt,(char *)whellTiltLine,(char *)whellTiltSqr,(char *)whellTiltCub} ;
+char * tiltText[digitalWheelText] = {(char *)whellTiltOff,(char *)whellTiltSlow,(char *)whellTiltMiddle,(char *)whellTiltFast,(char *)whellTiltFull} ;
 
-const char * whellRollOff = "TRANSMISSION ROLL: OFF";
-const char * whellRollSqrt = "TRANSMISSION ROLL: FIRST";
-const char * whellRollLine = "TRANSMISSION ROLL: SECOND";
-const char * whellRollSqr = "TRANSMISSION ROLL: THIRD";
-const char * whellRollCub = "TRANSMISSION ROLL: CUB";
+const char * whellRollOff  = "ROLL RANGE: OFF";
+const char * whellRollSlow = "ROLL RANGE: SLOW";
+const char * whellRollMiddle = "ROLL RANGE: MIDDLE";
+const char * whellRollFast  = "ROLL RANGE: FAST";
+const char * whellRollFull  = "ROLL RANGE: FULL";
 
-char * rollText[digitalWheelText] = {(char *)whellRollOff,(char *)whellRollSqrt,(char *)whellRollLine,(char *)whellRollSqr,(char *)whellRollCub} ;
+char * rollText[digitalWheelText] = {(char *)whellRollOff,(char *)whellRollSlow,(char *)whellRollMiddle,(char *)whellRollFast,(char *)whellRollFull} ;
 
 const char * festWheelPan  = "PAN WHEEL: FIRST";
 const char * festWheelTilt = "PAN WHEEL: SECOND";
@@ -504,7 +512,7 @@ class  LCDDegitalWheel:public LCDWheelBase {
 public:
     LCDDegitalWheel( WheelDigital & digitalData):
         digitalData(digitalData),
-        LCDWheelBase(3,(char *)headerDigitalWheel,positionHeaderDigital,(char *)pointerDigital,positionPointerDigital) {
+        LCDWheelBase(2,(char *)headerDigitalWheel,positionHeaderDigital,(char *)pointerDigital,positionPointerDigital) {
             select=false;
 
             cellHeader.Active_Style = Style_MenuHeader;
@@ -554,8 +562,6 @@ public:
             cell[4]=&ferstIDWheel;
             cell[5]=&secondIDWheel;
             cell[6]=&thirdIDWheel;
-
-
             }
 
 private:
@@ -637,6 +643,7 @@ private:
             cell[i]->ReHide();
             }
         cell[encoder.getActualPosition()]->ReDraw();
+        startWheelSelect.ReHide();
         ferstIDWheel.ReHide();
         secondIDWheel.ReHide();
         thirdIDWheel.ReHide();
@@ -725,6 +732,18 @@ private:
         }
 
 };
+
+class  LCDWheelDeadZone:public LCDWheelBase {
+    
+    
+
+private:
+    
+public:
+    
+    
+    };
+
 
 
 class LCDWheelMenu: public LCD_Listener {
@@ -817,13 +836,13 @@ public:
     void up() {
         int16_t i = activeForm->encoder.getActualPosition();
         activeForm->cell[activeForm->encoder.getActualPosition()]->ReHide();
-        activeForm->encoder.stepLeft();
+        activeForm->encoder.decrement();
         activeForm->cell[activeForm->encoder.getActualPosition()]->ReDraw();
         }
 
     void down () {
         activeForm->cell[activeForm->encoder.getActualPosition()]->ReHide();
-        activeForm->encoder.stepRight();
+        activeForm->encoder.increment();
         activeForm->cell[activeForm->encoder.getActualPosition()]->ReDraw();
         }
 

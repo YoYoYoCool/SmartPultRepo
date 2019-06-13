@@ -21,6 +21,7 @@
 
 #include "TurnsViewMenu.hpp"
 #include "WheelMenu.hpp"
+#include "ZIFRevers.hpp"
 
 
 
@@ -124,7 +125,7 @@ tMenu_Link setupMenuText[8]={
 		{"USER PROFILES",NULL},
 		{"JOYSTICK PLACEMENT",NULL},
 		{"UNDER/OVERSLUNG",NULL},
-		{"WHEEL MENU",NULL},
+		{"WHEELS MENU",NULL},
 		{"JOYSTICK CALIBRATION",NULL},
 		{"TUNING",NULL},
 		{"FOLOWING MODE",NULL}
@@ -186,20 +187,6 @@ enum {TiltResonanceSuspensionResonance=1,
 
 enum {TiltResonanceSuspensionResonanceSistem=0,
     PanResonanceSuspensionResonanceSistem};
-
-tMenu_Link wheelSpeedText[3]={
-		{"PAN WHEEL",NULL},
-		{"TILT WHEEL",NULL},
-		{"DUTCH WHEEL",NULL}
-
-};
-enum {PanWheelSpeed=1,
-    TiltWheelSpeed,
-    DutchWheelSpeed};
-
-enum {PanWheelSpeedSistem=0,
-    TiltWheelSpeedSistem,
-    DutchWheelSpeedSistem};
 
 tMenu_Link profileMenuText[6]={
 		{"PROFILE 1", NULL},
@@ -294,27 +281,30 @@ tMenu_Link MeasureSistemTipesMenu[2]={
 enum {metricSistem=0, imperialSistem};
 
 #else
-tMenu_Link lensControlSetup[6]={
+tMenu_Link lensControlSetup[7]={
 		{"MOTOR MAPPING", NULL},
 		{"MOTOR MODELS", NULL},
 		{"CAMERA MODEL", NULL},
 		{"ZOOM SENSITIVITY", NULL},
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
+		{"ZIF REVERS", NULL}
 };
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
     CameraModelLensControlSetup,
     ZoomSensLensControlSetup,
     LensCalibrateLensControlSetup,
-    ZoomDriftLensControlSetup};
+    ZoomDriftLensControlSetup,
+    ZIFReversSetup};
 
 enum {MotorMappingLensControlSetupSistem=0,
     MotorModelLensControlSetupSistem,
     CameraModelLensControlSetupSistem,
     ZoomSensLensControlSetupSistem,
     LensCalibrateLensControlSetupSistem,
-    ZoomDriftLensControlSetupSistem};
+    ZoomDriftLensControlSetupSistem,
+    ZIFReversSistem};
 
 #endif
 
@@ -501,7 +491,7 @@ SwitchMotorTypeMenu* lensControlMotorTypeSelectPointer;
 SwitchMotorAction* lensControlMotorActionSelectPointer;
 LCD_Main* mainScreenPointer;
 HourMeterMenu* hourMeterMenuPointer;
-
+LCD::ZIFRevers * zifReversMenuPointer;
 //LCD_Menu_WeelSpeed* wheelSpeedMenuPointer;
 LCD::LCDWheelMenu* wheelMenuPointer;
 SelectMenuSpiderSelect* tiltSpiderSelectMenuPointer;
@@ -726,7 +716,10 @@ void pultIndikator_Task(Pult* point_pult)
 	lensControlSetup[objectiveSelectControlSetupSistem].pPointSub=&lensControlObjektiveMenu;
 
 #else
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,6,0,6);
+	LCD::ZIFRevers  zifReversMenu;
+	zifReversMenuPointer=&zifReversMenu;
+
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
 	lensControlMenuPointer=&lensControlMenu;
 #endif
 
@@ -754,6 +747,7 @@ void pultIndikator_Task(Pult* point_pult)
 
 	lensControlSetup[ZoomSensLensControlSetupSistem].pPointSub=&lensControlZoomSense;
 	lensControlSetup[ZoomDriftLensControlSetupSistem].pPointSub=&lensControlZoomDrift;
+	lensControlSetup[ZIFReversSistem].pPointSub=&zifReversMenu;
 
 	SwitchMotorTypeMenu lensControlMotorTypeSelect("SELECT TYPE",lensControlMotorsTypesText,2);
 	lensControlMotorTypeSelectPointer=&lensControlMotorTypeSelect;
@@ -2343,6 +2337,13 @@ bool Menu_Listener(LCD_Listener* HoIs)
 	    }
     #endif
 
+	if(HoIs==zifReversMenuPointer ) {
+	    pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
+	    pDispl->Parent = HoIs;
+	    pDispl->Focused = true;
+	    return true;
+	    }
+
 	if(HoIs == p_PDT_Menu_Eq) //обработчик выбора эквалайзера
 	    {
 		if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1)
@@ -2439,9 +2440,8 @@ void LCD_Menu::Listener()
 
 	if (getButtonState(pult_Button_Select) == PRESSED)
 	{
-
 		if(this==lensControlMenuPointer&&this->Tek_Count==LensCalibrateLensControlSetup)
-		{
+		    {
 
 			Table_Cell[LensCalibrateLensControlSetupSistem]->Hide();
 
@@ -2454,7 +2454,7 @@ void LCD_Menu::Listener()
 			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReHide();
 			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReDraw();
 			return;
-		}
+		    }
 		if(this==setupMenuPointer&&this->Tek_Count==JoystickCalibrationSetupMenu)
 		{
 			resP=Table_Cell[JoystickCalibrationSetupMenuSistem]->p_text;
@@ -3573,173 +3573,6 @@ void SetStartFluid::updateFromEeprom()
 
 //----------------------------------------------------------------------------------------------------------
 
-void LCD_Menu_WeelSpeed::renderCellString(char* head, float var1, float var2, bool isTwoValueStyle)
-{
-	if(isTwoValueStyle)
-	{
-		strcpy(bufferBig,head);
-		sprintf(bufSmall, "%3.2f", var1);
-		strcat(bufferBig, bufSmall);
-		strcat(bufferBig, " : ");
-		sprintf(bufSmall, "%3.2f", var2);
-		strcat(bufferBig, bufSmall);
-	}
-	else
-	{
-		strcpy(bufferBig,head);
-		sprintf(bufSmall, ": %3.2f", var1);
-		strcat(bufferBig, bufSmall);
-	}
-}
-
-void LCD_Menu_WeelSpeed::Draw(byte Active)
-{
-	DrawHeader();
-	Tek_Count = Active;
-	DrawVert();
-	Table_Cell[Active-1]->Draw();
-}
-void LCD_Menu_WeelSpeed::DrawVert()
-{
-	byte i;
-	Int16 StepY;
-
-	{
-		p_Pos_Size_XY.X = 30; p_Pos_Size_XY.Y = 35;
-		p_Pos_Size_XY.Xsize = 250; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
-		StepY = p_Pos_Size_XY.Ysize + 5;
-
-		for(i=0;i<Menu_On_Screen;i++)
-		{
-			if(Counter_Cell==0){break;}
-
-
-			renderCellString(Menu_Link[Start+i-1].Name,values[Start+i-1],0, false);
-
-			if((Tek_Count)==(Start+i))
-			{
-				Table_Cell[Start+i-1]->FastDraw(p_Pos_Size_XY.X,p_Pos_Size_XY.Y+StepY*(i),
-													p_Pos_Size_XY.Xsize,p_Pos_Size_XY.Ysize,
-													bufferBig, Cell_Active);//Table_Cell[Start+i-1]->p_text
-			}
-
-			else
-			{
-
-				Table_Cell[Start+i-1]->FastDraw(p_Pos_Size_XY.X,p_Pos_Size_XY.Y+StepY*(i),
-										p_Pos_Size_XY.Xsize,p_Pos_Size_XY.Ysize,
-										bufferBig, Cell_UnActive);//Table_Cell[Start+i-1]->p_text
-			}
-			if( (Start+i) == Counter_Cell) break;
-		}
-	}
-	renderCellString(Menu_Link[Tek_Count-1].Name,values[Tek_Count-1],0, false);
-	Table_Cell[Tek_Count-1]->SetText(bufferBig);
-	Table_Cell[Tek_Count-1]->Draw();
-}
-
-
-void LCD_Menu_WeelSpeed::Listener()
-{
-	if(Focused)
-	{
-		ClearDisp();
-		Draw(Tek_Count);
-		Focused = false;
-	}
-	if (getButtonState(pult_Button_ESC) == PRESSED)
-	{
-		pDispl = pDispl->Parent;
-		pDispl->Focused = true;
-		return;
-	}
-
-	if (getButtonState(pult_Button_Dn) == PRESSED)	Plus();
-	if (getButtonState(pult_Button_Up) == PRESSED)	Minus();
-
-	if (getButtonState(pult_Button_Right) == PRESSED)
-	{
-	    values[Tek_Count-1]+=0.01;
-		if(	values[Tek_Count-1]>2.0){     values[Tek_Count-1]=2.0;    }
-
-		Draw(Tek_Count);
-		if(Tek_Count==PanWheelSpeed)
-		{
-			p_pult->setPanWheelSpeed(values[PanWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
-		}
-		if(Tek_Count==TiltWheelSpeed)
-		{
-			p_pult->setTiltWheelSpeed(values[TiltWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
-		}
-		if(Tek_Count==DutchWheelSpeed)
-		{
-			p_pult->setDutchWheelSpeed(values[DutchWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
-		}
-
-	}
-	if (getButtonState(pult_Button_Left) == PRESSED)
-	{
-	    values[Tek_Count-1]-=0.01;
-		if(	values[Tek_Count-1]<0.0)  {    values[Tek_Count-1]=0.0; 	}
-
-		Draw(Tek_Count);
-		if(Tek_Count==PanWheelSpeed)
-		{
-			p_pult->setPanWheelSpeed(values[PanWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,*((UInt32*)(&(values[PanWheelSpeedSistem]))));
-		}
-		if(Tek_Count==TiltWheelSpeed)
-		{
-			p_pult->setTiltWheelSpeed(values[TiltWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,*((UInt32*)(&(values[TiltWheelSpeedSistem]))));
-		}
-		if(Tek_Count==DutchWheelSpeed)
-		{
-			p_pult->setDutchWheelSpeed(values[DutchWheelSpeedSistem]);
-			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,*((UInt32*)(&(values[DutchWheelSpeedSistem]))));
-		}
-	}
-
-}
-
-
-void LCD_Menu_WeelSpeed::updateFromEEPROM()
-{
-
-	UInt32 v[3];
-
-	v[0]=EE_Working::Read(EE_LC_WHEEL_ANALOG_DATA);
-	v[1]=EE_Working::Read(EE_LC_WHEEL_DIGITAL_DATA);
-	v[2]=EE_Working::Read(EE_LC_DUTCH_WHEEL_SPEED);
-
-	values[0]=*((float*)(&v[0]));
-	values[1]=*((float*)(&v[1]));
-	values[2]=*((float*)(&v[2]));
-
-
-
-
-	for(UInt8 i=0;i!=3;i++)
-	{
-		if(v[i]==0xFFFFFFFF)
-		{
-			values[0]=0;
-			values[1]=0;
-			values[2]=0;
-			EE_Working::Write(EE_LC_WHEEL_ANALOG_DATA,	0);
-			EE_Working::Write(EE_LC_WHEEL_DIGITAL_DATA,	0);
-			EE_Working::Write(EE_LC_DUTCH_WHEEL_SPEED,	0);
-			break;
-		}
-	}
-
-	p_pult->setPanWheelSpeed(values[0]);
-	p_pult->setTiltWheelSpeed(values[1]);
-	p_pult->setDutchWheelSpeed(values[2]);
-}
 
 //-------------------- SELECT MENU -------------------------------------------------------------------------
 SelectMenu::SelectMenu (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress):

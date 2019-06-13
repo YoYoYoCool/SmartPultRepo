@@ -25,8 +25,8 @@
 #include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
 #include "LensParam/LensPack.hpp"
 
-//#define MAX_TRANSFER_TIMEOUT 350
-#define MAX_TRANSFER_TIMEOUT 100
+#define MAX_TRANSFER_TIMEOUT 350
+//#define MAX_TRANSFER_TIMEOUT 100
 #define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 5
 //#define PULT_DEVELOPING_BOARD
 
@@ -168,7 +168,7 @@ static Resistor* resistors[15] = {&panJoySpeedResistor, &panJoyFluidResistor, &p
 								  &dutchWheelResistor,
 								  &dutchPedalResistor};
 // виртуальные кнопки
-static PultButton virtualButtonJoysticOff;
+static PultButton virtualButtonJoysticOff, virtualZoomReversButton,virtualFocusReversButton,virtualIrisReversButton;
 
 #define virtualButton 1
 
@@ -1286,7 +1286,7 @@ static void inversLogic() {
 		break;
 	}
 	//ZIF REVERS
-	switch (zoomReversButton.state)
+	switch (virtualZoomReversButton.state)
 	{
 		case PRESSED:
 			zoomJoy.setInversOrientation();
@@ -1295,7 +1295,7 @@ static void inversLogic() {
 			zoomJoy.setNormalOrientation();
 			break;
 	}
-	switch (irisReversButton.state)
+	switch (virtualIrisReversButton.state)
 	{
 		case PRESSED:
 		    IrisResistor.setInversOrientation();
@@ -1304,7 +1304,7 @@ static void inversLogic() {
 		    IrisResistor.setNormalOrientation();
 			break;
 	}
-	switch (focusReversButton.state)
+	switch (virtualFocusReversButton.state)
 	{
 		case PRESSED:
 			focusResistor.setInversOrientation();
@@ -1667,7 +1667,7 @@ Warning tDusFail("Tilt ARS Fail", 						WT_WARNING);
 Warning gvFail("GV Fail", 								WT_WARNING);
 Warning encoderFail("Encoder Fail", 					WT_WARNING);
 Warning pultFail("Pult Fail", 							WT_WARNING);
-Warning pultGVCalibrat ("Giro vertical calibration", WT_INFO);
+Warning pultGVCalibrat ("Gyro vertical calibration", WT_WARNING);
 
 void Pult::updateWarningsList()
 {
@@ -2145,14 +2145,31 @@ void Pult::disableAllDigitalWheel()  {
      digitalWheelRoll.disable();
      }
 
+void Pult:: digitalWhellSetPanDeadZone(float deadZone) { digitalWheelPan.setDeadZone(deadZone);  }
+
+void Pult:: digitalWhellSetTiltDeadZone(float deadZone) { digitalWheelTilt.setDeadZone(deadZone);  }
+
+void Pult:: digitalWhellSetRollDeadZone(float deadZone) { digitalWheelRoll.setDeadZone(deadZone);  }
+
+void Pult:: analogWhellSetPanDeadZone(float deadZone)   { panExtern1Channel.setDeadZone(deadZone);  }
+
+void Pult:: analogWhellSetTiltDeadZone(float deadZone)  { tiltExtern1Channel.setDeadZone(deadZone);  }
+
+void Pult:: analogWhellSetRollDeadZone(float deadZone)  { panExtern1Channel.setDeadZone(deadZone);  }
+
 void Pult::digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll) {
-
-
      digitalWheelPan.channal.setFunction(pan);
      digitalWheelTilt.channal.setFunction(tilt);
      digitalWheelRoll.channal.setFunction(roll);
      }
 
+//-------------------------------------------------------------------------------
+
+void Pult::setZIFRevers(bool zoom, bool focus, bool iris) {
+    virtualZoomReversButton.state=(PultButtonStates)zoom;
+    virtualFocusReversButton.state=(PultButtonStates)focus;
+    virtualIrisReversButton.state=(PultButtonStates)iris;
+}
 
 //-------------------------------------------------------------------------------
 

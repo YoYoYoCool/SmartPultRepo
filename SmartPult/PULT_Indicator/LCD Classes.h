@@ -499,30 +499,7 @@ public:
 	void updateFromEeprom();
 };
 
-class LCD_Menu_WeelSpeed: public LCD_Menu
-{
-	volatile float values[10];
-	char bufferBig[30];
-	char bufSmall[8];
-public:
-	 LCD_Menu_WeelSpeed(char* pNam, tMenu_Link* Link, byte Count, byte Orient, byte Menu_Per_Scr):
-		 LCD_Menu(pNam,Link, Count, Orient, Menu_Per_Scr)
-	{
-		 for(UInt8 i=0;i!=10;i++)
-		 {
-			 values[i]=0;
-		 }
 
-
-	}
-
-	 void renderCellString(char* head, float var1, float var2, bool isTwoValueStyle);
-	 virtual void Draw(byte Active);
-	 virtual void DrawVert();
-	 virtual void Listener();
-	 void updateFromEEPROM();
-
-};
 
 
 class CheckMenu: public LCD_Listener{

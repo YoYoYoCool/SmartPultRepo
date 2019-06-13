@@ -127,9 +127,9 @@
 
     const EepromDefault ecoModeDefault          =  {       0,               0,                 1};              //97
     const EepromDefault panFolowingDefault      =  {       0,               0,                 2};              //98
-    const EepromDefault empty[100]              =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //99
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //100
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //101
+    const EepromDefault CRCDefaultOld           =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //99
+    const EepromDefault ZIFRevers               =  {       0,               0x7,                0x7};     //100
+    const EepromDefault empty[98]               =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //101
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //102
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //103
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //104
@@ -352,6 +352,8 @@
 
          &ecoModeDefault,
          &panFolowingDefault,
+         &CRCDefaultOld,
+         &ZIFRevers,
          &empty[0],
          &empty[1],
          &empty[2],
@@ -450,8 +452,6 @@
          &empty[95],
          &empty[96],
          &empty[97],
-         &empty[98],
-         &empty[99],
          &CRCDefault
     };
 
