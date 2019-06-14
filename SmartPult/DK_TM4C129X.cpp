@@ -150,7 +150,9 @@ void EK_TM4C1294XL_initPWM(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
 
     GPIOPinConfigure(GPIO_PF1_M0PWM1);
+//    GPIOPinConfigure(GPIO_PF2_M0PWM2);
     GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_1);
+//    GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_2);
 
     PWM_init();
 }
@@ -406,7 +408,9 @@ const GPIO_HWAttrs gpioHWAttrs[EK_TM4C1294XL_GPIOCOUNT] = {
 	{GPIO_PORTM_BASE, GPIO_PIN_7, GPIO_OUTPUT},
 	{GPIO_PORTJ_BASE, GPIO_PIN_7, GPIO_OUTPUT},
 	{GPIO_PORTC_BASE, GPIO_PIN_6, GPIO_OUTPUT},
-//	{GPIO_PORTM_BASE, GPIO_PIN_6, GPIO_OUTPUT},
+	{GPIO_PORTM_BASE, GPIO_PIN_6, GPIO_OUTPUT},
+	{GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_OUTPUT},
+	{GPIO_PORTG_BASE, GPIO_PIN_7, GPIO_OUTPUT},
 
 };
 
@@ -432,7 +436,9 @@ extern const GPIO_Config GPIO_config[] = {
 	{&gpioHWAttrs[15]},
 
 	{&gpioHWAttrs[16]},
-/*	{&gpioHWAttrs{17}},*/
+	{&gpioHWAttrs[17]},
+	{&gpioHWAttrs[18]},
+	{&gpioHWAttrs[19]},
     {NULL}
 };
 
@@ -466,10 +472,12 @@ void DK_TM4C129X_initGPIO(void)
 	GPIOPinTypeGPIOOutput(GPIO_PORTM_BASE, GPIO_PIN_7);
 	//RS485 TXE ALT
 	GPIOPinTypeGPIOOutput(GPIO_PORTJ_BASE, GPIO_PIN_7);
-	//Preston on
-//	GPIOPinTypeGPIOOutput(GPIO_PORTM_BASE, GPIO_PIN_6);
-//	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3);
-//	GPIOPinTypeGPIOOutput(GPIO_PORTG_BASE, GPIO_PIN_7);
+/*	//Preston on
+	GPIOPinTypeGPIOOutput(GPIO_PORTM_BASE, GPIO_PIN_6);
+	//camera start level
+	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3);*/
+	//camera start front
+	GPIOPinTypeGPIOOutput(GPIO_PORTG_BASE, GPIO_PIN_7);
 
     //входы кнопок борды
     GPIOPinTypeGPIOInput(GPIO_PORTP_BASE, GPIO_PIN_1);  //PP1 Select

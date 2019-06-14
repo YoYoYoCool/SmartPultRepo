@@ -528,10 +528,9 @@ void pultIndikator_Task(Pult* point_pult)
 //	EE_Working::cleanEEPROM();
 	EE_Working::refactoringEEPROM();
 	EE_Working::getProfile();
-
 	Pwm pwmBright(GyConBoard_BrightPwm,10000);
-	init_PWM_Bright(&pwmBright);
 
+	init_PWM_Bright(&pwmBright);
 	p_pult = point_pult;
 
 

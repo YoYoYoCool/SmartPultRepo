@@ -57,6 +57,7 @@ extern "C" {
 
 #define GyConBoard_initPWM      EK_TM4C1294XL_initPWM
 #define GyConBoard_BrightPwm    EK_TM4C1294XL_PWM1
+#define GyConBoard_PrestonPWM   EK_TM4C1294XL_PWM2
 
 #define Board_PULT_GYCON_UART 	EK_TM4C1294XL_UART4
 #define Board_PULT_ALT_UART 	EK_TM4C1294XL_UART5
