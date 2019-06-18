@@ -48,6 +48,7 @@ Int main(){
     Board_initSDSPI();
     pult.initWatchDog();
     pultIndikatorInit();
+    GyConBoard_initPWM();
 
     GPIO_write(Board_RS485x3_TXE, Board_RS485_WRITE_MODE);
 

@@ -43,6 +43,7 @@ extern "C" {
 #include <driverlib/adc.h>
 #include <driverlib/sysctl.h>
 #include <ti/sysbios/knl/Task.h>
+//#include "../PULT_Indicator/PWM_Work.h"
 
 #include <ti/drivers/SDSPI.h>
 //#include <xdc/runtime/System.h>
@@ -110,6 +111,14 @@ extern "C" {
 #define Board_BUTTON_1_16_READ_PIN  EK_TM4C1294XL_BUTTON_1_16_READ_PIN
 #define Board_BUTTON_17_32_READ_PIN  EK_TM4C1294XL_BUTTON_17_32_READ_PIN
 #define Board_BUTTON_33_48_READ_PIN  EK_TM4C1294XL_BUTTON_33_48_READ_PIN
+
+#define Board_PRESTON_ON_OFF        EK_TM4C1294XL_PRESTON_ON
+
+
+#define Board_CAMERA_START_LEVEL    EK_TM4C1294XL_CAMERA_START_LEVEL
+#define Board_CAMERA_START_FRONT    EK_TM4C1294XL_CAMERA_START_FRONT
+
+
 //Инициализация SDSPI Fatfs
 class FileSystemState
 {
@@ -144,6 +153,80 @@ class RegisterControl
 		void upLedReset()  	{	GPIO_write(BoardLedResetPin, Board_PIN_HIGH);}
 		void downLedReset()	{	GPIO_write(BoardLedResetPin, Board_PIN_LOW);}
 };
+
+//-----------------------------------------------------------------------------
+/*
+class PrestonBoardBase {
+
+public:
+
+    virtual void writeSpeed() =0;
+
+    virtual void setOnState() = 0;
+
+};
+*/
+class PrestonBoard/*: public PrestonBoardBase*/ {
+
+public:
+
+    PrestonBoard() {
+
+        }
+
+     void setOnState (bool state) {
+        if (state)
+            GPIO_write(Board_PRESTON_ON_OFF,Board_PIN_HIGH);
+        else
+            GPIO_write(Board_PRESTON_ON_OFF,Board_PIN_LOW);
+    }
+
+     void writeSpeed( float speed) {
+
+        }
+};
+
+//------------------------------------------------------------------------------
+/*
+class CameraStartBase {
+
+public:
+
+    virtual void cameraStart () = 0;
+
+
+    virtual void cameraStop () = 0;
+
+};
+
+class CameraStartLevelDriver:public CameraStartBase {
+
+public:
+
+    virtual void cameraStart () {
+            GPIO_write(Board_CAMERA_START_LEVEL,Board_PIN_HIGH);
+        }
+
+    virtual void cameraStop () {
+            GPIO_write(Board_CAMERA_START_LEVEL,Board_PIN_LOW);
+        }
+
+};
+
+class CameraStartFrontBoard: public CameraStartBase {
+
+public:
+ //   GPIO_write(Board_CAMERA_START_FRONT,cameraStopLevel);
+
+    virtual void cameraStart () {
+
+        }
+
+    virtual void cameraStop () {
+
+        }
+
+};*/
 
 //-----------------------------------------------------------------------------
 
@@ -198,6 +281,10 @@ public:
 		}
 		this->id = id;
 	}
+
+
+
+
 	UInt32* read() {
 		ADCProcessorTrigger(ADC0_BASE, ADC_SEQUENSE0);
 		{

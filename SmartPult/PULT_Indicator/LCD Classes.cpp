@@ -528,9 +528,10 @@ void pultIndikator_Task(Pult* point_pult)
 //	EE_Working::cleanEEPROM();
 	EE_Working::refactoringEEPROM();
 	EE_Working::getProfile();
-	Pwm pwmBright(GyConBoard_BrightPwm,10000);
-
-	init_PWM_Bright(&pwmBright);
+//	Pwm pwmBright  (GyConBoard_BrightPwm,10000);
+//	Pwm pwmPreston (GyConBoard_PrestonPWM,3);
+//	pwmPreston.setDuty(0.6);
+//	init_PWM_Bright(&pwmBright);
 	p_pult = point_pult;
 
 
@@ -789,7 +790,7 @@ void pultIndikator_Task(Pult* point_pult)
 			vax|=buLogo[3*(y*320+x)+0];
 			DpyPixelDraw(&g_sKentec320x240x16_SSD2119, x, y, vax) ;
 			watchDogTimer.useKey(WD_KEY3);		}
-	SetBrightness(Bright_Set.Value_Koeff);
+//	SetBrightness(Bright_Set.Value_Koeff);
 	for(UInt32 i=0;i!=200;i++)	{
 		watchDogTimer.useKey(WD_KEY3);
 		Task_sleep(10);	}
@@ -811,7 +812,6 @@ void pultIndikator_Task(Pult* point_pult)
 		watchDogTimer.useKey(WD_KEY3);
 		Task_sleep(10);
 
-		MainListener();
 		pDispl->Listener();
 		motionLogicController.clocking();
 
@@ -853,7 +853,7 @@ PultButtonStates LCD_Listener::getButtonState(PultButtons pultButton)
 //Warning headDisconnectedWarning("Head disconnected!", WT_WARNING);
 void MainListener()
 {
-	if(p_pult->isJoySticksEnabled()) //состяние джойстиков
+/*	if(p_pult->isJoySticksEnabled()) //состяние джойстиков
 	{
 		p_pult->getLedController()->getData()->resetLed(LED_JOYSTIC);
 		p_pult->getLedController()->invalidate();
@@ -862,9 +862,9 @@ void MainListener()
 	{
 		p_pult->getLedController()->getData()->setLed(LED_JOYSTIC);
 		p_pult->getLedController()->invalidate();
-	}
+	}*/
 
-	if(p_pult->isMotorsEnabled()) //состояние моторов
+/*	if(p_pult->isMotorsEnabled()) //состояние моторов
 	{
 		p_pult->getLedController()->getData()->setLed(LED_MOTOR);
 		p_pult->getLedController()->invalidate();
@@ -884,7 +884,7 @@ void MainListener()
 		SetBrightness(pBright_Set->Value_Koeff);
 	}
 
-	return;
+	return;*/
 
 }
 
@@ -4572,7 +4572,7 @@ void loadEepromValueFromPult()
 {
 	pSet_Koeff->Read_EE_State();
 	pBright_Set->readFromEEPROM();
-	SetBrightness(pBright_Set->Value_Koeff);
+//	SetBrightness(pBright_Set->Value_Koeff);
 	pEqualizerPan->Read_EE_State();
 	pEqualizerDutch->Read_EE_State();
 	pEqualizerTilt->Read_EE_State();
@@ -5031,7 +5031,8 @@ Cell_String((char*) "", 1,1,10,10)
 void LCD_Koeff::readFromEEPROM()
 {
 	Value_Koeff = EE_Working::Read(EE_Bright);
-	if(Value_Koeff>100) {Value_Koeff=100; EE_Working::Write(EE_Bright,Value_Koeff);}
+	if(Value_Koeff>100) {Value_Koeff=1; EE_Working::Write(EE_Bright,Value_Koeff);}
+	p_pult->setBrightness((float)Value_Koeff);
 }
 
 void LCD_Koeff::Draw() //рисование
@@ -5102,6 +5103,7 @@ void LCD_Koeff::Listener()
 		Cell_Koeff.ReDraw();
 	//	SetBrightness(Value_Koeff);             С этим мигает отключенная подсветка
 		EE_Working::Write(EE_Bright,Value_Koeff);
+		p_pult->setBrightness((float)Value_Koeff);
 	}
 	if (getButtonState(pult_Button_Dn) == PRESSED)
 	{
@@ -5115,6 +5117,7 @@ void LCD_Koeff::Listener()
 		Cell_Koeff.ReDraw();
 	//	SetBrightness(Value_Koeff);
 		EE_Working::Write(EE_Bright,Value_Koeff);
+		p_pult->setBrightness((float)Value_Koeff);
 	}
 
 	//если одновременно удержание кнопок вправо-влево
@@ -5899,10 +5902,6 @@ void pultIndikatorInit()
     SysCtlPeripheralEnable(SYSCTL_PERIPH_EEPROM0);
     EEPROMInit();
 
-    //InitSPI();
-    p_pult->getLedController()->getDriver()->init();
-    //init_PWM_Bright();
-    GyConBoard_initPWM();
 }
 
 void Init_Styles()

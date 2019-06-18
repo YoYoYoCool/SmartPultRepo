@@ -24,6 +24,10 @@
 #include "../ExtrenalDeviceSynchro/DigitalWheel/Digital Wheel.hpp"
 #include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
 #include "LensParam/LensPack.hpp"
+#include "PULT_Indicator/ServoPwm.h"
+#include "backlight.hpp"
+#include "../ExtrenalDeviceSynchro/Preston/Preston.hpp"
+
 
 #define MAX_TRANSFER_TIMEOUT 350
 //#define MAX_TRANSFER_TIMEOUT 100
@@ -207,12 +211,12 @@ static PultButton* buttons_17_32[BUTTONS_17_32_COUNT] = {&gvAccButton, &motionPl
 
 //Кнопки 33-
 #define BUTTONS_33_48_COUNT 16
-static PultButton cameraStartButton(28), sa17(29), in35, shaker, in37, in38, in39, in40, in41, in42, in43, in44, inp45, inp46, inp47;
-static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa17, &in35, &shaker, &in37, &in38, &in39, &in40, &in41, &in42, &in43, &in44, &inp45, &inp46, &inp47,&tb4};
+static PultButton cameraStartButton(28), sa17(29), backlightButton, shaker, in37, in38, in39, in40, in41, in42, in43, in44, inp45, inp46, inp47;
+static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa17, &backlightButton, &shaker, &in37, &in38, &in39, &in40, &in41, &in42, &in43, &in44, &inp45, &inp46, &inp47,&tb4};
 
 
 static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
-		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel2, &motionTrackSel5, &motionTrackSel3, &motionTrackSel6, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &in35//&inp47
+		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel2, &motionTrackSel5, &motionTrackSel3, &motionTrackSel6, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
 };
 
 static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
@@ -293,6 +297,9 @@ ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &dig
 
 //--------------------------------------------------------------------
 
+
+
+//---------------------------------------------------------------------
 HallEffectJoyChannel dutchExtern2Channel(0.14,2110,&dutchJoySpeedResistor,100, 250,0.015);
 
 /*
@@ -530,6 +537,14 @@ Pult::Pult(Semaphore_Handle* s,Semaphore_Handle* sA):
 	lensCalibrateFlag=false;
 }
 
+PrestonBoard prestonEnableDriver;
+ExtrenalDevices::Preston preston(&prestonEnableDriver);
+
+
+Backlight backlight;
+
+
+
 static UInt16 muxPosRef = 9;
 //=====================================================================================================
 //сея чушь есть пробный объектив;
@@ -593,6 +608,7 @@ static UInt16 muxPosRef = 9;
 #pragma CODE_SECTION(".secure")
 void Pult::driverTask()
 {
+    ledControl.getDriver()->init();
     watchDogTimer.registerKey(WD_KEY2);
 #ifdef LensOtlancka
     lansBaseManager.store(1,dummyObjective);
@@ -642,10 +658,22 @@ void Pult::driverTask()
 	viewLists.setVarList(1, &elementTilt);
 	viewLists.setVarList(2, &elementDutch);
 
+	prestonEnableDriver.setOnState(true);
+
+	Pwm backlightDriver  (GyConBoard_BrightPwm,10000);
+	Pwm prestonDriver (GyConBoard_PrestonPWM,3);
+	backlight.setButton(sharedButtons[backLightOff]);
+	backlight.setDriver(&backlightDriver);
+	preston.setDriver(&prestonDriver);
+
+	bool state=false;
+
+
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
 //Обработка аналоговых сигналов
 		UInt32* result = signalsReader.read();
+
 		switch(joysticsConfig)
 		    {
 			case JOYSTIC_REVERS_JOY_CONFIG:
@@ -687,12 +715,24 @@ void Pult::driverTask()
 
 	    resistors[muxPos]->calculate(result[SIGNAL_SLOW]);
 
+	    backlight.update();
+	    preston.update(zoomJoy.getValue());
+
 		muxPos++;
 		if (muxPos > 14) muxPos = 0;
 		if (muxPos == muxPosRef) {
 			muxPos = muxPosRef;
 		}
 		signalsReader.setMultiplexer(muxPos);
+
+		if (state)
+		    state=false;
+		else
+		    state=true;
+/*
+		signalsReader.prestonOn(state);
+		signalsReader.cameraStartFront(state);
+		signalsReader.cameraStartLevel(state);*/
 //Обработка кнопок
 #ifdef PULT_DEVELOPING_BOARD
 	sharedButtons[pult_Button_Up]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX0));
@@ -1324,6 +1364,8 @@ static void joySticksOnOffLogic() {
 		dutchJoyChannel.enable();
 		tiltJoyChannel.enable();
 		zoomJoyChannel.enable();
+		ledControl.getData()->resetLed(LED_JOYSTIC);
+		ledControl.invalidate();
 		controlBits.bit.joysticOn=1;
 		break;
 	case RELESASED:
@@ -1331,9 +1373,11 @@ static void joySticksOnOffLogic() {
 		dutchJoyChannel.disable();
 		tiltJoyChannel.disable();
 		zoomJoyChannel.disable();
+		ledControl.getData()->setLed(LED_JOYSTIC);
+		ledControl.invalidate();
 		controlBits.bit.joysticOn=0;
 		break;
-	}
+	    }
 	if (virtualButtonJoysticOff.state==RELESASED) {
 	    zoomJoy.enable();
 	    panJoy.enable();
@@ -1441,6 +1485,14 @@ static void controlLogic() {
 	static UInt8 estimationBitCounter=0;
 
     controlBits.bit.onOffMotors = motorOnOffButton.isPressed();
+    if (controlBits.bit.onOffMotors) {
+        ledControl.getData()->setLed(LED_MOTOR);
+        ledControl.invalidate();
+        }
+    else {
+        ledControl.getData()->resetLed(LED_MOTOR);
+        ledControl.invalidate();
+        }
     controlBits.bit.levelCorrect = levelCorrectButton.isPressed();
     controlBits.bit.levelSetup = dutchLevelSetupButton.isPressed();
     controlBits.bit.gvCalibration = gvCalibrationButton.isPressed();
@@ -2171,6 +2223,13 @@ void Pult::setZIFRevers(bool zoom, bool focus, bool iris) {
     virtualIrisReversButton.state=(PultButtonStates)iris;
 }
 
+//-------------------------------------------------------------------------------
+
+void Pult::setPreston(bool on) {        }
+
+//-----------------------------------------------------------------------------
+
+void Pult::setBrightness (float brightness) {   backlight.setBrightness(brightness);    }
 //-------------------------------------------------------------------------------
 
 float Pult::getCalibrationOffset(CalibratedJoyChannel ch)
