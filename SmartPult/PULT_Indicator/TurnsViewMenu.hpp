@@ -178,7 +178,11 @@ public:
 
     virtual void DrawVert() {
         sprintf(textBuffer[0],"PAN: %2.6f",     panVal[0]);
+#ifdef smart19
+        sprintf(textBuffer[1],"ROLL: %2.6f",   dutchVal[0]);
+#else
         sprintf(textBuffer[1],"DUTCH: %2.6f",   dutchVal[0]);
+#endif
         sprintf(textBuffer[2],"TILT: %2.6f",    tiltVal[0]);
         //todo логика дрейф стопер
 

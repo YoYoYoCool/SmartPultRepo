@@ -287,7 +287,7 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         1.0
 );
 
-//#define Garanin
+
 #ifdef Garanin
 
 ExtrenalDevices::WheelChannel digitalWheelPanPasha (230.0,1.0,&panJoySpeedResistor);
@@ -323,20 +323,18 @@ JoyChannelIF* panChannelsArray[3]=      {&panJoyChannel,    &panExtern1Channel, 
 JoyChannelIF* dutchChannelsArray[4]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,&digitalWheelRollPasha};
 JoyChannelIF* tiltChannelsArray[3]=     {&tiltJoyChannel,   &tiltExtern1Channel,&digitalWheelTiltPasha};
 JoyChannelIF* zoomChannelsArray[1]=     {&zoomJoyChannel};
-#else
-JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
-JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
-JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
-JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
-#endif
 
-#ifdef Garanin
 JoyChannels panChannals     (panChannelsArray,3);
 JoyChannels dutchChannals   (dutchChannelsArray,4);
 JoyChannels tiltChannals    (tiltChannelsArray,3);
 JoyChannels zoomChannals    (zoomChannelsArray,1);
 
 #else
+JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
+JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
+JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
+JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
+
 JoyChannels panChannals     (panChannelsArray,4);
 JoyChannels dutchChannals   (dutchChannelsArray,5);
 JoyChannels tiltChannals    (tiltChannelsArray,4);
@@ -655,9 +653,6 @@ void Pult::driverTask()
     a=10;
     a-=5;
 #endif
-	watchDogTimer.registerKey(WD_KEY2);
-//#define weelDigital
-
 
 	filesSystemAPI.initFS();
 	motionControlAPI.init();
@@ -1088,16 +1083,16 @@ inline void dataRenderLogic()
 #pragma CODE_SECTION(".secure")
 void Pult::exchangeAlternativeTask()
 {
-
+    watchDogTimer.registerKey(WD_KEY4);
 #ifdef Garanin
 
     while(true)
         {
-        watchDogTimer.registerKey(WD_KEY1);
+        watchDogTimer.useKey(WD_KEY4);
         Task_sleep(100);
         }
 #else
-    watchDogTimer.registerKey(WD_KEY1);
+
     BasicProtocolParams params (
             3,
             &cmdListAlt,
@@ -1120,7 +1115,7 @@ void Pult::exchangeAlternativeTask()
     ExtrenalDevices::DigitalWheelManager digitalWheelManager(driverWhell,protokol,packRx,packTx);
     while(true)
         {
-        watchDogTimer.registerKey(WD_KEY1);
+        watchDogTimer.useKey(WD_KEY4);
 
         digitalWheelManager.exchenge(ProtocolWheel::wheelPan,ProtocolWheel::wheelSpeedRequest,panData);
         Task_sleep(1);

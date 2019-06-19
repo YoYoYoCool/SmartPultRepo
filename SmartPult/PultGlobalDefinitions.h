@@ -11,6 +11,8 @@
 //#define PULT_DEVELOPING_BOARD
 #define LANDSCAPE       //isDisplayOrientation
 
-
+//#define Garanin
+//#define smart19
+//#define WhellSmartPult
 
 #endif /* PULTGLOBALDEFINITIONS_H_ */

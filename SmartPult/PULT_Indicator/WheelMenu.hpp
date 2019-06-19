@@ -17,9 +17,6 @@
 #include "Libs/StandartElement/galetniy Perecluxhatel.hpp"
 #include "Libs/StandartElement/encoder.hpp"
 
-
-
-
 namespace LCD {
 
 
@@ -50,7 +47,6 @@ union WheelDigital {
         }data;
     };
 
-
 union WheelDeadZone {
     uint32_t all;
     __attribute__((__packed__)) struct {
@@ -61,24 +57,16 @@ union WheelDeadZone {
         }data;
     };
 
-
 enum WheelID {
     pan=0,
     tilt,
     dutch
 };
 
-
-
 enum DispForm {
     digitalWheel=1,
     analogWheel
 };
-
-
-
-
-
 
 class LCDWheelBase:public LCD_Listener {
 
@@ -123,8 +111,14 @@ const char * cellWheelPanOn = "WHEEL PAN : ON";
 const char * cellWheelPanOff = "WHEEL PAN : OFF";
 const char * cellWheelTiltOn = "WHEEL TILT : ON";
 const char * cellWheelTiltOff = "WHEEL TILT : OFF";
-const char * cellWheelDutchOn = "WHEEL ROLL : ON";
-const char * cellWheelRollOff = "WHEEL ROOL : OFF";
+#ifdef smart19
+const char * cellWheelRollOn = "WHEEL ROLL : ON";
+const char * cellWheelRollOff = "WHEEL ROLL : OFF";
+#else
+const char * cellWheelRollOn = "WHEEL DUTCH: ON";
+const char * cellWheelRollOff = "WHEEL DUTCH: OFF";
+#endif
+
 const char * cellPedalOn = "PEDAL : ON";
 const char * cellPedalOff = "PEDAL : OFF";
 
@@ -219,7 +213,7 @@ public:
             wheelTiltEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
             p_pult->enableTiltAnalogWheel();}
         if (analogData.data.analogWheelRollActive){
-            wheelRollEnable.p_text=(char*)cellWheelDutchOn;
+            wheelRollEnable.p_text=(char*)cellWheelRollOn;
             wheelRollEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             wheelRollEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
             p_pult->enableRollAnalogWheel();}
@@ -295,22 +289,19 @@ private:
             speedPan-=stepSpeed;
             if (speedPan<speedMin) {     speedPan=speedMin; }
             p_pult->setPanWheelSpeed(speedPan);
-            sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
-            wheelSpeedPan.ReDraw();
             float speed = speedPan;
             speed*=100;
+            printPan();
             analogData.data.wheelSpeedPan=(uint8_t)speed;
-            return;
             }
         if (cell[encoder.getActualPosition()]==&wheelSpeedTilt) {
             speedTilt-=stepSpeed;
             if (speedTilt<speedMin)
                 speedTilt=speedMin;
             p_pult->setTiltWheelSpeed(speedTilt);
-            sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
-            wheelSpeedTilt.ReDraw();
             float speed = speedTilt;
             speed*=100;
+            printTilt();
             analogData.data.wheelSpeedTilt=(uint8_t)speed;
             }
         if (cell[encoder.getActualPosition()]==&wheelSpeedRoll) {
@@ -318,10 +309,9 @@ private:
             if (speedRoll<speedMin)
                 speedRoll=speedMin;
             p_pult->setDutchWheelSpeed(speedRoll);
-            sprintf(&textRollSpeed[0],"ROLL SPEED:" "%1.2f", speedRoll);
-            wheelSpeedRoll.ReDraw();
             float speed = speedRoll;
             speed*=100;
+            printRoll();
             analogData.data.wheelSpeedRoll=(uint8_t)speed;
             }
         if (cell[encoder.getActualPosition()]==&wheelPanEnable) {
@@ -364,10 +354,9 @@ private:
             if (speedPan>speedMax)
                 speedPan=speedMax;
             p_pult->setPanWheelSpeed(speedPan);
-            sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
-            wheelSpeedPan.ReDraw();
             float speed = speedPan;
             speed*=100;
+            printPan();
             analogData.data.wheelSpeedPan=(uint8_t)speed;
             }
         if (cell[encoder.getActualPosition()]==&wheelSpeedTilt) {
@@ -375,10 +364,9 @@ private:
             if (speedTilt>speedMax)
                 speedTilt=speedMax;
             p_pult->setTiltWheelSpeed(speedTilt);
-            sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
-            wheelSpeedTilt.ReDraw();
             float speed = speedTilt;
             speed*=100;
+            printTilt();
             analogData.data.wheelSpeedTilt=(uint8_t)speed;
             }
         if (cell[encoder.getActualPosition()]==&wheelSpeedRoll) {
@@ -386,10 +374,9 @@ private:
             if (speedRoll>speedMax)
                 speedRoll=speedMax;
             p_pult->setDutchWheelSpeed(speedRoll);
-            sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
-            wheelSpeedRoll.ReDraw();
             float speed = speedRoll;
             speed*=100;
+            printRoll();
             analogData.data.wheelSpeedRoll=(uint8_t)speed;
             }
         if (cell[encoder.getActualPosition()]==&wheelPanEnable) {
@@ -417,7 +404,7 @@ private:
             wheelRollEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
             pedalEnable.Active_Style.Cell_Color=ClrLinen;
             pedalEnable.UnActive_Style.Cell_Color=ClrLinen;
-            wheelRollEnable.p_text=(char*)cellWheelDutchOn;
+            wheelRollEnable.p_text=(char*)cellWheelRollOn;
             pedalEnable.p_text=(char*)cellPedalOff;
             pedalEnable.ReHide();
             wheelRollEnable.ReDraw();
@@ -436,12 +423,35 @@ private:
             wheelRollEnable.ReHide();
             pedalEnable.ReDraw();
             }
+
         }
 
     void printData () {
         sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
         sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
+        #ifdef smart19
         sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
+        #else
+        sprintf(&textRollSpeed[0],"DUTCH SPEED: " "%1.2f", speedRoll);
+        #endif
+        }
+    void printPan() {
+        sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
+        wheelSpeedPan.ReDraw();
+        }
+
+    void printRoll() {
+        #ifdef smart19
+        sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
+        #else
+        sprintf(&textRollSpeed[0],"DUTCH SPEED: " "%1.2f", speedRoll);
+        #endif
+        wheelSpeedRoll.ReDraw();
+        }
+
+    void printTilt() {
+        sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
+        wheelSpeedTilt.ReDraw();
         }
 
 };
@@ -469,11 +479,20 @@ const char * whellTiltFull  = "TILT RANGE: FULL";
 
 char * tiltText[digitalWheelText] = {(char *)whellTiltOff,(char *)whellTiltSlow,(char *)whellTiltMiddle,(char *)whellTiltFast,(char *)whellTiltFull} ;
 
+#ifdef smart19
 const char * whellRollOff  = "ROLL RANGE: OFF";
 const char * whellRollSlow = "ROLL RANGE: SLOW";
 const char * whellRollMiddle = "ROLL RANGE: MIDDLE";
 const char * whellRollFast  = "ROLL RANGE: FAST";
 const char * whellRollFull  = "ROLL RANGE: FULL";
+
+#else
+const char * whellRollOff  = "DUTCH RANGE: OFF";
+const char * whellRollSlow = "DUTCH RANGE: SLOW";
+const char * whellRollMiddle = "DUTCH RANGE: MIDDLE";
+const char * whellRollFast  = "DUTCH RANGE: FAST";
+const char * whellRollFull  = "DUTCH RANGE: FULL";
+#endif
 
 char * rollText[digitalWheelText] = {(char *)whellRollOff,(char *)whellRollSlow,(char *)whellRollMiddle,(char *)whellRollFast,(char *)whellRollFull} ;
 
@@ -488,17 +507,27 @@ const char * secondWheelTilt = "TILT WHEEL: SECOND";
 const char * secondWheelRoll = "TILT WHEEL: THIRD";
 
 char * secondText[nameWheelID]  = {(char *)secondWheelPan,(char *)secondWheelTilt,(char *)secondWheelRoll};
-
+#ifdef smart19
 const char * thirdWheelPan  = "ROLL WHEEL: FIRST";
 const char * thirdWheelTilt = "ROLL WHEEL: SECOND";
 const char * thirdWheelRoll = "ROLL WHEEL: THIRD";
+#else
+const char * thirdWheelPan  = "DUTCH WHEEL: FIRST";
+const char * thirdWheelTilt = "DUTCH WHEEL: SECOND";
+const char * thirdWheelRoll = "DUTCH WHEEL: THIRD";
+#endif
+
 
 char * thirdText [nameWheelID]  = {(char *)thirdWheelPan, (char *)thirdWheelTilt, (char *)thirdWheelRoll };
 
 const char * textStartSelect     = "START WHEEL SELECTION";
 const char * textPanWheelSelect  = "CHOOSE THE PAN WHEEL";
 const char * textTiltWheelSelect = "CHOOSE THE TILT WHEEL";
+#ifdef smart19
 const char * textRollWheelSelect = "CHOOSE THE ROll WHEEL";
+#else
+const char * textRollWheelSelect = "CHOOSE THE DUTCH WHEEL";
+#endif
 const char * textEndSelect       = "ASSIGNMENT COMPLETED";
 
 char * selectWheel[6] = {(char*)textStartSelect,(char*)textPanWheelSelect,(char*)textTiltWheelSelect, (char*)textRollWheelSelect,(char*)textEndSelect};
@@ -596,7 +625,6 @@ public:
             wheelRollTransmission.Active_Style.Cell_Color=ClrMediumOrchid;
             wheelRollTransmission.UnActive_Style.Cell_Color=ClrMediumOrchid;
             }
-
         }
 
     virtual void workingForm() {
@@ -849,7 +877,6 @@ public:
     void Select() {
         for (int16_t i=0; i<activeForm->encoder.getMaxRisk()+1; i++) {
             activeForm->cell[i]->Active_Style.Border_Color=ClrSkyBlue;
-            activeForm->cell[i]->ReHide();
             }
         activeForm->cell[activeForm->encoder.getActualPosition()]->ReDraw();
         activeForm->select=true;

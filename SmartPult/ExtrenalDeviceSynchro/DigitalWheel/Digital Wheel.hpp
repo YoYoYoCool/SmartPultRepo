@@ -149,13 +149,12 @@ public:
 
     inline int32_t * getSpeedWheelRaw () {
         return &speedWheelRaw;
-    }
+        }
 
     inline void setConnect(bool connect) {
         this->connect=connect;
         }
-
-};
+    };
 
 
 }

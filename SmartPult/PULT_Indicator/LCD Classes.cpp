@@ -93,7 +93,11 @@ enum {SetUpperLimitMenuTiltLimitSistem=0,
 //наименования пуктов меню PAN DUTCH TILT перед вызовом эквалайзера
 tMenu_Link PDTMenu_link[4]={
 		{"PAN",NULL},
+#ifdef smart19
+		{"ROLL",NULL},
+#else
 		{"DUTCH",NULL},
+#endif
 		{"TILT",NULL},
 		{"ZOOM",NULL}
 };
@@ -148,7 +152,7 @@ enum {BrightnessSetupMenuSistem=0,
     TuningSetupMenuSistem,
     FolowingModeSetupMenuSistem};
 
-tMenu_Link tuningMenuText[8]={
+tMenu_Link tuningMenuText[7]={
 		{"SUSPENTION RESONANCE",NULL},
 		{"MAX TORQUE",NULL},
 		{"JOYSTICK DEADZONE",NULL},
@@ -445,16 +449,6 @@ tMenu_Link axisTurnsText[4]={
 		{"AUTO ", NULL}
 
 };
-enum {PanAxisTurns=1,
-    DutchAxisTurns,
-    TiltAxisTurns,
-    AutoAxisTurns};
-enum {PanAxisTurnsSistem=0,
-    DutchAxisTurnsSistem,
-    TiltAxisTurnsSistem,
-    AutoAxisTurnsSistem};
-
-
 
 //укзатели на все экранные формы
 
@@ -531,10 +525,6 @@ void pultIndikator_Task(Pult* point_pult)
 //	EE_Working::cleanEEPROM();
 	EE_Working::refactoringEEPROM();
 	EE_Working::getProfile();
-//	Pwm pwmBright  (GyConBoard_BrightPwm,10000);
-//	Pwm pwmPreston (GyConBoard_PrestonPWM,3);
-//	pwmPreston.setDuty(0.6);
-//	init_PWM_Bright(&pwmBright);
 	p_pult = point_pult;
 
 
@@ -682,7 +672,11 @@ void pultIndikator_Task(Pult* point_pult)
 	//сами эквалайзеры (3 шт)
 	LCD_Equalizer EqualizerPan((char*)"Pan",7, EE_PK_Line_0,PanJoystickEqualaser); //"EQUALIZER"
 	pEqualizerPan = &EqualizerPan;
+#ifdef smart19
+	LCD_Equalizer EqualizerDutch((char*)"Roll",7, EE_DK_Line_0,DutchJoystickEqualaser); //"EQUALIZER"
+#else
 	LCD_Equalizer EqualizerDutch((char*)"Dutch",7, EE_DK_Line_0,DutchJoystickEqualaser); //"EQUALIZER"
+#endif
 	pEqualizerDutch = &EqualizerDutch;
 	LCD_Equalizer EqualizerTilt((char*)"Tilt",7, EE_TK_Line_0,TiltJoystickEqualaser); //"EQUALIZER"
 	pEqualizerTilt = &EqualizerTilt;
@@ -777,14 +771,7 @@ void pultIndikator_Task(Pult* point_pult)
 	LCD_Menu Main_Menu((char*)"MAIN MENU", Main_Menu_Link,6,1,6);
 	pMain_Menu = &Main_Menu;
 
-//	//секретное меню
-//	LCD_Set_Koeff_secret Set_Koeff_secret((char*)"Secret Koeff", 2, 6); //коэффициенты
-//	pSet_Koeff_secret = &Set_Koeff_secret;
-//
-//	LCD_ERROR LCD_ERROR1((char*)"");
-//	pLCD_ERROR = &LCD_ERROR1;
 
-//	GrImageDraw(&sContext, buLogo, 0, 0);
 	UInt32 vax=0;
 
 	for(UInt16 x=0;x!=320;x++)
@@ -797,7 +784,7 @@ void pultIndikator_Task(Pult* point_pult)
 			vax|=buLogo[3*(y*320+x)+0];
 			DpyPixelDraw(&g_sKentec320x240x16_SSD2119, x, y, vax) ;
 			watchDogTimer.useKey(WD_KEY3);		}
-//	SetBrightness(Bright_Set.Value_Koeff);
+
 	for(UInt32 i=0;i!=200;i++)	{
 		watchDogTimer.useKey(WD_KEY3);
 		Task_sleep(10);	}
@@ -809,7 +796,7 @@ void pultIndikator_Task(Pult* point_pult)
 	Main_Screen.Draw();
 	Main_Screen.Focused = false;
 
-//	SetBrightness(Bright_Set.Value_Koeff);
+
 
 	volatile UInt32 lastTimeToStart=0;
 	volatile UInt32 newTTS=0;
@@ -1392,7 +1379,7 @@ void LCD_Main::Draw() //рисование
 	// ======== Сверху ==============void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active);
 //todo русуем зум сенс
 	//UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
-	UInt16 PosX = 1, Length1 = 22, Length2 = 59, Otkat = 2;
+	UInt16 PosX = 2, Length1 = 22, Length2 = 59, Otkat = 2;
 	Cell_P_Name.Active_Style = Style_MenuHeader;
 	Cell_P_Name.FastDraw(PosX,1,Length1,30, (char*)"P", Cell_Active);
 
@@ -1400,19 +1387,41 @@ void LCD_Main::Draw() //рисование
 	Cell_P_Inf.UnActive_Style = Style_Error;
 	Cell_P_Inf.FastDraw(PosX + (Length1-Otkat),1,Length2,30, (char*)"PS1", Cell_Active);
 
-	Cell_D_Name.Active_Style = Style_MenuHeader;
-	Cell_D_Name.FastDraw(PosX + (Length1-Otkat) + Length2,1,Length1,30, (char*)"D", Cell_Active);
+
+#ifdef smart19
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 1*(Length1-Otkat) + Length2,1,Length1,30, (char*)"T", Cell_Active);
+
+    Cell_T_Inf.Active_Style = Style_MenuHeader;
+    Cell_T_Inf.UnActive_Style = Style_Error;
+    Cell_T_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"TS1", Cell_Active);
+
+    Cell_D_Name.Active_Style = Style_MenuHeader;
+	Cell_D_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"R", Cell_Active);
 
 	Cell_D_Inf.Active_Style = Style_MenuHeader;
 	Cell_D_Inf.UnActive_Style = Style_Error;
-	Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"DS1", Cell_Active);
+	Cell_D_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"DS1", Cell_Active);
 
-	Cell_T_Name.Active_Style = Style_MenuHeader;
-	Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"T", Cell_Active);
+	#else
+	Cell_D_Name.Active_Style = Style_MenuHeader;
+	Cell_D_Name.FastDraw(PosX + (Length1-Otkat) + Length2,1,Length1,30, (char*)"D", Cell_Active);
 
-	Cell_T_Inf.Active_Style = Style_MenuHeader;
-	Cell_T_Inf.UnActive_Style = Style_Error;
-	Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
+    Cell_D_Inf.Active_Style = Style_MenuHeader;
+    Cell_D_Inf.UnActive_Style = Style_Error;
+    Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"DS1", Cell_Active);
+
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"T", Cell_Active);
+
+    Cell_T_Inf.Active_Style = Style_MenuHeader;
+    Cell_T_Inf.UnActive_Style = Style_Error;
+    Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
+
+
+	#endif
+
+
 
     Cell_Z_Name.Active_Style = Style_MenuHeader;
     Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,1,Length1,30, (char*)"Z", Cell_Active);
@@ -2607,7 +2616,11 @@ void SetJoyDeadZone::DrawVert() //рисование вертикального меню
 	StepY = p_Pos_Size_XY.Ysize + 5;
 
 	sprintf(bufferNames[0],"PAN: %d", values[0]);
+#ifdef smart19
+	sprintf(bufferNames[1],"ROLL: %d", values[1]);
+#else
 	sprintf(bufferNames[1],"DUTCH: %d", values[1]);
+#endif
 	sprintf(bufferNames[2],"TILT: %d", values[2]);
 	sprintf(bufferNames[3],"ZOOM: %d", values[3]);
 
@@ -2786,7 +2799,11 @@ void SetMaxTorque::DrawVert() //рисование вертикального меню
 
 	drawEco();
 	sprintf(bufferNames[panTorqueSistem],"PAN: %d", values[panTorqueSistem]);
+#ifdef smart19
+	sprintf(bufferNames[dutchTorqueSistem],"ROOL: %d", values[dutchTorqueSistem]);
+#else
 	sprintf(bufferNames[dutchTorqueSistem],"DUTCH: %d", values[dutchTorqueSistem]);
+#endif
 	sprintf(bufferNames[tiltTorqueSistem],"TILT: %d", values[tiltTorqueSistem]);
 
 	for(UInt32 i=0;i!=Menu_On_Screen;i++)
@@ -4720,11 +4737,18 @@ void ProfileSelectMenu::Listener()
 LCD_Set_Koeff::LCD_Set_Koeff(char* pNam, byte Count, byte Menu_Per_Scr):
 Cell_Header((char*) " ", 1,1,10,10),
 Cell_1((char*) "PK", 1,1,10,10),
+Cell_4((char*) "PI", 33,1,10,10),
+#ifdef smart19
+Cell_2((char*) "RK", 22,1,10,10),
+Cell_3((char*) "TK", 11,1,10,10),
+Cell_5((char*) "RI", 55,1,10,10),
+Cell_6((char*) "TI", 44,1,10,10),
+#else
 Cell_2((char*) "DK", 11,1,10,10),
 Cell_3((char*) "TK", 22,1,10,10),
-Cell_4((char*) "PI", 33,1,10,10),
 Cell_5((char*) "DI", 44,1,10,10),
 Cell_6((char*) "TI", 55,1,10,10),
+#endif
 Cell_7((char*) "", 66,1,10,10),
 Cell_8((char*) "", 77,1,10,10),
 Cell_9((char*) "", 88,1,10,10),
@@ -5060,7 +5084,7 @@ void LCD_Set_Koeff::DrawHeader()
 {
 	Cell_Header.FastDraw(0,0,319,35, pName,Cell_UnActive);
 }
-
+//---------------------------------------------------------------------
 LCD_Koeff::LCD_Koeff(char* pName, char* ptext,	UInt16 text_length):
 Cell_Koeff((char*) "", 1,1,10,10),
 Cell_String((char*) "", 1,1,10,10)

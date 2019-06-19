@@ -40,7 +40,7 @@ bool secure()
 
 
 Int main(){
-	//secure();
+
     Board_initGeneral();
     Board_initGPIO();
     Board_initUART();
