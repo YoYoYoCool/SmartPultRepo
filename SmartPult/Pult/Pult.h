@@ -420,12 +420,18 @@ public:
     void analogWhellSetTiltDeadZone(float deadZone);
     void analogWhellSetRollDeadZone(float deadZone);
     //------------------------------------------------------------
+    float getSpeedPasha();
+    //-------------------------------------------------
 
     void setZIFRevers(bool zoom, bool focus, bool iris);
 
     //------------------------------------------------------------
 
     void setPreston(bool on);
+
+    void xorPreston ();
+
+    bool getEnablePreston();
 
     //------------------------------------------------------------
 

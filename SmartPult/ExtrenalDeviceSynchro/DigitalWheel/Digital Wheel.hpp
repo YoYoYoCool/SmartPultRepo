@@ -127,14 +127,10 @@ public:
                     }
 
     inline virtual float getCurrentAdcValue() {
-        if (inputRaw) {
-            speedWheel=speedWheelRaw;
-            speedWheel*=0.001;
-            }
+        speedWheel=speedWheelRaw;
+        speedWheel*=0.001;
         if (!isEnable)
             return 0.0;
-        /*if (!connect)
-            return 0.0;*/
         speedWheel=channal.updateData(speedWheel,speedControl->adcValue);
         if (speedWheel>maxValue)
             speedWheel=maxValue;
@@ -154,11 +150,6 @@ public:
     inline int32_t * getSpeedWheelRaw () {
         return &speedWheelRaw;
     }
-
-    inline void setSpeed (float speedWheel) {
-        this->speedWheel=speedWheel;
-        this->speedWheel*=0.001;
-        }
 
     inline void setConnect(bool connect) {
         this->connect=connect;

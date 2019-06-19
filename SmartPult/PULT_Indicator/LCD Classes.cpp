@@ -281,14 +281,15 @@ tMenu_Link MeasureSistemTipesMenu[2]={
 enum {metricSistem=0, imperialSistem};
 
 #else
-tMenu_Link lensControlSetup[7]={
+tMenu_Link lensControlSetup[8]={
 		{"MOTOR MAPPING", NULL},
 		{"MOTOR MODELS", NULL},
 		{"CAMERA MODEL", NULL},
 		{"ZOOM SENSITIVITY", NULL},
 		{"LENS CALIBRATE", NULL},
 		{"ZOOM DRIFT", NULL},
-		{"ZIF REVERS", NULL}
+		{"ZIF REVERS", NULL},
+		{"EXTERNAL LENS CONTROL", NULL}
 };
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
@@ -296,7 +297,8 @@ enum {MotorMappingLensControlSetup=1,
     ZoomSensLensControlSetup,
     LensCalibrateLensControlSetup,
     ZoomDriftLensControlSetup,
-    ZIFReversSetup};
+    ZIFReversSetup,
+    externalLensControl};
 
 enum {MotorMappingLensControlSetupSistem=0,
     MotorModelLensControlSetupSistem,
@@ -304,7 +306,8 @@ enum {MotorMappingLensControlSetupSistem=0,
     ZoomSensLensControlSetupSistem,
     LensCalibrateLensControlSetupSistem,
     ZoomDriftLensControlSetupSistem,
-    ZIFReversSistem};
+    ZIFReversSistem,
+    externalLensControlSistem};
 
 #endif
 
@@ -697,6 +700,7 @@ void pultIndikator_Task(Pult* point_pult)
 	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
 	lensControlMenuPointer=&lensControlMenu;
 
+
 	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",controlObjectiveMenu,3,0,3);
 	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
 	lensControlSetup[4].pPointSub=lensControlObjectiveMenuPointer;
@@ -716,12 +720,15 @@ void pultIndikator_Task(Pult* point_pult)
 	lensControlSetup[objectiveSelectControlSetupSistem].pPointSub=&lensControlObjektiveMenu;
 
 #else
-	LCD::ZIFRevers  zifReversMenu;
-	zifReversMenuPointer=&zifReversMenu;
 
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
+
+	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,8,0,8);
+	lensControlMenu.readEEPROM();
 	lensControlMenuPointer=&lensControlMenu;
 #endif
+
+    LCD::ZIFRevers  zifReversMenu;
+    zifReversMenuPointer=&zifReversMenu;
 
 	LCD_Menu_lcZIF lensControlZifSetup("MOTOR MAPPING",lensControlZIF ,3,0,3,lensControlMotorsText,3);
 	lensControlZifSetupPointer=&lensControlZifSetup;
@@ -1492,6 +1499,8 @@ void LCD_Main::updatecurrentProfileCell()
 }
 void LCD_Main::updateVoltageString(bool manual)
 {
+//    sprintf(&voltageString[0],"%3.2f",p_pult->getSpeedPasha());
+//    headVoltage.ReDraw();
 	UInt16 t=(UInt16)(p_pult->getHeadVoltage()*10);
 
 	if((lastVoltage!=t)||manual)
@@ -1502,7 +1511,6 @@ void LCD_Main::updateVoltageString(bool manual)
 		headVoltage.ReDraw();
 		return;
 	}
-	voltageString[9]=0;
 }
 
 void LCD_Main::updateTiltLimiterCell()
@@ -2091,6 +2099,7 @@ Cell_10((char*) " ", 1,1,10,10)
 
 	for(i=0;i<Counter_Cell;i++) //прописываем надписи пунктов
 		Table_Cell[i]->SetText((Menu_Link+i)->Name);
+
 }
 
 LCD_Menu::LCD_Menu():
@@ -2120,6 +2129,7 @@ Cell_10((char*) " ", 1,1,10,10)
 	Cell_Header.Active_Style = Style_MenuHeader;
 	Cell_Header.UnActive_Style = Style_MenuHeader;
 
+
 }
 
 
@@ -2129,8 +2139,8 @@ void LCD_Menu::DrawVert() //рисование вертикального меню
 	Int16 StepY;
 
 	{
-		p_Pos_Size_XY.X = 25; p_Pos_Size_XY.Y = 35;
-		p_Pos_Size_XY.Xsize = 260; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
+		p_Pos_Size_XY.X = 3; p_Pos_Size_XY.Y = 35;
+		p_Pos_Size_XY.Xsize = 314; p_Pos_Size_XY.Ysize = (UInt32)((VERTICAL_LEN/Menu_On_Screen))-5;//35
 		StepY = p_Pos_Size_XY.Ysize + 5;
 
 		for(i=0;i<Menu_On_Screen;i++)
@@ -2191,6 +2201,21 @@ void LCD_Menu::Draw(byte Active) //расчет позиции и рисование
 	Table_Cell[Active-1]->Draw();
 }
 
+void LCD_Menu::readEEPROM() {
+    uint32_t prestonData=EE_Working::Read(EE_LC_EXTERNAL_LENS_CONTROL);
+    if (prestonData>1) {
+        EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 0);
+        }
+    else {
+        if (prestonData)
+            Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM ON";
+        else
+            Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM OFF";
+        }
+    p_pult->setPreston((bool)prestonData);
+
+                    // записываем что престон включен
+    }
 
 void LCD_Menu::Plus() //обработаем плюсование
 {
@@ -2454,6 +2479,9 @@ void LCD_Menu::Listener()
 			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReDraw();
 			return;
 		    }
+		if(this==lensControlMenuPointer&&this->Tek_Count==externalLensControl){
+		    return;
+		}
 		if(this==setupMenuPointer&&this->Tek_Count==JoystickCalibrationSetupMenu)
 		{
 			resP=Table_Cell[JoystickCalibrationSetupMenuSistem]->p_text;
@@ -2513,6 +2541,22 @@ void LCD_Menu::Listener()
 		pDispl->Focused = true;
 		return;
 	}
+
+	if(this==lensControlMenuPointer&&this->Tek_Count==externalLensControl){
+	    if ((getButtonState(pult_Button_Right) == PRESSED)||(getButtonState(pult_Button_Left) == PRESSED))
+            {
+            p_pult->xorPreston();
+            if (p_pult->getEnablePreston()) {
+                Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM ON";
+                EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 1);// записываем что престон включен
+                }
+            else {
+                Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM OFF";
+                EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 0);// записываем что престон включен
+                }
+            Table_Cell[externalLensControlSistem]->ReDraw();
+            }
+        }
 
 	if (getButtonState(pult_Button_Dn) == PRESSED)	Plus();
 	if (getButtonState(pult_Button_Up) == PRESSED)	Minus();

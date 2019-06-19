@@ -129,8 +129,8 @@
     const EepromDefault panFolowingDefault      =  {       0,               0,                 2};              //98
     const EepromDefault CRCDefaultOld           =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //99
     const EepromDefault ZIFRevers               =  {       0,               0x7,                0x7};     //100
-    const EepromDefault empty[98]               =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //101
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //102
+    const EepromDefault externalLensControlOnOff=  {       0,               0,                  1};        //101
+    const EepromDefault empty[97]               =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //102
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //103
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //104
                                                            0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //105
@@ -354,6 +354,7 @@
          &panFolowingDefault,
          &CRCDefaultOld,
          &ZIFRevers,
+         &externalLensControlOnOff,
          &empty[0],
          &empty[1],
          &empty[2],
@@ -451,7 +452,6 @@
          &empty[94],
          &empty[95],
          &empty[96],
-         &empty[97],
          &CRCDefault
     };
 

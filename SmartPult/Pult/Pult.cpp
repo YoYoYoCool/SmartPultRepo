@@ -287,6 +287,19 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         1.0
 );
 
+//#define Garanin
+#ifdef Garanin
+
+ExtrenalDevices::WheelChannel digitalWheelPanPasha (230.0,1.0,&panJoySpeedResistor);
+
+ExtrenalDevices::WheelChannel digitalWheelRollPasha (230.0,1.0,&dutchJoySpeedResistor);
+
+ExtrenalDevices::WheelChannel digitalWheelTiltPasha (230.0,1.0,&tiltJoySpeedResistor);
+
+ExtrenalDevices::WheelChannel* digitalWheelChannelPasha[3] = { &digitalWheelPanPasha, &digitalWheelRollPasha, &digitalWheelTiltPasha };
+
+#else
+
 ExtrenalDevices::WheelChannel digitalWheelPan (230.0,1.0,&panJoySpeedResistor);
 
 ExtrenalDevices::WheelChannel digitalWheelRoll (230.0,1.0,&dutchJoySpeedResistor);
@@ -295,6 +308,9 @@ ExtrenalDevices::WheelChannel digitalWheelTilt (230.0,1.0,&tiltJoySpeedResistor)
 
 ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &digitalWheelRoll, &digitalWheelTilt };
 
+#endif
+
+
 //--------------------------------------------------------------------
 
 
@@ -302,27 +318,30 @@ ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &dig
 //---------------------------------------------------------------------
 HallEffectJoyChannel dutchExtern2Channel(0.14,2110,&dutchJoySpeedResistor,100, 250,0.015);
 
-/*
-JoyChannelIF* panChannelsArray[3]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel};
-JoyChannelIF* dutchChannelsArray[4]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel};
-JoyChannelIF* tiltChannelsArray[3]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel};
-JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
-
-JoyChannels panChannals     (panChannelsArray,3);
-JoyChannels dutchChannals   (dutchChannelsArray,4);
-JoyChannels tiltChannals    (tiltChannelsArray,3);
-JoyChannels zoomChannals    (zoomChannelsArray,2);*/
-
-
+#ifdef Garanin
+JoyChannelIF* panChannelsArray[3]=      {&panJoyChannel,    &panExtern1Channel, &digitalWheelPanPasha};
+JoyChannelIF* dutchChannelsArray[4]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,&digitalWheelRollPasha};
+JoyChannelIF* tiltChannelsArray[3]=     {&tiltJoyChannel,   &tiltExtern1Channel,&digitalWheelTiltPasha};
+JoyChannelIF* zoomChannelsArray[1]=     {&zoomJoyChannel};
+#else
 JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
 JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
 JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
 JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
+#endif
 
+#ifdef Garanin
+JoyChannels panChannals     (panChannelsArray,3);
+JoyChannels dutchChannals   (dutchChannelsArray,4);
+JoyChannels tiltChannals    (tiltChannelsArray,3);
+JoyChannels zoomChannals    (zoomChannelsArray,1);
+
+#else
 JoyChannels panChannals     (panChannelsArray,4);
 JoyChannels dutchChannals   (dutchChannelsArray,5);
 JoyChannels tiltChannals    (tiltChannelsArray,4);
 JoyChannels zoomChannals    (zoomChannelsArray,2);
+#endif
 
 									//joystics
 
@@ -639,35 +658,34 @@ void Pult::driverTask()
 	watchDogTimer.registerKey(WD_KEY2);
 //#define weelDigital
 
-#ifdef weelDigital
-	volatile float * speedPanWheel = digitalWheelPan.getUKSpeedIn();
-	volatile float * speedDutchWheel = digitalWheelRoll.getUKSpeedIn();
-	volatile float * speedTiltWheel = digitalWheelTilt.getUKSpeedIn();
-	speedPanWheel[0]=900.0;
-	speedDutchWheel[0]=1900.0;
-	speedTiltWheel[0]=1500.0;
-#endif
+
 	filesSystemAPI.initFS();
 	motionControlAPI.init();
 
+    #ifdef Garanin
+	Var elementPan("Pan Speed:",&digitalWheelPanPasha.getSpeedWheel());
+	Var elementTilt("Tilt Speed:",&digitalWheelTiltPasha.getSpeedWheel());
+	Var elementDutch("Dutch Speed:",&digitalWheelRollPasha.getSpeedWheel());
+	cartoniPanAxisChannel.setSpeed(digitalWheelPanPasha.getSpeedWheelRaw());
+	cartoniDutchAxisChannel.setSpeed(digitalWheelRollPasha.getSpeedWheelRaw());
+	cartoniTiltAxisChannel.setSpeed(digitalWheelTiltPasha.getSpeedWheelRaw());
 
+    #else
 	Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
 	Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
 	Var elementDutch("Dutch Speed:",&cartoniDutchAxisChannel.getAxisVal());
+    #endif
+
+
 	viewLists.setVarList(0, &elementPan);
 	viewLists.setVarList(1, &elementTilt);
 	viewLists.setVarList(2, &elementDutch);
-
-	prestonEnableDriver.setOnState(true);
 
 	Pwm backlightDriver  (GyConBoard_BrightPwm,10000);
 	Pwm prestonDriver (GyConBoard_PrestonPWM,3);
 	backlight.setButton(sharedButtons[backLightOff]);
 	backlight.setDriver(&backlightDriver);
 	preston.setDriver(&prestonDriver);
-
-	bool state=false;
-
 
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
@@ -697,8 +715,11 @@ void Pult::driverTask()
 		cartoniPanAxisChannel.setData();
 		cartoniTiltAxisChannel.setData();
 		cartoniDutchAxisChannel.setData();
+#ifdef Garanin
+#else
 		cartoniZoomAxisChannel.setData();
-        cartoniFocusAxisChannel.setData();
+#endif
+		cartoniFocusAxisChannel.setData();
         cartoniIrisAxisChannel.setData();
         //запихиваем суда объектив для отлаки
 
@@ -725,12 +746,7 @@ void Pult::driverTask()
 		}
 		signalsReader.setMultiplexer(muxPos);
 
-		if (state)
-		    state=false;
-		else
-		    state=true;
-/*
-		signalsReader.prestonOn(state);
+/*		signalsReader.prestonOn(state);
 		signalsReader.cameraStartFront(state);
 		signalsReader.cameraStartLevel(state);*/
 //Обработка кнопок
@@ -1072,6 +1088,15 @@ inline void dataRenderLogic()
 #pragma CODE_SECTION(".secure")
 void Pult::exchangeAlternativeTask()
 {
+
+#ifdef Garanin
+
+    while(true)
+        {
+        watchDogTimer.registerKey(WD_KEY1);
+        Task_sleep(100);
+        }
+#else
     watchDogTimer.registerKey(WD_KEY1);
     BasicProtocolParams params (
             3,
@@ -1081,8 +1106,6 @@ void Pult::exchangeAlternativeTask()
             Board_PULTALT_RS485RW
 
     );
-
-
     GPIO_write(Board_PULTALT_RS485RW, Board_RS485_WRITE_MODE);
     ProtocolWheel::WheelProtocol protokol;
     ExtrenalDevices::DataOut panData;
@@ -1093,16 +1116,11 @@ void Pult::exchangeAlternativeTask()
     panData.dataInput=digitalWheelPan.getSpeedWheelRaw();
     tiltData.dataInput=digitalWheelTilt.getSpeedWheelRaw();
     rollData.dataInput=digitalWheelRoll.getSpeedWheelRaw();
-
     Rs485Driver2 driverWhell(params.uartId, 115200, params.recieveTimeout, params.txEnablePin);
     ExtrenalDevices::DigitalWheelManager digitalWheelManager(driverWhell,protokol,packRx,packTx);
-/*    ExtrenalDevices::DigitalWheelManager digitalWheelRollManager(driverWhell,protokol,ProtocolWheel::WHEEL_ROLL,roolData);
-    ExtrenalDevices::DigitalWheelManager digitalWheelTiltManager(driverWhell,protokol,ProtocolWheel::WHEEL_TILT,tiltData);*/
-//    ExtrenalDevices::DigitalWheelManager digitalWheelManager (driverWhell,protokol);
-
-
     while(true)
         {
+        watchDogTimer.registerKey(WD_KEY1);
 
         digitalWheelManager.exchenge(ProtocolWheel::wheelPan,ProtocolWheel::wheelSpeedRequest,panData);
         Task_sleep(1);
@@ -1115,6 +1133,7 @@ void Pult::exchangeAlternativeTask()
 
 
         }
+#endif
 }
 
 static volatile bool gtaComplite=false;
@@ -2161,58 +2180,190 @@ void Pult::disableRollAnalogWheel()   {  dutchExtern1Channel.disable();   }
 
 void Pult::disablePadal()       {  dutchExtern2Channel.disable();   }
 
-void Pult::digitalWheelPanStepLeft() {    digitalWheelPan.channal.stepLeft();     }
+void Pult::digitalWheelPanStepLeft() {
+    #ifdef Garanin
+    digitalWheelPanPasha.channal.stepLeft();
+    #else
+    digitalWheelPan.channal.stepLeft();
+    #endif
+    }
 
-void Pult::digitalWheelTiltStepLeft(){   digitalWheelTilt.channal.stepLeft();      }
-
-void Pult::digitalWheelRollStepLeft(){     digitalWheelRoll.channal.stepLeft();    }
-
-void Pult::digitalWheelPanStepRight(){     digitalWheelPan.channal.stepRight();    }
-
-void Pult::digitalWheelTiltStepRight(){    digitalWheelTilt.channal.stepRight();  }
-
-void Pult::digitalWheelRollStepRight(){     digitalWheelRoll.channal.stepRight();  }
-
-int8_t Pult:: digitalWheelPanGetFunction() {      return digitalWheelPan.channal.getFunction(); }
-
-int8_t Pult::digitalWheelTiltGetFunction() {      return digitalWheelTilt.channal.getFunction(); }
-
-int8_t Pult::digitalWheelRollGetFunction() {      return digitalWheelRoll.channal.getFunction(); }
-
-void Pult::digitalWhellPanEnable()         {   digitalWheelPan.enable();  }
-
-void Pult::digitalWhellPanDisable()        {   digitalWheelPan.disable(); }
-
-void Pult::digitalWhellTiltEnable()        {   digitalWheelTilt.enable(); }
-
-void Pult::digitalWhellTiltDisable()       {   digitalWheelTilt.disable(); }
-
-void Pult::digitalWhellRollEnable()        {   digitalWheelRoll.enable(); }
-
-void Pult::digitalWhellRollDisable()       {   digitalWheelRoll.disable(); }
-
-void Pult::disableAllDigitalWheel()  {
-     digitalWheelPan.disable();
-     digitalWheelTilt.disable();
-     digitalWheelRoll.disable();
+void Pult::digitalWheelTiltStepLeft(){
+     #ifdef Garanin
+     digitalWheelTiltPasha.channal.stepLeft();
+     #else
+     digitalWheelTilt.channal.stepLeft();
+     #endif
      }
 
-void Pult:: digitalWhellSetPanDeadZone(float deadZone) { digitalWheelPan.setDeadZone(deadZone);  }
+void Pult::digitalWheelRollStepLeft(){
+    #ifdef Garanin
+    digitalWheelRollPasha.channal.stepLeft();
+    #else
+    digitalWheelRoll.channal.stepLeft();
+    #endif
+    }
 
-void Pult:: digitalWhellSetTiltDeadZone(float deadZone) { digitalWheelTilt.setDeadZone(deadZone);  }
+void Pult::digitalWheelPanStepRight(){
+#ifdef Garanin
+    digitalWheelPanPasha.channal.stepRight();
+#else
+    digitalWheelPan.channal.stepRight();
+#endif
+}
 
-void Pult:: digitalWhellSetRollDeadZone(float deadZone) { digitalWheelRoll.setDeadZone(deadZone);  }
+void Pult::digitalWheelTiltStepRight(){
+#ifdef Garanin
+    digitalWheelTiltPasha.channal.stepRight();
+#else
+    digitalWheelTilt.channal.stepRight();
+#endif
+    }
 
-void Pult:: analogWhellSetPanDeadZone(float deadZone)   { panExtern1Channel.setDeadZone(deadZone);  }
+void Pult::digitalWheelRollStepRight(){
+#ifdef Garanin
+    digitalWheelRollPasha.channal.stepRight();
+#else
+    digitalWheelRoll.channal.stepRight();
+#endif
+    }
 
-void Pult:: analogWhellSetTiltDeadZone(float deadZone)  { tiltExtern1Channel.setDeadZone(deadZone);  }
+int8_t Pult:: digitalWheelPanGetFunction() {
+#ifdef Garanin
+    return digitalWheelPanPasha.channal.getFunction();
+#else
+    return digitalWheelPan.channal.getFunction();
+#endif
+     }
 
-void Pult:: analogWhellSetRollDeadZone(float deadZone)  { panExtern1Channel.setDeadZone(deadZone);  }
+int8_t Pult::digitalWheelTiltGetFunction() {
+#ifdef Garanin
+    return digitalWheelTiltPasha.channal.getFunction();
+#else
+    return digitalWheelTilt.channal.getFunction();
+#endif
+    }
+
+int8_t Pult::digitalWheelRollGetFunction() {
+#ifdef Garanin
+    return digitalWheelRollPasha.channal.getFunction();
+#else
+    return digitalWheelRoll.channal.getFunction();
+#endif
+    }
+
+void Pult::digitalWhellPanEnable()         {
+#ifdef Garanin
+    digitalWheelPanPasha.enable();
+#else
+    digitalWheelPan.enable();
+#endif
+      }
+
+void Pult::digitalWhellPanDisable()        {
+#ifdef Garanin
+    digitalWheelPanPasha.disable();
+#else
+    digitalWheelPan.disable();
+#endif
+     }
+
+void Pult::digitalWhellTiltEnable()        {
+#ifdef Garanin
+    digitalWheelTiltPasha.enable();
+#else
+    digitalWheelTilt.enable();
+#endif
+     }
+
+void Pult::digitalWhellTiltDisable()       {
+#ifdef Garanin
+    digitalWheelTiltPasha.disable();
+#else
+    digitalWheelTilt.disable();
+#endif
+
+    }
+
+void Pult::digitalWhellRollEnable()        {
+#ifdef Garanin
+    digitalWheelRollPasha.enable();
+#else
+    digitalWheelRoll.enable();
+#endif
+     }
+
+void Pult::digitalWhellRollDisable()       {
+#ifdef Garanin
+    digitalWheelRollPasha.disable();
+#else
+    digitalWheelRoll.disable();
+#endif
+     }
+
+void Pult::disableAllDigitalWheel()  {
+#ifdef Garanin
+    digitalWheelPanPasha.disable();
+    digitalWheelTiltPasha.disable();
+    digitalWheelRollPasha.disable();
+#else
+    digitalWheelPan.disable();
+    digitalWheelTilt.disable();
+    digitalWheelRoll.disable();
+#endif
+
+
+     }
+
+void Pult:: digitalWhellSetPanDeadZone(float deadZone) {
+#ifdef Garanin
+    digitalWheelPanPasha.setDeadZone(deadZone);
+#else
+    digitalWheelPan.setDeadZone(deadZone);
+#endif
+      }
+
+void Pult:: digitalWhellSetTiltDeadZone(float deadZone) {
+#ifdef Garanin
+    digitalWheelTiltPasha.setDeadZone(deadZone);
+#else
+    digitalWheelTilt.setDeadZone(deadZone);
+#endif
+      }
+
+void Pult:: digitalWhellSetRollDeadZone(float deadZone) {
+#ifdef Garanin
+    digitalWheelRollPasha.setDeadZone(deadZone);
+#else
+    digitalWheelRoll.setDeadZone(deadZone);
+#endif
+      }
+
+void Pult:: analogWhellSetPanDeadZone(float deadZone)   {
+    panExtern1Channel.setDeadZone(deadZone);  }
+
+void Pult:: analogWhellSetTiltDeadZone(float deadZone)  {
+    tiltExtern1Channel.setDeadZone(deadZone);  }
+
+void Pult:: analogWhellSetRollDeadZone(float deadZone)  {
+    panExtern1Channel.setDeadZone(deadZone);  }
+
+float Pult::getSpeedPasha() {
+    return tiltJoy.getRawValue();
+}
 
 void Pult::digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll) {
-     digitalWheelPan.channal.setFunction(pan);
-     digitalWheelTilt.channal.setFunction(tilt);
-     digitalWheelRoll.channal.setFunction(roll);
+#ifdef Garanin
+    digitalWheelPanPasha.channal.setFunction(pan);
+    digitalWheelTiltPasha.channal.setFunction(tilt);
+    digitalWheelRollPasha.channal.setFunction(roll);
+#else
+    digitalWheelPan.channal.setFunction(pan);
+    digitalWheelTilt.channal.setFunction(tilt);
+    digitalWheelRoll.channal.setFunction(roll);
+#endif
+
+
      }
 
 //-------------------------------------------------------------------------------
@@ -2225,7 +2376,11 @@ void Pult::setZIFRevers(bool zoom, bool focus, bool iris) {
 
 //-------------------------------------------------------------------------------
 
-void Pult::setPreston(bool on) {        }
+void Pult::setPreston(bool on) { preston.setEnable(on);       }
+
+void Pult::xorPreston ()    {    preston.xorEnable();    }
+
+bool Pult::getEnablePreston() {     return preston.getEnable();    }
 
 //-----------------------------------------------------------------------------
 

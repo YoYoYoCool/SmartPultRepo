@@ -328,6 +328,9 @@ public:
 	    else //ориентация 2*3
 	    {   Cell_Header.FastDraw(0,0,319,30, pName, Cell_UnActive); }
 	}
+	void readEEPROM();
+
+
 	virtual void Listener(); //будет наследоваться всеми экранными формами для анализа изменения кнопок и данных
 };
 

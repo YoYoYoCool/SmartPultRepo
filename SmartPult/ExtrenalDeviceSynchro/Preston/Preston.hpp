@@ -47,7 +47,6 @@ namespace ExtrenalDevices {
 
         void update(float speed) {
             if (enable) {
-                enableDriver->setOnState(enable);
                 if (speed>1)
                     speed=1;
                 if(speed<-1)
@@ -59,10 +58,26 @@ namespace ExtrenalDevices {
                 if (speed<0.077)
                     speed=0.077;
                 }
+            else {
+                speed=0.5;
+                }
+            enableDriver->setOnState(enable);
             prestonDriver->setDuty(speed);
             }
 
         void setEnable (bool enable ) { this->enable=enable; }
+
+        inline void xorEnable () {
+            if (enable) {
+                enable=false;
+                return;
+                }
+            enable=true;
+            }
+
+        inline bool getEnable () {
+            return enable;
+            }
 
     };
 

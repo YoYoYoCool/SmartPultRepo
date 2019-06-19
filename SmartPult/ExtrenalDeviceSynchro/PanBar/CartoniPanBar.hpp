@@ -11,7 +11,7 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include "../../GyConCommon/dataTypes.h"
-
+#include "../PultGlobalDefinitions.h"
 
 
 
@@ -404,22 +404,39 @@ namespace ExtrenalDevices
                 if(!axis.isActive)  {rez=0.0;}
                 return rez;
                 }
-
+//#define Garanin
             void setData()
                 {
+                #ifdef Garanin
+                axis=dataConverter.getAxis(channelAxis);
+                if (axis.isActive) {
+                    speed[0]=(int32_t)(axis.value*1000);
+                    }
+                else
+                    speed[0]=0;
+                #else
                 axis=dataConverter.getAxis(channelAxis);
                 adcValue=axis.value;
+                #endif
                 }
 
             inline volatile float &  getAxisVal () {
                 return axis.value;
                 }
+            #ifdef Garanin
+            inline void setSpeed (int32_t * speed) {
+                this->speed=speed;
+                }
+            #endif
 
         private:
             CartoniChannelAxisList channelAxis;
             CartoniDataConverter& dataConverter;
             CartoniAxis axis;
             const float maxValue;
+            #ifdef Garanin
+            int32_t * speed;
+            #endif
     };
 
 }
