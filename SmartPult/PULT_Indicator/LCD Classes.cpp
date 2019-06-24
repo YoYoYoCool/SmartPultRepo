@@ -1,5 +1,4 @@
 
-
 #include "../Board.h"
 
 #include "LCD Classes.h"
@@ -91,31 +90,56 @@ enum {SetUpperLimitMenuTiltLimitSistem=0,
     ResetAllLimitMenuTiltLimitSistem};
 
 //наименования пуктов меню PAN DUTCH TILT перед вызовом эквалайзера
-tMenu_Link PDTMenu_link[4]={
-		{"PAN",NULL},
-#ifdef smart19
-		{"ROLL",NULL},
+
+#ifdef joyPult
+
+    tMenu_Link PDTMenu_link[4]={
+        {"PAN",NULL},
+    #ifdef USAEdition
+        {"ROLL",NULL},
+    #else
+        {"DUTCH",NULL},
+    #endif
+        {"TILT",NULL},
+        {"ZOOM",NULL}
+        };
+
+    enum {PanPDTMenu=1,
+        DutchPDTMenu,
+        TiltPDTMenu,
+        ZoomPDTMenu};
+    enum {PanPDTMenuSistem=0,
+        DutchPDTMenuSistem,
+        TiltPDTMenuSistem,
+        ZoomPDTMenuSistem};
 #else
-		{"DUTCH",NULL},
+    tMenu_Link PDTMenu_link[3]={
+        {"PAN",NULL},
+    #ifdef USAEdition
+        {"ROLL",NULL},
+    #else
+        {"DUTCH",NULL},
+    #endif
+        {"TILT",NULL}
+    };
+    enum {PanPDTMenu=1,
+        DutchPDTMenu,
+        TiltPDTMenu
+        };
+    enum {PanPDTMenuSistem=0,
+        DutchPDTMenuSistem,
+        TiltPDTMenuSistem
+        };
 #endif
-		{"TILT",NULL},
-		{"ZOOM",NULL}
-};
-enum {PanPDTMenu=1,
-    DutchPDTMenu,
-    TiltPDTMenu,
-    ZoomPDTMenu};
-enum {PanPDTMenuSistem=0,
-    DutchPDTMenuSistem,
-    TiltPDTMenuSistem,
-    ZoomPDTMenuSistem};
+
+
 
 tMenu_Link secretMenuText[3]={
 		{"Set",NULL},
 		{"View",NULL},
 		{"Check",NULL},
+    };
 
-};
 enum {SetSecretMenu=1,
     VievSecretMenu,
     CheckSecretMenu};
@@ -124,61 +148,118 @@ enum {SetSecretMenuSistem=0,
     VievSecretMenuSistem,
     CheckSecretMenuSistem};
 
-tMenu_Link setupMenuText[8]={
-		{"BRIGHTNESS",NULL},
-		{"USER PROFILES",NULL},
-		{"JOYSTICK PLACEMENT",NULL},
-		{"UNDER/OVERSLUNG",NULL},
-		{"WHEELS MENU",NULL},
-		{"JOYSTICK CALIBRATION",NULL},
-		{"TUNING",NULL},
-		{"FOLOWING MODE",NULL}
-};
-enum {BrightnessSetupMenu=1,
-    UserProfilesSetupMenu,
-    JoystickPlacementSetupMenu,
-    UnderOverslungSetupMenu,
-    WhellSpeedSetupMenu,
-    JoystickCalibrationSetupMenu,
-    TuningSetupMenu,
-    FolowingModeSetupMenu};
+#ifdef joyPult
 
-enum {BrightnessSetupMenuSistem=0,
-    UserProfilesSetupMenuSistem,
-    JoystickPlacementSetupMenu_sistem,
-    UnderOverslungSetupMenu_sistem,
-    WhellSpeedSetupMenuSistem,
-    JoystickCalibrationSetupMenuSistem,
-    TuningSetupMenuSistem,
-    FolowingModeSetupMenuSistem};
+    tMenu_Link setupMenuText[8]={
+            {"BRIGHTNESS",NULL},
+            {"USER PROFILES",NULL},
+            {"JOYSTICK PLACEMENT",NULL},
+            {"UNDER/OVERSLUNG",NULL},
+            {"WHEELS MENU",NULL},
+            {"JOYSTICK CALIBRATION",NULL},
+            {"TUNING",NULL},
+            {"FOLLOWING MODE",NULL}
+            };
 
-tMenu_Link tuningMenuText[7]={
-		{"SUSPENTION RESONANCE",NULL},
-		{"MAX TORQUE",NULL},
-		{"JOYSTICK DEADZONE",NULL},
-//		{"FRONT RAMP",NULL},
-		{"TOTAL RUNTIME",NULL},
-		{"PREROL",NULL},
-		{"SYNCHRO SOURCE",NULL},
-		{"DRIFT STOPPER",NULL}
-};
-enum {SuspensionResonansTuningMenu=1,
-    MaxTorqueTuningMenu,
-    JoysticDeadZoneTuningMenu,
-//    FrontRampTuningMenu,
-    TotalRuntimeTuningMenu,
-    PrerolTuningMenu,
-    SynchroSourceTuningMenu,
-    DriftStopperTuningMenu};
+    enum {BrightnessSetupMenu=1,
+        UserProfilesSetupMenu,
+        JoystickPlacementSetupMenu,
+        UnderOverslungSetupMenu,
+        WhellSpeedSetupMenu,
+        JoystickCalibrationSetupMenu,
+        TuningSetupMenu,
+        FolowingModeSetupMenu};
 
-enum {SuspensionResonansTuningMenuSistem=0,
-    MaxTorqueTuningMenuSistem,
-    JoysticDeadZoneTuningMenuSistem,
-//    FrontRampTuningMenuSistem,
-    TotalRuntimeTuningMenuSistem,
-    PrerolTuningMenuSistem,
-    SynchroSourceTuningMenuSistem,
-    DriftStopperTuningMenuSistem};
+    enum {BrightnessSetupMenuSistem=0,
+        UserProfilesSetupMenuSistem,
+        JoystickPlacementSetupMenu_sistem,
+        UnderOverslungSetupMenu_sistem,
+        WhellSpeedSetupMenuSistem,
+        JoystickCalibrationSetupMenuSistem,
+        TuningSetupMenuSistem,
+        FolowingModeSetupMenuSistem};
+#else
+
+    tMenu_Link setupMenuText[6]={
+            {"BRIGHTNESS",NULL},
+            {"USER PROFILES",NULL},
+            {"UNDER/OVERSLUNG",NULL},
+            {"WHEELS MENU",NULL},
+            {"TUNING",NULL},
+            {"FOLOWING MODE",NULL}
+            };
+
+    enum {BrightnessSetupMenu=1,
+        UserProfilesSetupMenu,
+        UnderOverslungSetupMenu,
+        WhellSpeedSetupMenu,
+        TuningSetupMenu,
+        FolowingModeSetupMenu};
+
+    enum {BrightnessSetupMenuSistem=0,
+        UserProfilesSetupMenuSistem,
+        UnderOverslungSetupMenu_sistem,
+        WhellSpeedSetupMenuSistem,
+        TuningSetupMenuSistem,
+        FolowingModeSetupMenuSistem};
+#endif
+
+#ifdef joyPult
+
+    tMenu_Link tuningMenuText[7]={
+            {"SUSPENTION RESONANCE",NULL},
+            {"MAX TORQUE",NULL},
+            {"JOYSTICK DEADZONE",NULL},
+            {"TOTAL RUNTIME",NULL},
+            {"PREROL",NULL},
+            {"SYNCHRO SOURCE",NULL},
+            {"DRIFT STOPPER",NULL}
+    };
+    enum {SuspensionResonansTuningMenu=1,
+        MaxTorqueTuningMenu,
+        JoysticDeadZoneTuningMenu,
+        TotalRuntimeTuningMenu,
+        PrerolTuningMenu,
+        SynchroSourceTuningMenu,
+        DriftStopperTuningMenu};
+
+    enum {SuspensionResonansTuningMenuSistem=0,
+        MaxTorqueTuningMenuSistem,
+        JoysticDeadZoneTuningMenuSistem,
+        TotalRuntimeTuningMenuSistem,
+        PrerolTuningMenuSistem,
+        SynchroSourceTuningMenuSistem,
+        DriftStopperTuningMenuSistem};
+
+#else
+
+    tMenu_Link tuningMenuText[6]={
+            {"SUSPENTION RESONANCE",NULL},
+            {"MAX TORQUE",NULL},
+            {"TOTAL RUNTIME",NULL},
+            {"PREROL",NULL},
+            {"SYNCHRO SOURCE",NULL},
+            {"DRIFT STOPPER",NULL}
+    };
+    enum {SuspensionResonansTuningMenu=1,
+        MaxTorqueTuningMenu,
+        TotalRuntimeTuningMenu,
+        PrerolTuningMenu,
+        SynchroSourceTuningMenu,
+        DriftStopperTuningMenu};
+
+    enum {SuspensionResonansTuningMenuSistem=0,
+        MaxTorqueTuningMenuSistem,
+        TotalRuntimeTuningMenuSistem,
+        PrerolTuningMenuSistem,
+        SynchroSourceTuningMenuSistem,
+        DriftStopperTuningMenuSistem};
+
+
+
+#endif
+
+
 
 tMenu_Link suspensionResonanceSelectMenuText[2]={
 		{"TILT",NULL},
@@ -217,83 +298,17 @@ enum {RigthSideHandSwitchAxesText=1,
 enum {RigthSideHandSwitchAxesTextSistem=0,
     LeftSideHandSwitchAxesTextSistem};
 
-//#define objDef
+#ifdef joyPult
 
-#ifdef objDef
-tMenu_Link lensControlSetup[7]={
+tMenu_Link lensControlSetup[8]={
         {"MOTOR MAPPING", NULL},
         {"MOTOR MODELS", NULL},
         {"CAMERA MODEL", NULL},
-        {"OBJECTIVE SET",NULL},
-        {"ZOOM SENS", NULL},
+        {"ZOOM SENSITIVITY", NULL},
         {"LENS CALIBRATE", NULL},
         {"ZOOM DRIFT", NULL},
-};
-enum {MotorMappingLensControlSetup=1,
-    MotorModelLensControlSetup,
-    CameraModelLensControlSetup,
-    objectiveSelectControlSetup,
-    ZoomSensLensControlSetup,
-    LensCalibrateLensControlSetup,
-    ZoomDriftLensControlSetup};
-
-enum {MotorMappingLensControlSetupSistem=0,
-    MotorModelLensControlSetupSistem,
-    CameraModelLensControlSetupSistem,
-    objectiveSelectControlSetupSistem,
-    ZoomSensLensControlSetupSistem,
-    LensCalibrateLensControlSetupSistem,
-    ZoomDriftLensControlSetupSistem};
-
-tMenu_Link controlObjectiveMenu[3]= {
-        {"SELECT",NULL},
-        {"CREATE",NULL},
-        {"MEASURE SYSTEM TYPES",NULL}
-    };
-enum {
-    objectivSelectMenu=1,
-    objectiveCreatMenu,
-    measurementSystemsTypes
-};
-
-enum {
-    objectivSelectMenuSistem=0,
-    objectiveCreatMenuSistem,
-    measurementSystemsTypesSistem
-    };
-
-LCD::LCDMenuObjectiveSelect* _objectiveSelectMenu;
-tMenu_Link objectiveSelect[5]= {
-        {"ONE", NULL},
-        {"TWO", NULL},
-        {"THREE",NULL},
-        {"FOUR",NULL},
-        {"FIVE",NULL}
-    };
-
-tMenu_Link objectiveCreat[4]= {
-        {"NAME CREAT",NULL},
-        {"ZOOM CREAT",NULL},
-        {"IRIS CREAT",NULL},
-        {"FOCUS CREAT",NULL}
-    };
-LCD::MeasureSistemTipes* LCDMeasureSelect;
-tMenu_Link MeasureSistemTipesMenu[2]={
-    {"METRIC",NULL },
-    {"IMPERIAL",NULL}
-    };
-enum {metricSistem=0, imperialSistem};
-
-#else
-tMenu_Link lensControlSetup[8]={
-		{"MOTOR MAPPING", NULL},
-		{"MOTOR MODELS", NULL},
-		{"CAMERA MODEL", NULL},
-		{"ZOOM SENSITIVITY", NULL},
-		{"LENS CALIBRATE", NULL},
-		{"ZOOM DRIFT", NULL},
-		{"ZIF REVERS", NULL},
-		{"EXTERNAL LENS CONTROL", NULL}
+        {"ZIF REVERS", NULL},
+        {"EXTERNAL LENS CONTROL", NULL}
 };
 enum {MotorMappingLensControlSetup=1,
     MotorModelLensControlSetup,
@@ -313,8 +328,26 @@ enum {MotorMappingLensControlSetupSistem=0,
     ZIFReversSistem,
     externalLensControlSistem};
 
-#endif
+#else
 
+tMenu_Link lensControlSetup[4]={
+        {"MOTOR MAPPING", NULL},
+        {"MOTOR MODELS", NULL},
+        {"CAMERA MODEL", NULL},
+        {"LENS CALIBRATE", NULL},
+    };
+enum {MotorMappingLensControlSetup=1,
+    MotorModelLensControlSetup,
+    CameraModelLensControlSetup,
+    LensCalibrateLensControlSetup};
+
+enum {MotorMappingLensControlSetupSistem=0,
+    MotorModelLensControlSetupSistem,
+    CameraModelLensControlSetupSistem,
+    LensCalibrateLensControlSetupSistem};
+
+
+#endif
 
 tMenu_Link lensControlZIF[3]={
 		{"ZOOM", NULL},
@@ -489,7 +522,6 @@ SwitchMotorAction* lensControlMotorActionSelectPointer;
 LCD_Main* mainScreenPointer;
 HourMeterMenu* hourMeterMenuPointer;
 LCD::ZIFRevers * zifReversMenuPointer;
-//LCD_Menu_WeelSpeed* wheelSpeedMenuPointer;
 LCD::LCDWheelMenu* wheelMenuPointer;
 SelectMenuSpiderSelect* tiltSpiderSelectMenuPointer;
 SelectMenuSpiderSelect* panSpiderSelectMenuPointer;
@@ -573,10 +605,8 @@ void pultIndikator_Task(Pult* point_pult)
 	LCD::TurnsViewMenu axisTurnsViewMenu("DRIFT STOPPER", axisTurnsText, 7, 7);
 	axisTurnsViewMenuPointer=&axisTurnsViewMenu;
 
-	//LCD_Menu_WeelSpeed wheelSpeedMenu("WHEEL SPEED",wheelSpeedText,3,0,3);
 	LCD::LCDWheelMenu wheelMenu;
 	wheelMenuPointer=&wheelMenu;
-//	wheelSpeedMenuPointer->updateFromEEPROM();
 
 	SelectMenuSpiderSelect tiltSpiderSelectMenu("SUSPENSION RESONANCE", tiltSpiderSelectText, 2, 2,EE_LC_TILT_SUSPENSION_RES_TYPE,EE_LC_TILT_SUSPENSION_EDIT_FREQ,SUSPENSION_RESONANCE_CHANNEL_TILT);
 	tiltSpiderSelectMenuPointer=&tiltSpiderSelectMenu;
@@ -593,11 +623,11 @@ void pultIndikator_Task(Pult* point_pult)
 	/*SetStartFluid setStartFluidMenu("FRONT RAMP");
 	setStartFluidPointer=&setStartFluidMenu;
 	setStartFluidMenu.updateFromEeprom();*/
-
+#ifdef joyPult
 	SetJoyDeadZone setJoyDeadZoneMenu("DEADZONE");
 	setJoyDeadZoneMenuPointer=&setJoyDeadZoneMenu;
 	setJoyDeadZoneMenu.updateFromEeprom();
-
+#endif
 
 	LCD_Menu suspResonanceSelectMenu("SUSPENSION RESONANCE",  suspensionResonanceSelectMenuText, 2, 0, 2	);
 	suspResonanceSelectPointer=&suspResonanceSelectMenu;
@@ -622,18 +652,8 @@ void pultIndikator_Task(Pult* point_pult)
 	syncroSorcePointer->updateFromEEPROM();
 
 
-
+#ifdef joyPult
 	LCD_Menu tuningMenu("TUNING",  tuningMenuText, 7, 0, 7	);
-/*	tuningMenuPointer=&tuningMenu;
-	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
-	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
-	tuningMenuText[2].pPointSub=&setJoyDeadZoneMenu;
-	tuningMenuText[3].pPointSub=&setStartFluidMenu;
-	tuningMenuText[4].pPointSub=&hourMeterMenu;
-	tuningMenuText[5].pPointSub=&motionPrerolMenu;
-	tuningMenuText[6].pPointSub=&syncroSouce;
-	tuningMenuText[7].pPointSub=&axisTurnsViewMenu;*/
-
 	tuningMenuPointer=&tuningMenu;
 	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
 	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
@@ -642,13 +662,26 @@ void pultIndikator_Task(Pult* point_pult)
 	tuningMenuText[4].pPointSub=&motionPrerolMenu;
 	tuningMenuText[5].pPointSub=&syncroSouce;
 	tuningMenuText[6].pPointSub=&axisTurnsViewMenu;
+#else
+	LCD_Menu tuningMenu("TUNING",  tuningMenuText, 6, 0, 6  );
+	tuningMenuPointer=&tuningMenu;
+	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
+	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
+	tuningMenuText[2].pPointSub=&hourMeterMenu;
+	tuningMenuText[3].pPointSub=&motionPrerolMenu;
+	tuningMenuText[4].pPointSub=&syncroSouce;
+	tuningMenuText[5].pPointSub=&axisTurnsViewMenu;
+#endif
 
-	FolowingModeMenu folowingModeMenu("FOLOWING MODE");
+
+
+
+	FolowingModeMenu folowingModeMenu("FOLLOWING MODE");
 	folowingModePointer=&folowingModeMenu;
 	folowingModeMenu.updateFromEeprom();
-
+#ifdef joyPult
 	LCD_Menu setupMenu("SETUP",  setupMenuText, 8, 0, 8 );
-	setupMenuPointer=&setupMenu;
+
 	Main_Menu_Link[1].pPointSub = &setupMenu;
 	setupMenuText[0].pPointSub=pBright_Set;
 	setupMenuText[1].pPointSub=&profileMenu;
@@ -657,6 +690,19 @@ void pultIndikator_Task(Pult* point_pult)
 	setupMenuText[4].pPointSub=&wheelMenu;
 	setupMenuText[6].pPointSub=&tuningMenu;
 	setupMenuText[7].pPointSub=&folowingModeMenu;
+#else
+	LCD_Menu setupMenu("SETUP",  setupMenuText, 6, 0, 6 );
+
+	Main_Menu_Link[1].pPointSub = &setupMenu;
+	setupMenuText[0].pPointSub=pBright_Set;
+	setupMenuText[1].pPointSub=&profileMenu;
+	setupMenuText[2].pPointSub=&setupOverslangActivate;
+	setupMenuText[3].pPointSub=&wheelMenu;
+	setupMenuText[4].pPointSub=&tuningMenu;
+	setupMenuText[5].pPointSub=&folowingModeMenu;
+
+#endif
+	setupMenuPointer=&setupMenu;
 
 	//Motion
 	LCD_Cell Cell_Motion((char*)"Insert module",30,90,250,60);
@@ -672,7 +718,7 @@ void pultIndikator_Task(Pult* point_pult)
 	//сами эквалайзеры (3 шт)
 	LCD_Equalizer EqualizerPan((char*)"Pan",7, EE_PK_Line_0,PanJoystickEqualaser); //"EQUALIZER"
 	pEqualizerPan = &EqualizerPan;
-#ifdef smart19
+#ifdef USAEdition
 	LCD_Equalizer EqualizerDutch((char*)"Roll",7, EE_DK_Line_0,DutchJoystickEqualaser); //"EQUALIZER"
 #else
 	LCD_Equalizer EqualizerDutch((char*)"Dutch",7, EE_DK_Line_0,DutchJoystickEqualaser); //"EQUALIZER"
@@ -680,49 +726,45 @@ void pultIndikator_Task(Pult* point_pult)
 	pEqualizerDutch = &EqualizerDutch;
 	LCD_Equalizer EqualizerTilt((char*)"Tilt",7, EE_TK_Line_0,TiltJoystickEqualaser); //"EQUALIZER"
 	pEqualizerTilt = &EqualizerTilt;
+#ifdef 	joyPult
 	LCD_Equalizer EqualizerZoom((char*)"Zoom",7, EE_ZK_Line_0,ZoomJoystickEqualaser); //"EQUALIZER"
 	pEqualizerZoom = &EqualizerZoom;
 	//теперь подменю выбора оси эквалайзера
 	LCD_Menu PDT_Menu_Eq((char*)"Select Axis", PDTMenu_link,4,0,4);
 	p_PDT_Menu_Eq = &PDT_Menu_Eq;
 	Main_Menu_Link[4].pPointSub = p_PDT_Menu_Eq;
+#else
+	LCD_Menu PDT_Menu_Eq((char*)"Select Axis", PDTMenu_link,3,0,3);
+	p_PDT_Menu_Eq = &PDT_Menu_Eq;
+	Main_Menu_Link[4].pPointSub = p_PDT_Menu_Eq;
+#endif
 	//todo
 	//"LENS CONTROL"
-
-
-#ifdef objDef
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
-	lensControlMenuPointer=&lensControlMenu;
-
-
-	LCD_Menu lensControlObjektiveMenu ("OBJEKTIVE",controlObjectiveMenu,3,0,3);
-	lensControlObjectiveMenuPointer=&lensControlObjektiveMenu;
-	lensControlSetup[4].pPointSub=lensControlObjectiveMenuPointer;
-
-	LCD_Menu objectiveCreatMenu ("LENS CREAT",objectiveCreat,4,0,4);
-	lensCreatMenuPointer=&objectiveCreatMenu;
-
-	LCD::MeasureSistemTipes selectMeasureMenu("MEASURE SYSTEM TYPES",MeasureSistemTipesMenu,2,0,2);
-	LCDMeasureSelect=&selectMeasureMenu;
-
-	LCD::LCDMenuObjectiveSelect objectiveSelectMenu ("OBJECTIVE SELECT",objectiveSelect,5,0,5);
-	_objectiveSelectMenu=&objectiveSelectMenu;
-
-	controlObjectiveMenu[objectivSelectMenuSistem].pPointSub=_objectiveSelectMenu;
-	controlObjectiveMenu[objectiveCreatMenuSistem].pPointSub=lensCreatMenuPointer;
-	controlObjectiveMenu[measurementSystemsTypesSistem].pPointSub=LCDMeasureSelect;
-	lensControlSetup[objectiveSelectControlSetupSistem].pPointSub=&lensControlObjektiveMenu;
-
-#else
-
-
+#ifdef  joyPult
 	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,8,0,8);
 	lensControlMenu.readEEPROM();
 	lensControlMenuPointer=&lensControlMenu;
-#endif
 
     LCD::ZIFRevers  zifReversMenu;
     zifReversMenuPointer=&zifReversMenu;
+
+    SelectMenuZoomSense lensControlZoomSense("ZOOM SENSE", lensControlZoomSenseText, 4, 4,EE_LC_ZOOM_SENSE);
+    lensControlZoomSense.updateFromEEPROM();
+    lensControlZoomSensePointer=&lensControlZoomSense;
+
+    SetZoomDrift lensControlZoomDrift("ZOOM DRIFT");
+    lensControlZoomDrift.updateFromEeprom();
+    lensControlZoomDriftPointer=&lensControlZoomDrift;
+
+    lensControlSetup[ZoomSensLensControlSetupSistem].pPointSub=&lensControlZoomSense;
+    lensControlSetup[ZoomDriftLensControlSetupSistem].pPointSub=&lensControlZoomDrift;
+    lensControlSetup[ZIFReversSistem].pPointSub=&zifReversMenu;
+#else
+    LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,4,0,4);
+    lensControlMenu.readEEPROM();
+    lensControlMenuPointer=&lensControlMenu;
+
+#endif
 
 	LCD_Menu_lcZIF lensControlZifSetup("MOTOR MAPPING",lensControlZIF ,3,0,3,lensControlMotorsText,3);
 	lensControlZifSetupPointer=&lensControlZifSetup;
@@ -734,21 +776,9 @@ void pultIndikator_Task(Pult* point_pult)
 	lensControlCameraStart.updateFromEEPROM();
 	lensControlCameraStartPointer=&lensControlCameraStart;
 
-	SelectMenuZoomSense lensControlZoomSense("ZOOM SENSE", lensControlZoomSenseText, 4, 4,EE_LC_ZOOM_SENSE);
-	lensControlZoomSense.updateFromEEPROM();
-	lensControlZoomSensePointer=&lensControlZoomSense;
-
-	SetZoomDrift lensControlZoomDrift("ZOOM DRIFT");
-	lensControlZoomDrift.updateFromEeprom();
-	lensControlZoomDriftPointer=&lensControlZoomDrift;
-
 	lensControlSetup[MotorMappingLensControlSetupSistem].pPointSub=&lensControlZifSetup;
 	lensControlSetup[MotorModelLensControlSetupSistem].pPointSub=&lensControlMotorsSetup;
 	lensControlSetup[CameraModelLensControlSetupSistem].pPointSub=&lensControlCameraStart;
-
-	lensControlSetup[ZoomSensLensControlSetupSistem].pPointSub=&lensControlZoomSense;
-	lensControlSetup[ZoomDriftLensControlSetupSistem].pPointSub=&lensControlZoomDrift;
-	lensControlSetup[ZIFReversSistem].pPointSub=&zifReversMenu;
 
 	SwitchMotorTypeMenu lensControlMotorTypeSelect("SELECT TYPE",lensControlMotorsTypesText,2);
 	lensControlMotorTypeSelectPointer=&lensControlMotorTypeSelect;
@@ -766,11 +796,8 @@ void pultIndikator_Task(Pult* point_pult)
 
 	Main_Menu_Link[5].pPointSub =&lensControlMenu;
 
-	//теперь главное меню
-
 	LCD_Menu Main_Menu((char*)"MAIN MENU", Main_Menu_Link,6,1,6);
 	pMain_Menu = &Main_Menu;
-
 
 	UInt32 vax=0;
 
@@ -796,8 +823,6 @@ void pultIndikator_Task(Pult* point_pult)
 	Main_Screen.Draw();
 	Main_Screen.Focused = false;
 
-
-
 	volatile UInt32 lastTimeToStart=0;
 	volatile UInt32 newTTS=0;
 	volatile UInt32 rawValue=0;
@@ -811,21 +836,21 @@ void pultIndikator_Task(Pult* point_pult)
 
 		newTTS=p_pult->getTimeToStart();
 		if(newTTS>=(lastTimeToStart+10))
-		{
+		    {
 			rawValue=EE_Working::ReadCalibrationData(EE_CAL_HOURS);
 			if(rawValue==0xFFFFFFFF)
-			{
+			    {
 				rawValue=0;
 				EE_Working::WriteCalibrationData(EE_CAL_HOURS, rawValue);
-			}
+			    }
 			rawValue+=(newTTS-lastTimeToStart);
 			if(rawValue>=0xFFFFFFFA){rawValue=0xFFFFFFFA;}
 			EE_Working::WriteCalibrationData(EE_CAL_HOURS, rawValue);
 			lastTimeToStart=newTTS;
 			HourMeter_rawValue=rawValue;
-		}
-	}
-}
+            }
+        }
+    }
 
 PultButtonStates LCD_Listener::getButtonState(PultButtons pultButton)
 {
@@ -844,45 +869,6 @@ PultButtonStates LCD_Listener::getButtonState(PultButtons pultButton)
 	return RELESASED;
 }
 
-//Warning headDisconnectedWarning("Head disconnected!", WT_WARNING);
-void MainListener()
-{
-/*	if(p_pult->isJoySticksEnabled()) //состяние джойстиков
-	{
-		p_pult->getLedController()->getData()->resetLed(LED_JOYSTIC);
-		p_pult->getLedController()->invalidate();
-	}
-	else
-	{
-		p_pult->getLedController()->getData()->setLed(LED_JOYSTIC);
-		p_pult->getLedController()->invalidate();
-	}*/
-
-/*	if(p_pult->isMotorsEnabled()) //состояние моторов
-	{
-		p_pult->getLedController()->getData()->setLed(LED_MOTOR);
-		p_pult->getLedController()->invalidate();
-	}
-	else
-	{
-		p_pult->getLedController()->getData()->resetLed(LED_MOTOR);
-		p_pult->getLedController()->invalidate();
-	}
-
-	if (!(p_pult->isBackLightEnabled()))
-	{
-		SetBrightness(0);
-	}
-	else
-	{
-		SetBrightness(pBright_Set->Value_Koeff);
-	}
-
-	return;*/
-
-}
-
-
 LCD_Main::LCD_Main(char* pName):
 Cell_Main_Counter((char*) "", 1,1,10,10),
 Cell_Main_Counter_Right((char*) "", 1,1,10,10),
@@ -893,8 +879,10 @@ Cell_D_Name((char*) "", 1,1,10,10),
 Cell_D_Inf((char*) "", 1,1,10,10),
 Cell_T_Name((char*) "", 1,1,10,10),
 Cell_T_Inf((char*) "", 1,1,10,10),
+#ifdef joyPult
 Cell_Z_Name((char*) "", 1,1,10,10),
 Cell_Z_Inf((char*) "", 1,1,10,10),
+#endif
 Cell_Joyst_State((char*) "", 1,1,10,10),
 Cell_Motor_State((char*) "", 1,1,10,10),
 Cell_GV_Acc((char*) "", 1,1,10,10),
@@ -1229,7 +1217,11 @@ void LCD_Main::Draw() //рисование
 //		Cell_Joyst_State.Active_Style.Cell_Color = ClrGoldenrod;
 		Cell_Joyst_State.Active_Style.Cell_Color = Style_MenuActive.Cell_Color;
 		Cell_Joyst_State.UnActive_Style.pFont = g_psFontCmsc22;
-		Cell_Joyst_State.FastDraw(60,30,200,30, (char*)"Joystick OFF", Cell_UnActive);
+#ifdef joyPult
+		Cell_Joyst_State.FastDraw(60,30,200,30, (char*)"Joysticks OFF", Cell_UnActive);
+#else
+		Cell_Joyst_State.FastDraw(60,30,200,30, (char*)"All Wheels OFF", Cell_UnActive);
+#endif
 
 		Cell_Motor_State.Active_Style = Cell_Joyst_State.Active_Style;
 		Cell_Motor_State.UnActive_Style = Cell_Joyst_State.UnActive_Style;
@@ -1258,15 +1250,10 @@ void LCD_Main::Draw() //рисование
 
 		currentProfile.Active_Style = Cell_Joyst_State.Active_Style;
 		currentProfile.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-		//currentProfile.Active_Style.Text_Centered=false;
 		updatecurrentProfileCell();
 		currentProfile.FastDraw(255,30,60,30, profileString, Cell_Active);
-	//headVoltage.FastDraw(5,150,60,30, (char*)"V:N/A", Cell_Active);
 
 
-	/*	CellTiltLimitedState.Active_Style = Cell_Joyst_State.Active_Style;
-		CellTiltLimitedState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-		CellTiltLimitedState.FastDraw(60,60,200,30, (char*)"Tilt Unlimited!", Cell_UnActive);*/
 
 		// ======== END Центр ==============
 	}
@@ -1301,7 +1288,11 @@ void LCD_Main::Draw() //рисование
 //		Cell_Joyst_State.Active_Style.Cell_Color = ClrGoldenrod;//Style_MenuActive.Cell_Color;
 		Cell_Joyst_State.Active_Style.Cell_Color = Style_MenuActive.Cell_Color;
 		Cell_Joyst_State.UnActive_Style.pFont = g_psFontCmsc18;
-		Cell_Joyst_State.FastDraw(5,85,130,20, (char*)"Joystick OFF", Cell_UnActive);
+#ifdef joyPult
+		Cell_Joyst_State.FastDraw(5,85,130,20, (char*)"Joysticks OFF", Cell_UnActive);
+#else
+        Cell_Joyst_State.FastDraw(5,85,130,20, (char*)"All Wheels OFF", Cell_UnActive);
+#endif
 		Cell_Motor_State.Active_Style = Cell_Joyst_State.Active_Style;
 		Cell_Motor_State.UnActive_Style = Cell_Joyst_State.UnActive_Style;
 		Cell_Motor_State.FastDraw(5,110,130,20, (char*)"Motors OFF", Cell_UnActive);
@@ -1378,8 +1369,11 @@ void LCD_Main::Draw() //рисование
 
 	// ======== Сверху ==============void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active);
 //todo русуем зум сенс
-	//UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
+#ifdef joyPult
 	UInt16 PosX = 2, Length1 = 22, Length2 = 59, Otkat = 2;
+#else
+	UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
+#endif
 	Cell_P_Name.Active_Style = Style_MenuHeader;
 	Cell_P_Name.FastDraw(PosX,1,Length1,30, (char*)"P", Cell_Active);
 
@@ -1388,7 +1382,7 @@ void LCD_Main::Draw() //рисование
 	Cell_P_Inf.FastDraw(PosX + (Length1-Otkat),1,Length2,30, (char*)"PS1", Cell_Active);
 
 
-#ifdef smart19
+#ifdef USAEdition
     Cell_T_Name.Active_Style = Style_MenuHeader;
     Cell_T_Name.FastDraw(PosX + 1*(Length1-Otkat) + Length2,1,Length1,30, (char*)"T", Cell_Active);
 
@@ -1417,18 +1411,17 @@ void LCD_Main::Draw() //рисование
     Cell_T_Inf.Active_Style = Style_MenuHeader;
     Cell_T_Inf.UnActive_Style = Style_Error;
     Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
-
-
 	#endif
 
 
-
+#ifdef joyPult
     Cell_Z_Name.Active_Style = Style_MenuHeader;
     Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,1,Length1,30, (char*)"Z", Cell_Active);
 
     Cell_Z_Inf.Active_Style = Style_MenuHeader;
     Cell_Z_Inf.UnActive_Style = Style_Error;
     Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) + 3*Length2,1,Length2,30, (char*)"ZS1", Cell_Active);
+#endif
 	// ======== END Сверху ==============
 
 	Serv_Counter(p_pult->getPanTurns(), true);
@@ -1469,9 +1462,10 @@ void LCD_Main::ReDraw() //перерисовка
 	Cell_D_Inf.ReDraw();
 	Cell_T_Name.ReDraw();
 	Cell_T_Inf.ReDraw();
-	//todo вписываем новые объекты верхнего подменю на перерисовку
+#ifdef joyPult
 	Cell_Z_Name.ReDraw();
 	Cell_Z_Inf.ReDraw();
+#endif
 	// ======== END Сверху ==============
 	updateTiltLimiterCell();
 	updatecurrentProfileCell();
@@ -1491,7 +1485,6 @@ void LCD_Main::ReDraw() //перерисовка
 		motionPlayModeState=MOTION_PLAY_MODE_ONCE;
 		motionMixModeState=MOTION_MIX_TRACK_ONLY;
 
-
 		motionLimitTime.ReDraw();
 		motionCurrentTime.ReDraw();
 		motionLimitTime.ReDraw();
@@ -1508,8 +1501,6 @@ void LCD_Main::updatecurrentProfileCell()
 }
 void LCD_Main::updateVoltageString(bool manual)
 {
-//    sprintf(&voltageString[0],"%3.2f",p_pult->getSpeedPasha());
-//    headVoltage.ReDraw();
 	UInt16 t=(UInt16)(p_pult->getHeadVoltage()*10);
 
 	if((lastVoltage!=t)||manual)
@@ -1722,6 +1713,7 @@ void LCD_Main::explore_Presets()
 		Cell_T_Inf.SetText(promName);
 		Cell_T_Inf.ReDraw();
 	}
+#ifdef joyPult
     promName = (char*)p_pult->getJoystickPresetName(ZoomJoystickPreset);
     if(Cell_Z_Inf.p_text != promName)
     {
@@ -1737,6 +1729,7 @@ void LCD_Main::explore_Presets()
         Cell_Z_Inf.SetText(promName);
         Cell_Z_Inf.ReDraw();
     }
+#endif
 }
 
 bool LCD_Main::explore_Koeff_Butt()
@@ -2211,18 +2204,20 @@ void LCD_Menu::Draw(byte Active) //расчет позиции и рисование
 }
 
 void LCD_Menu::readEEPROM() {
+#ifdef joyPult
     uint32_t prestonData=EE_Working::Read(EE_LC_EXTERNAL_LENS_CONTROL);
     if (prestonData>1) {
         EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 0);
         }
     else {
+
         if (prestonData)
             Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM ON";
         else
             Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM OFF";
         }
     p_pult->setPreston((bool)prestonData);
-
+#endif
                     // записываем что престон включен
     }
 
@@ -2488,6 +2483,7 @@ void LCD_Menu::Listener()
 			this->Table_Cell[LensCalibrateLensControlSetupSistem]->ReDraw();
 			return;
 		    }
+ #ifdef joyPult
 		if(this==lensControlMenuPointer&&this->Tek_Count==externalLensControl){
 		    return;
 		}
@@ -2520,8 +2516,8 @@ void LCD_Menu::Listener()
 			this->Table_Cell[JoystickCalibrationSetupMenuSistem]->ReHide();
 			this->Table_Cell[JoystickCalibrationSetupMenuSistem]->ReDraw();
 			return;
-
 		}
+#endif
 
 		if(this == pMain_Menu)
 		    {
@@ -2550,7 +2546,7 @@ void LCD_Menu::Listener()
 		pDispl->Focused = true;
 		return;
 	}
-
+#ifdef joyPult
 	if(this==lensControlMenuPointer&&this->Tek_Count==externalLensControl){
 	    if ((getButtonState(pult_Button_Right) == PRESSED)||(getButtonState(pult_Button_Left) == PRESSED))
             {
@@ -2566,6 +2562,7 @@ void LCD_Menu::Listener()
             Table_Cell[externalLensControlSistem]->ReDraw();
             }
         }
+#endif
 
 	if (getButtonState(pult_Button_Dn) == PRESSED)	Plus();
 	if (getButtonState(pult_Button_Up) == PRESSED)	Minus();
@@ -2616,7 +2613,7 @@ void SetJoyDeadZone::DrawVert() //рисование вертикального меню
 	StepY = p_Pos_Size_XY.Ysize + 5;
 
 	sprintf(bufferNames[0],"PAN: %d", values[0]);
-#ifdef smart19
+#ifdef USAEdition
 	sprintf(bufferNames[1],"ROLL: %d", values[1]);
 #else
 	sprintf(bufferNames[1],"DUTCH: %d", values[1]);
@@ -2799,7 +2796,7 @@ void SetMaxTorque::DrawVert() //рисование вертикального меню
 
 	drawEco();
 	sprintf(bufferNames[panTorqueSistem],"PAN: %d", values[panTorqueSistem]);
-#ifdef smart19
+#ifdef USAEdition
 	sprintf(bufferNames[dutchTorqueSistem],"ROOL: %d", values[dutchTorqueSistem]);
 #else
 	sprintf(bufferNames[dutchTorqueSistem],"DUTCH: %d", values[dutchTorqueSistem]);
@@ -4633,7 +4630,6 @@ void loadEepromValueFromPult()
 {
 	pSet_Koeff->Read_EE_State();
 	pBright_Set->readFromEEPROM();
-//	SetBrightness(pBright_Set->Value_Koeff);
 	pEqualizerPan->Read_EE_State();
 	pEqualizerDutch->Read_EE_State();
 	pEqualizerTilt->Read_EE_State();
@@ -4649,20 +4645,21 @@ void loadEepromValueFromPult()
 	tiltSpiderSelectMenuPointer->updateFromEEPROM();
 	setupOverslangActivatePointer->updateFromEEPROM();
 	lensControlCameraStartPointer->updateFromEEPROM();
+#ifdef joyPult
 	lensControlZoomSensePointer->updateFromEEPROM();
 	lensControlZoomDriftPointer->updateFromEeprom();
 	setJoyDeadZoneMenuPointer->updateFromEeprom();
+	lensControlZoomSensePointer->action();
+	lensControlZoomDriftPointer->action();
+	setJoyDeadZoneMenuPointer->action();
+#endif
 	setMotionPrerolPointer->updateFromEeprom();
     folowingModePointer->updateFromEeprom();
-//	syncroSorcePointer->updateFromEEPROM();
-//	syncroSorcePointer->action();
 	setMaxTorqueMenuPointer->action();
 	tiltSpiderSelectMenuPointer->action();
 	setupOverslangActivatePointer->action();
 	lensControlCameraStartPointer->action();
-	lensControlZoomSensePointer->action();
-	lensControlZoomDriftPointer->action();
-	setJoyDeadZoneMenuPointer->action();
+
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -4738,7 +4735,7 @@ LCD_Set_Koeff::LCD_Set_Koeff(char* pNam, byte Count, byte Menu_Per_Scr):
 Cell_Header((char*) " ", 1,1,10,10),
 Cell_1((char*) "PK", 1,1,10,10),
 Cell_4((char*) "PI", 33,1,10,10),
-#ifdef smart19
+#ifdef USAEdition
 Cell_2((char*) "RK", 22,1,10,10),
 Cell_3((char*) "TK", 11,1,10,10),
 Cell_5((char*) "RI", 55,1,10,10),
@@ -6155,4 +6152,5 @@ tColor FullColorTable[140] =
         {"ClrYellow",               0x00FFFF00},
         {"ClrYellowGreen",          0x009ACD32},
         };
+
 

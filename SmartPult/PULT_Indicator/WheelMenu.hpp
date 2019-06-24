@@ -111,7 +111,7 @@ const char * cellWheelPanOn = "WHEEL PAN : ON";
 const char * cellWheelPanOff = "WHEEL PAN : OFF";
 const char * cellWheelTiltOn = "WHEEL TILT : ON";
 const char * cellWheelTiltOff = "WHEEL TILT : OFF";
-#ifdef smart19
+#ifdef USAEdition
 const char * cellWheelRollOn = "WHEEL ROLL : ON";
 const char * cellWheelRollOff = "WHEEL ROLL : OFF";
 #else
@@ -429,7 +429,7 @@ private:
     void printData () {
         sprintf(&textPanSpeed[0],"PAN SPEED: " "%1.2f", speedPan);
         sprintf(&textTiltSpeed[0],"TILT SPEED: " "%1.2f", speedTilt);
-        #ifdef smart19
+        #ifdef USAEdition
         sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
         #else
         sprintf(&textRollSpeed[0],"DUTCH SPEED: " "%1.2f", speedRoll);
@@ -441,7 +441,7 @@ private:
         }
 
     void printRoll() {
-        #ifdef smart19
+        #ifdef USAEdition
         sprintf(&textRollSpeed[0],"ROLL SPEED: " "%1.2f", speedRoll);
         #else
         sprintf(&textRollSpeed[0],"DUTCH SPEED: " "%1.2f", speedRoll);
@@ -479,7 +479,7 @@ const char * whellTiltFull  = "TILT RANGE: FULL";
 
 char * tiltText[digitalWheelText] = {(char *)whellTiltOff,(char *)whellTiltSlow,(char *)whellTiltMiddle,(char *)whellTiltFast,(char *)whellTiltFull} ;
 
-#ifdef smart19
+#ifdef USAEdition
 const char * whellRollOff  = "ROLL RANGE: OFF";
 const char * whellRollSlow = "ROLL RANGE: SLOW";
 const char * whellRollMiddle = "ROLL RANGE: MIDDLE";
@@ -507,7 +507,7 @@ const char * secondWheelTilt = "TILT WHEEL: SECOND";
 const char * secondWheelRoll = "TILT WHEEL: THIRD";
 
 char * secondText[nameWheelID]  = {(char *)secondWheelPan,(char *)secondWheelTilt,(char *)secondWheelRoll};
-#ifdef smart19
+#ifdef USAEdition
 const char * thirdWheelPan  = "ROLL WHEEL: FIRST";
 const char * thirdWheelTilt = "ROLL WHEEL: SECOND";
 const char * thirdWheelRoll = "ROLL WHEEL: THIRD";
@@ -523,7 +523,7 @@ char * thirdText [nameWheelID]  = {(char *)thirdWheelPan, (char *)thirdWheelTilt
 const char * textStartSelect     = "START WHEEL SELECTION";
 const char * textPanWheelSelect  = "CHOOSE THE PAN WHEEL";
 const char * textTiltWheelSelect = "CHOOSE THE TILT WHEEL";
-#ifdef smart19
+#ifdef USAEdition
 const char * textRollWheelSelect = "CHOOSE THE ROll WHEEL";
 #else
 const char * textRollWheelSelect = "CHOOSE THE DUTCH WHEEL";

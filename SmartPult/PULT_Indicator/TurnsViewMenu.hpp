@@ -45,18 +45,32 @@ const char * errorString= "ERROR";
 const char * sistemOkString="SYSTEM OK";
 const char * inicializationString="INITIALIZATION";
 const char * sistemHaveErrorString="SYSTEM ERROR";
-const char * waitJoyStickStatusString="JOYSTICKS STATUS...";
+
 const char * waitLevelCorrectStatusString="LEVEL CORRECT STATUS...";
 const char * waitMotorsStatusString="MOTORS STATUS...";
 const char * motorsOnString = "MOTORS ON";
 const char * motorsOffString ="MOTORS OFF";
 const char * levelCorrectOnString = "LEVEL CORRECT ON";
 const char * levelCorrectOffString = "LEVEL CORRECT OFF";
+
+#ifdef joyPult
 const char * joyStrickOnString = "JOYSTICKS ON";
 const char * joyStrickOffString = "JOYSTICKS OFF";
 const char * joyStickBlockStartString="BLOCKING JOYSTICKS...";
-const char * joyStickBlockOkString="FINISHED BLOCKING";
+const char * waitJoyStickStatusString="JOYSTICKS STATUS...";
 const char * joyStickBlockString = "JOYSTICKS BLOCKED";
+const char * joyStickUnblokStartString = "UNBLOCKING JOYSTICKS...";
+
+#else
+const char * joyStrickOnString = "WHEELS ON";
+const char * joyStrickOffString = "WHEELS OFF";
+const char * joyStickBlockStartString="BLOCKING WHEELS...";
+const char * waitJoyStickStatusString="WHEEL STATUS...";
+const char * joyStickBlockString = "WHEEL BLOCKED";
+const char * joyStickUnblokStartString = "UNBLOCKING WHEELS...";
+
+#endif
+const char * joyStickBlockOkString="FINISHED BLOCKING";
 const char * GVBlockStartString="BLOCKING LEVEL CORRECT...";
 const char * GVBlockOkString="FINISHED BLOCKING";
 const char * GVBlockString="LEVEL CORRECT BLOCKED";
@@ -65,7 +79,7 @@ const char * motorBlockOkString="FINISHED BLOCKING";
 const char * motorHardBlockString="MOTORS FORCED ON";
 const char * activatedString ="ACTIVATED";
 const char * interraptString = "ABORTING...";
-const char * joyStickUnblokStartString = "UNBLOCKING JOYSTICKS...";
+
 const char * joyStickUnblokOkString = "FINISHED UNBLOCKING";
 const char * levelCorrectUnblokStartString = "UNBLOCKING GV...";
 const char * levelCorrectUnblokOkString = "FINISHED UNBLOCKING";
@@ -178,7 +192,7 @@ public:
 
     virtual void DrawVert() {
         sprintf(textBuffer[0],"PAN: %2.6f",     panVal[0]);
-#ifdef smart19
+#ifdef USAEdition
         sprintf(textBuffer[1],"ROLL: %2.6f",   dutchVal[0]);
 #else
         sprintf(textBuffer[1],"DUTCH: %2.6f",   dutchVal[0]);

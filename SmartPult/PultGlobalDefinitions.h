@@ -12,7 +12,14 @@
 #define LANDSCAPE       //isDisplayOrientation
 
 //#define Garanin
-//#define smart19
-//#define WhellSmartPult
+#define USAEdition
+//#define joyPult
+
+#ifdef joyPult
+#else
+#define WhellSmartPult
+#endif
+//#define objDef
+
 
 #endif /* PULTGLOBALDEFINITIONS_H_ */

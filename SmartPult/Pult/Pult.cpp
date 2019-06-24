@@ -181,8 +181,12 @@ PultButton* virtualButtons[virtualButton] = {&virtualButtonJoysticOff
 };
 
 // нопки 1 - 16
-
+#ifdef joyPult
 static PultButton lensCalibrationButton,zoomReversButton,irisReversButton,focusReversButton,tb4;
+#else
+static PultButton lensCalibrationButton,rollWheelReversButton,tiltWheelReversButton,panWheelReversButton,tb4;
+#endif
+
 
 #define BUTTONS_1_16_COUNT 16
 static PultButton panReversButton(0), panSenseButton(1),
@@ -200,7 +204,11 @@ static PultButton* buttons_1_16[BUTTONS_1_16_COUNT] =
 	   &gvCalibrationButton, &levelCorrectButton,
 	   &fastLevelCorrectButton, &dutchLevelSetupButton, &motorOnOffButton,
 	   &joyStickOnOffButton,
+#ifdef joyPult
 	   &lensCalibrationButton,&zoomReversButton,&irisReversButton,&focusReversButton
+#else
+	   &lensCalibrationButton,&rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
+#endif
 };
 
 // нопки 17 - 32
@@ -214,14 +222,23 @@ static PultButton* buttons_17_32[BUTTONS_17_32_COUNT] = {&gvAccButton, &motionPl
 static PultButton cameraStartButton(28), sa17(29), backlightButton, shaker, in37, in38, in39, in40, in41, in42, in43, in44, inp45, inp46, inp47;
 static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa17, &backlightButton, &shaker, &in37, &in38, &in39, &in40, &in41, &in42, &in43, &in44, &inp45, &inp46, &inp47,&tb4};
 
-
+#ifdef USAEdition
 static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
-		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel2, &motionTrackSel5, &motionTrackSel3, &motionTrackSel6, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
+		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel3, &motionTrackSel6, &motionTrackSel2, &motionTrackSel5, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
 };
 
 static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
 		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel2, &motionTrackSel3, &motionTrackSel4, &motionTrackSel5, &motionTrackSel6
 };
+#else
+static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
+        &motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel2, &motionTrackSel5, &motionTrackSel3, &motionTrackSel6, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
+};
+
+static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
+        &motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel2, &motionTrackSel3, &motionTrackSel4, &motionTrackSel5, &motionTrackSel6
+};
+#endif
 //-------------------------------------------------------------------------------------
 //-------------- NEW JOYSTIC ----------------------------------------------------------
 										//CHANELS DEFINITION
@@ -328,8 +345,9 @@ JoyChannels panChannals     (panChannelsArray,3);
 JoyChannels dutchChannals   (dutchChannelsArray,4);
 JoyChannels tiltChannals    (tiltChannelsArray,3);
 JoyChannels zoomChannals    (zoomChannelsArray,1);
+#endif
 
-#else
+#ifdef joyPult
 JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
 JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
 JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
@@ -339,6 +357,17 @@ JoyChannels panChannals     (panChannelsArray,4);
 JoyChannels dutchChannals   (dutchChannelsArray,5);
 JoyChannels tiltChannals    (tiltChannelsArray,4);
 JoyChannels zoomChannals    (zoomChannelsArray,2);
+
+#else
+JoyChannelIF* panChannelsArray[3]=      {&panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
+JoyChannelIF* dutchChannelsArray[4]=    {&dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
+JoyChannelIF* tiltChannelsArray[3]=     {&tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
+JoyChannelIF* zoomChannelsArray[1]=     { &cartoniZoomAxisChannel};
+
+JoyChannels panChannals     (panChannelsArray,3);
+JoyChannels dutchChannals   (dutchChannelsArray,4);
+JoyChannels tiltChannals    (tiltChannelsArray,3);
+JoyChannels zoomChannals    (zoomChannelsArray,1);
 #endif
 
 									//joystics
@@ -682,11 +711,18 @@ void Pult::driverTask()
 	backlight.setDriver(&backlightDriver);
 	preston.setDriver(&prestonDriver);
 
+
+#ifdef WhellSmartPult
+	panJoyChannel.disable();
+	dutchJoyChannel.disable();
+	tiltJoyChannel.disable();
+	zoomJoyChannel.disable();
+#endif
 	while(true) {
 		watchDogTimer.useKey(WD_KEY2);
 //ќбработка аналоговых сигналов
 		UInt32* result = signalsReader.read();
-
+#ifdef joyPult
 		switch(joysticsConfig)
 		    {
 			case JOYSTIC_REVERS_JOY_CONFIG:
@@ -704,7 +740,7 @@ void Pult::driverTask()
 				zoomJoyChannel.setRef(result[SIGNAL_ZOOM]);
 				break;
 		    }
-
+#endif
 		panExtern1Channel.setRef(result[SIGNAL_PAN_WHEEL]);
 		tiltExtern1Channel.setRef(result[SIGNAL_TILT_WHEEL]);
 		cartoniPanAxisChannel.setData();
@@ -1315,6 +1351,7 @@ void Pult::exchangeTask()
 // Pult Logic
 
 static void inversLogic() {
+#ifdef joyPult
 	switch (panReversButton.state) {
 	case PRESSED:
 		panJoy.setInversOrientation();
@@ -1339,6 +1376,48 @@ static void inversLogic() {
 		tiltJoy.setNormalOrientation();
 		break;
 	}
+#else
+//	&rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
+	if(panReversButton.isPressed()) {
+	    panJoy.enable();
+	    panJoy.setNormalOrientation();
+	    }
+	else if (!panReversButton.isPressed()&&!panWheelReversButton.isPressed()) {
+	    panJoy.disable();
+	    }
+
+	else {
+	    panJoy.enable();
+	    panJoy.setInversOrientation();
+	    }
+
+    if(dutchReversButton.isPressed()) {
+        dutchJoy.enable();
+        dutchJoy.setNormalOrientation();
+        }
+    else if (!dutchReversButton.isPressed()&&!rollWheelReversButton.isPressed()) {
+        dutchJoy.disable();
+        }
+
+    else {
+        dutchJoy.enable();
+        dutchJoy.setInversOrientation();
+        }
+
+    if(tiltReversButton.isPressed()) {
+        tiltJoy.enable();
+        tiltJoy.setNormalOrientation();
+        }
+    else if (!tiltReversButton.isPressed()&&!tiltWheelReversButton.isPressed()) {
+        tiltJoy.disable();
+        }
+
+    else {
+        tiltJoy.enable();
+        tiltJoy.setInversOrientation();
+        }
+
+#endif
 	//ZIF REVERS
 	switch (virtualZoomReversButton.state)
 	{
@@ -1371,9 +1450,9 @@ static void inversLogic() {
 
 
 static void joySticksOnOffLogic() {
+#ifdef joyPult
 	switch (joyStickOnOffButton.state) {
 	case PRESSED:
-
 		panJoyChannel.enable();
 		dutchJoyChannel.enable();
 		tiltJoyChannel.enable();
@@ -1392,6 +1471,26 @@ static void joySticksOnOffLogic() {
 		controlBits.bit.joysticOn=0;
 		break;
 	    }
+#else
+    switch (joyStickOnOffButton.state) {
+    case PRESSED:
+        digitalWheelPan.enable();
+        digitalWheelRoll.enable();
+        digitalWheelTilt.enable();
+        ledControl.getData()->resetLed(LED_JOYSTIC);
+        ledControl.invalidate();
+        controlBits.bit.joysticOn=1;
+        break;
+    case RELESASED:
+        digitalWheelPan.disable();
+        digitalWheelRoll.disable();
+        digitalWheelTilt.disable();
+        ledControl.getData()->setLed(LED_JOYSTIC);
+        ledControl.invalidate();
+        controlBits.bit.joysticOn=0;
+        break;
+        }
+#endif
 	if (virtualButtonJoysticOff.state==RELESASED) {
 	    zoomJoy.enable();
 	    panJoy.enable();
@@ -1403,6 +1502,7 @@ static void joySticksOnOffLogic() {
 	    dutchJoy.disable();
 	    tiltJoy.disable();
 	}
+
 }
 
 static UInt8 panSensId = 0;
@@ -1510,14 +1610,9 @@ static void controlLogic() {
     controlBits.bit.levelCorrect = levelCorrectButton.isPressed();
     controlBits.bit.levelSetup = dutchLevelSetupButton.isPressed();
     controlBits.bit.gvCalibration = gvCalibrationButton.isPressed();
-
-//#define amigo
-#ifdef amigo
-    controlBits.bit.fastLevelCorrect = shaker.isPressed();
-#else
     controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
 
-#endif
+
 	if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 3; setUpTiltLimitsFlag = false;};
 	if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
 	if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
@@ -1561,10 +1656,16 @@ static void controlLogic() {
 	} else
 		controlBits.bit.resetDwTiltLimits = false;
 
-
+#ifdef joyPult
 	if (gvAccButton.isClicked()) {
 		controlBits.bit.gvAcc = !controlBits.bit.gvAcc;
 	}
+#else
+	if (gvAccButton.isPressed())
+	    controlBits.bit.gvAcc = 1;
+	else
+	    controlBits.bit.gvAcc = 0;
+#endif
 	if (cameraStartButton.isClicked()) {
 		motorControlBits.bit.cameraStart=!motorControlBits.bit.cameraStart;
 	}

@@ -105,7 +105,8 @@ private:
     uint8_t counter;
     float speedWheel2;
     int32_t speedWheelRaw;
-    bool inputRaw;
+
+
 
 public:
 
@@ -120,7 +121,6 @@ public:
                     isEnable   =false;
                     connect=false;
                     counter=0;
-                    inputRaw=true;
                     for (uint8_t i=0; i<transmissionMax; i++) {
                         channal.setup(i,settings[i]);}
 
@@ -141,10 +141,6 @@ public:
 
     inline volatile float & getSpeedWheel () {
         return speedWheel;
-        }
-
-    inline void setUseSpeedRaw (bool inputRaw) {
-        this->inputRaw = inputRaw;
         }
 
     inline int32_t * getSpeedWheelRaw () {
