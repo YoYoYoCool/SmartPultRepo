@@ -543,7 +543,7 @@ public:
         digitalData(digitalData),
         LCDWheelBase(2,(char *)headerDigitalWheel,positionHeaderDigital,(char *)pointerDigital,positionPointerDigital) {
             select=false;
-
+            digitalData.all=0;
             cellHeader.Active_Style = Style_MenuHeader;
             cellHeader.UnActive_Style = Style_MenuHeader;
             cellPointer.Active_Style = Style_MenuHeader;
@@ -611,12 +611,18 @@ public:
             wheelPanTransmission.Active_Style.Cell_Color=ClrMediumOrchid;
             wheelPanTransmission.UnActive_Style.Cell_Color=ClrMediumOrchid;
             }
+        else {
+            p_pult->digitalWhellPanDisable();
+        }
 
         if (digitalData.data.digitalWheelTiltTransmission!=0) {
             p_pult->digitalWhellTiltEnable();
             wheelTiltTransmission.p_text=tiltText[(int8_t)digitalData.data.digitalWheelTiltTransmission];
             wheelTiltTransmission.Active_Style.Cell_Color=ClrMediumOrchid;
             wheelTiltTransmission.UnActive_Style.Cell_Color=ClrMediumOrchid;
+            }
+        else {
+            p_pult->digitalWhellTiltDisable();
             }
 
         if (digitalData.data.digitalWheelRollTransmission!=0) {
@@ -625,6 +631,9 @@ public:
             wheelRollTransmission.Active_Style.Cell_Color=ClrMediumOrchid;
             wheelRollTransmission.UnActive_Style.Cell_Color=ClrMediumOrchid;
             }
+        else {
+            p_pult->digitalWhellRollDisable();
+                }
         }
 
     virtual void workingForm() {
@@ -843,6 +852,7 @@ public:
         p_pult->setPanWheelSpeed(((float)analogData.data.wheelSpeedPan)*0.01);
         p_pult->setTiltWheelSpeed(((float)analogData.data.wheelSpeedTilt)*0.01);
         p_pult->setDutchWheelSpeed(((float)analogData.data.wheelSpeedRoll)*0.01);
+
         }
 
 private:

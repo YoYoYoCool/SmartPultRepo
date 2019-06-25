@@ -1617,7 +1617,11 @@ static void controlLogic() {
 	if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
 	if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
 	if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 3; resetDwTiltLimitsFlag = false;};
+#ifdef USAEdition || WhellSmartPult
+	if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+#else
 	if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+#endif
 	if (estimationFlag==true){estimationBitCounter=3;estimationFlag=false;}
 
 	if (estimationBitCounter){

@@ -12,8 +12,8 @@
 #define LANDSCAPE       //isDisplayOrientation
 
 //#define Garanin
-#define USAEdition
-//#define joyPult
+//#define USAEdition
+#define joyPult
 
 #ifdef joyPult
 #else

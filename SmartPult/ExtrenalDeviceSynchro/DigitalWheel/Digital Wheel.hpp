@@ -32,9 +32,9 @@ enum {transmissionMax=5};
 Schematic::AttAmpSettings settingsDummi = {
     .amplifierSettings.Vcc=12.0,
     .amplifierSettings.Vee=-12.0,
-    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.stableRatio=0.0,
     .amplifierSettings.resistenceMax=3722,
-    .amplifierSettings.adjustableRatio=15.7,
+    .amplifierSettings.adjustableRatio=0.0,
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
@@ -42,8 +42,14 @@ Schematic::AttAmpSettings settingsDummi = {
     };
 
 Schematic::AttAmpSettings settingsFirst = {
-    .amplifierSettings.Vcc=12.0,
-    .amplifierSettings.Vee=-12.0,
+
+#ifdef joyPult
+     .amplifierSettings.Vcc=12.0,
+     .amplifierSettings.Vee=-12.0,
+#else
+     .amplifierSettings.Vcc=24.0,
+     .amplifierSettings.Vee=-24.0,
+#endif
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
     .amplifierSettings.adjustableRatio=15.7,
@@ -54,8 +60,13 @@ Schematic::AttAmpSettings settingsFirst = {
     };
 
 Schematic::AttAmpSettings settingsSecond = {
+#ifdef joyPult
     .amplifierSettings.Vcc=120.0,
     .amplifierSettings.Vee=-120.0,
+#else
+    .amplifierSettings.Vcc=200.0,
+    .amplifierSettings.Vee=-200.0,
+#endif
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
     .amplifierSettings.adjustableRatio=15.7,
