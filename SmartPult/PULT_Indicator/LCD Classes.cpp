@@ -1501,6 +1501,26 @@ void LCD_Main::updatecurrentProfileCell()
 }
 void LCD_Main::updateVoltageString(bool manual)
 {
+#ifdef panWheelDebug
+    sprintf(voltageString,"V: %4.1f",p_pult->getSpeedPasha());
+    voltageString[9]=0;
+    headVoltage.ReDraw();
+#endif
+
+#ifdef rollWheelDebug
+    sprintf(voltageString,"V: %4.1f",p_pult->getSpeedPasha());
+    voltageString[9]=0;
+    headVoltage.ReDraw();
+#endif
+
+#ifdef tiltWheelDebug
+    sprintf(voltageString,"V: %4.1f",p_pult->getSpeedPasha());
+    voltageString[9]=0;
+    headVoltage.ReDraw();
+#endif
+
+#ifndef debugWheel
+
 	UInt16 t=(UInt16)(p_pult->getHeadVoltage()*10);
 
 	if((lastVoltage!=t)||manual)
@@ -1511,6 +1531,7 @@ void LCD_Main::updateVoltageString(bool manual)
 		headVoltage.ReDraw();
 		return;
 	}
+#endif
 }
 
 void LCD_Main::updateTiltLimiterCell()

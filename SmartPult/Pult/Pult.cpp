@@ -695,10 +695,21 @@ void Pult::driverTask()
 	cartoniTiltAxisChannel.setSpeed(digitalWheelTiltPasha.getSpeedWheelRaw());
 
     #else
-	Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
-	Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
-	Var elementDutch("Dutch Speed:",&cartoniDutchAxisChannel.getAxisVal());
+        #ifdef PanBarDebug
+	        Var elementPan ("Pan Speed: ",&cartoniPanAxisChannel.getAxisVal());
+	        Var elementTilt ("Tilt Speed: ",&cartoniTiltAxisChannel.getAxisVal());
+	        Var elementDutch ("Roll Speed: ",&cartoniDutchAxisChannel.getAxisVal());
+        #else
+	        Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
+	        Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
+            #ifdef USAEdition
+	            Var elementDutch("Roll Speed:",&digitalWheelRoll.getSpeedWheel());
+            #else
+	            Var elementDutch("Dutch Speed:",&digitalWheelRoll.getSpeedWheel());
+            #endif
+        #endif
     #endif
+
 
 
 	viewLists.setVarList(0, &elementPan);
@@ -2449,7 +2460,15 @@ void Pult:: analogWhellSetRollDeadZone(float deadZone)  {
     panExtern1Channel.setDeadZone(deadZone);  }
 
 float Pult::getSpeedPasha() {
+#ifdef panWheelDebug
+    return panJoy.getRawValue();
+#endif
+#ifdef rollWheelDebug
+    return dutchJoy.getRawValue();
+#endif
+#ifdef tiltWheelDebug
     return tiltJoy.getRawValue();
+#endif
 }
 
 void Pult::digitalWheelPanSetFunction(int8_t pan,int8_t tilt, int8_t roll) {

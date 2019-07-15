@@ -56,7 +56,11 @@ Schematic::AttAmpSettings settingsFirst = {
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-    .attenuatorSettings.attenuationK=0.002,
+#ifdef joyPult
+    .attenuatorSettings.attenuationK=0.002
+#else
+    .attenuatorSettings.attenuationK=0.001
+#endif
     };
 
 Schematic::AttAmpSettings settingsSecond = {
@@ -69,11 +73,19 @@ Schematic::AttAmpSettings settingsSecond = {
 #endif
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
+#ifdef joyPult
     .amplifierSettings.adjustableRatio=15.7,
+#else
+    .amplifierSettings.adjustableRatio=8.7,
+#endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-    .attenuatorSettings.attenuationK=0.02,
+#ifdef joyPult
+    .attenuatorSettings.attenuationK=0.02
+#else
+    .attenuatorSettings.attenuationK=0.01
+#endif
     };
 
 Schematic::AttAmpSettings settingsThird = {
@@ -81,11 +93,19 @@ Schematic::AttAmpSettings settingsThird = {
     .amplifierSettings.Vee=-230.0,
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
+#ifdef joyPult
     .amplifierSettings.adjustableRatio=4.0,
+#else
+    .amplifierSettings.adjustableRatio=3.0,
+#endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-    .attenuatorSettings.attenuationK=0.2,
+#ifdef joyPult
+    .attenuatorSettings.attenuationK=0.2
+#else
+    .attenuatorSettings.attenuationK=0.05
+#endif
     };
 
 Schematic::AttAmpSettings settingsFast = {

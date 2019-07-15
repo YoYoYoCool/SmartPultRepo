@@ -12,14 +12,24 @@
 #define LANDSCAPE       //isDisplayOrientation
 
 //#define Garanin
-//#define USAEdition
+#define USAEdition
 #define joyPult
+#define PanBarDebug
+
 
 #ifdef joyPult
 #else
 #define WhellSmartPult
 #endif
 //#define objDef
+//для настройки и проверки пульта
+//#define testPult
+
+//для отладки
+//#define panWheelDebug
+//#define rollWheelDebug
+//#define tiltWheelDebug
+//#define debugWheel
 
 
 #endif /* PULTGLOBALDEFINITIONS_H_ */

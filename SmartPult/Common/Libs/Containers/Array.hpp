@@ -8,7 +8,6 @@
 #ifndef LIBS_CONTAINERS_ARRAY_HPP_
 #define LIBS_CONTAINERS_ARRAY_HPP_
 
-#include "Libs/Utils/Debug.hpp"
 #include "stdint.h"
 #include "stddef.h"
 
@@ -22,12 +21,10 @@ protected:
 public:
     inline Array(TData* data, size_t size) :
         data(data){
-        debugAssert(data!=NULL);
     }
     inline Array(TData* dataArr, size_t size, TData initData) :
         data(dataArr),
         size(size){
-        debugAssert(dataArr!=NULL);
         setAll(initData);
     }
     inline void setAll(TData& data) {
@@ -36,7 +33,6 @@ public:
         }
     }
     inline TData& operator[](size_t i) {
-        debugAssert(i<size);
         return data[i];
     };
     inline size_t getSize() {return size;};

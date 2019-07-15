@@ -8,9 +8,6 @@
 #ifndef COMMON_LIBS_STANDARTELEMENT_ENCODER_HPP_
 #define COMMON_LIBS_STANDARTELEMENT_ENCODER_HPP_
 
-
-
-
 namespace StandartElement {
 
 class Encoder {

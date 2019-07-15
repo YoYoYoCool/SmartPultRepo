@@ -48,7 +48,7 @@ private:
         CellHeader cellPointerDown;
 
 public:
-    LCDHeader(LCDHeaderSettings settingsHeader ) {
+    LCDHeader(LCDHeaderSettings & settingsHeader ) {
         t_Pos_Size_XY positionHeader = {    .X=0,  .Y=0, .Xsize=319, .Ysize=30  };
 
         if (settingsHeader.visiblePointerLeft) {
@@ -172,7 +172,6 @@ public:
      void updateText () {
          cell.p_text=text[encoder.getActualPosition()];
         }
-
 };
 
 
@@ -189,8 +188,14 @@ private:
             freeDisplayField.Y+=5;
             }
         }
+
     LCDHeader header;
-    LCDWorkcEdit cell[numberOfCell];
+    LCDWorkcEdit    cell[numberOfCell];
+
+    void drawCell () {
+        for (uint8_t i=0; i<numberOfCell; i++) {
+            cell[i].cell.ReHide();   }
+        }
 
 
 public:
@@ -198,33 +203,56 @@ public:
     StandartElement::Encoder encoderVertical;
 
 
-    LCDBaseNoRotation(LCDHeaderSettings settingsHeader,LCDWorkcEditSettings** setting): header(settingsHeader), encoderVertical((int16_t)numberOfCell-1) {
+    LCDBaseNoRotation(LCDHeaderSettings & settingsHeader,LCDWorkcEditSettings** setting):
+        header(settingsHeader),
+        encoderVertical(numberOfCell-1)
+    {
         t_Pos_Size_XY freeDisplayField = {
                                           .X=20,
                                           .Xsize=279,
                                           .Ysize=210,
                                           .Y=30
-            };
+                                        };
         calculateInformEdit(freeDisplayField);
         for (int8_t i=0; i<numberOfCell; i++) {
             cell[i].setup(setting[i]);
+
             }
+        }
+
+    LCDBaseNoRotation(): encoderVertical(numberOfCell-1)
+        {
+        t_Pos_Size_XY freeDisplayField = {
+                                          .X=20,
+                                          .Xsize=279,
+                                          .Ysize=210,
+                                          .Y=30
+                                        };
+        calculateInformEdit(freeDisplayField);
         }
 
     void drawForm() {
         header.draw();
-        for (uint8_t i=0; i<numberOfCell; i++) {
-            cell[i].cell.ReHide();   }
+        drawCell();
         cell[encoderVertical.getActualPosition()].cell.ReDraw();
-    }
+        }
 
-    void stepDown() {
+    void setGorizontalEncoder(int8_t id, int16_t count) {
+        cell[id].encoder.setActualPosition(count);
+        cell[id].updateText();
+        }
+
+    int8_t getCellEncoderPosition() {
+        return cell[encoderVertical.getActualPosition()].encoder.getActualPosition();
+        }
+
+    virtual void stepDown() {
         cell[encoderVertical.getActualPosition()].cell.ReHide();
         encoderVertical.increment();
         cell[encoderVertical.getActualPosition()].cell.ReDraw();
         }
 
-    void stepUp() {
+    virtual void stepUp() {
         cell[encoderVertical.getActualPosition()].cell.ReHide();
         encoderVertical.decrement();
         cell[encoderVertical.getActualPosition()].cell.ReDraw();
@@ -237,19 +265,7 @@ public:
     void stepRight() {
         cell[encoderVertical.getActualPosition()].stepRight();
         }
-
-    void setGorizontalEncoder(int8_t id, int16_t count) {
-        cell[id].encoder.setActualPosition(count);
-        cell[id].updateText();
-        }
-
-    int8_t getCellEncoderPosition() {
-        return cell[encoderVertical.getActualPosition()].encoder.getActualPosition();
-        }
-
 };
-
-
 
 
 }

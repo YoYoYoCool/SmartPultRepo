@@ -20,10 +20,6 @@
 #include "LCDBase.hpp"
 
 
-
-
-
-
 namespace LCD {
 
 
