@@ -345,31 +345,31 @@ JoyChannels panChannals     (panChannelsArray,3);
 JoyChannels dutchChannals   (dutchChannelsArray,4);
 JoyChannels tiltChannals    (tiltChannelsArray,3);
 JoyChannels zoomChannals    (zoomChannelsArray,1);
-#endif
-
-#ifdef joyPult
-JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
-JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
-JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
-JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
-
-JoyChannels panChannals     (panChannelsArray,4);
-JoyChannels dutchChannals   (dutchChannelsArray,5);
-JoyChannels tiltChannals    (tiltChannelsArray,4);
-JoyChannels zoomChannals    (zoomChannelsArray,2);
-
 #else
-JoyChannelIF* panChannelsArray[3]=      {&panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
-JoyChannelIF* dutchChannelsArray[4]=    {&dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
-JoyChannelIF* tiltChannelsArray[3]=     {&tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
-JoyChannelIF* zoomChannelsArray[1]=     { &cartoniZoomAxisChannel};
 
-JoyChannels panChannals     (panChannelsArray,3);
-JoyChannels dutchChannals   (dutchChannelsArray,4);
-JoyChannels tiltChannals    (tiltChannelsArray,3);
-JoyChannels zoomChannals    (zoomChannelsArray,1);
+    #ifdef joyPult
+    JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
+    JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
+    JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
+    JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
+
+    JoyChannels panChannals     (panChannelsArray,4);
+    JoyChannels dutchChannals   (dutchChannelsArray,5);
+    JoyChannels tiltChannals    (tiltChannelsArray,4);
+    JoyChannels zoomChannals    (zoomChannelsArray,2);
+
+    #else
+    JoyChannelIF* panChannelsArray[3]=      {&panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
+    JoyChannelIF* dutchChannelsArray[4]=    {&dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
+    JoyChannelIF* tiltChannelsArray[3]=     {&tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
+    JoyChannelIF* zoomChannelsArray[1]=     { &cartoniZoomAxisChannel};
+
+    JoyChannels panChannals     (panChannelsArray,3);
+    JoyChannels dutchChannals   (dutchChannelsArray,4);
+    JoyChannels tiltChannals    (tiltChannelsArray,3);
+    JoyChannels zoomChannals    (zoomChannelsArray,1);
+    #endif
 #endif
-
 									//joystics
 
 MultiJoystic panJoy     (230, &panCubitorFunc,      &panJoyDriftResistor,   &panJoyFluidResistor,   &(panChannals.channels));
@@ -710,8 +710,6 @@ void Pult::driverTask()
         #endif
     #endif
 
-
-
 	viewLists.setVarList(0, &elementPan);
 	viewLists.setVarList(1, &elementTilt);
 	viewLists.setVarList(2, &elementDutch);
@@ -721,7 +719,6 @@ void Pult::driverTask()
 	backlight.setButton(sharedButtons[backLightOff]);
 	backlight.setDriver(&backlightDriver);
 	preston.setDriver(&prestonDriver);
-
 
 #ifdef WhellSmartPult
 	panJoyChannel.disable();
@@ -737,7 +734,8 @@ void Pult::driverTask()
 		switch(joysticsConfig)
 		    {
 			case JOYSTIC_REVERS_JOY_CONFIG:
-				panJoyChannel.setRef(result[SIGNAL_DUTCH]);
+
+			    panJoyChannel.setRef(result[SIGNAL_DUTCH]);
 				dutchJoyChannel.setRef(result[SIGNAL_PAN]);
 				tiltJoyChannel.setRef(result[SIGNAL_ZOOM]);
 				zoomJoyChannel.setRef(result[SIGNAL_TILT]);
@@ -745,7 +743,8 @@ void Pult::driverTask()
 
 			case DEFAULT_JOY_CONFIG:
 			default:
-				panJoyChannel.setRef(result[SIGNAL_PAN]);
+
+			    panJoyChannel.setRef(result[SIGNAL_PAN]);
 				dutchJoyChannel.setRef(result[SIGNAL_DUTCH]);
 				tiltJoyChannel.setRef(result[SIGNAL_TILT]);
 				zoomJoyChannel.setRef(result[SIGNAL_ZOOM]);

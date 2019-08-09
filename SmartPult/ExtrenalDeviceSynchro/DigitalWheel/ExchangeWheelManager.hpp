@@ -77,7 +77,7 @@ public:
 
 
     inline int8_t exchenge (ProtocolWheel::WheelsType wheedId,
-                            ProtocolWheel::ReadCommand comandID,
+                            ProtocolWheel::Command comandID,
                             DataOut & dataOut) {
         WheelExchengeError errors;
         errors.all=0;

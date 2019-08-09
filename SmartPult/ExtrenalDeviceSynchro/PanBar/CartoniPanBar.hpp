@@ -386,8 +386,13 @@ namespace ExtrenalDevices
              virtual float getCurrentAdcValue()
                  {
                  float rez=adcValue;
-                 /*
-                float rez=filter.calculate(adcValue);
+/*                 if ((rez<0.50)&&(rez>-0.50)) {
+                     rez*=0.2;
+                     }
+                 else {
+
+                     }
+                rez=filter.calculate(rez);/*
                 rez=deadZone(rez, deadZoneValue);*/
                 if (channelAxis==CH_ZOOM) {
                     rez=rez*K;
@@ -396,11 +401,12 @@ namespace ExtrenalDevices
                     if (rez<0)
                         rez-=0.1;
                     }
-                else
+                else {
+                //rez=rez*(getSpeed());//задатчик смещения нуля
                 #ifndef Garanin
-                    rez*=5.0;
+                    //rez*=5.0;
                 #endif
-//                rez=rez*(getSpeed()+0.5);//задатчик смещения нуля
+                }
                 if (rez>maxValue) {
                     rez=maxValue;}
                 if (rez<-maxValue){

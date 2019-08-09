@@ -14,7 +14,7 @@
 //#define Garanin
 #define USAEdition
 #define joyPult
-#define PanBarDebug
+//#define PanBarDebug
 
 
 #ifdef joyPult
@@ -26,6 +26,7 @@
 //#define testPult
 
 //для отладки
+#define bigWhell
 //#define panWheelDebug
 //#define rollWheelDebug
 //#define tiltWheelDebug

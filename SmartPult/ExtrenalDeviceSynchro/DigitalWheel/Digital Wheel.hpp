@@ -43,9 +43,9 @@ Schematic::AttAmpSettings settingsDummi = {
 
 Schematic::AttAmpSettings settingsFirst = {
 
-#ifdef joyPult
-     .amplifierSettings.Vcc=12.0,
-     .amplifierSettings.Vee=-12.0,
+#ifdef bigWhell
+     .amplifierSettings.Vcc=24.0,
+     .amplifierSettings.Vee=-24.0,
 #else
      .amplifierSettings.Vcc=24.0,
      .amplifierSettings.Vee=-24.0,
@@ -56,35 +56,35 @@ Schematic::AttAmpSettings settingsFirst = {
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef joyPult
+#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.002
 #else
-    .attenuatorSettings.attenuationK=0.001
+    .attenuatorSettings.attenuationK=0.002
 #endif
     };
 
 Schematic::AttAmpSettings settingsSecond = {
-#ifdef joyPult
-    .amplifierSettings.Vcc=120.0,
-    .amplifierSettings.Vee=-120.0,
+#ifdef bigWhell
+    .amplifierSettings.Vcc=200.0,
+    .amplifierSettings.Vee=-200.0,
 #else
     .amplifierSettings.Vcc=200.0,
     .amplifierSettings.Vee=-200.0,
 #endif
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
-#ifdef joyPult
+#ifdef bigWhell
     .amplifierSettings.adjustableRatio=15.7,
 #else
-    .amplifierSettings.adjustableRatio=8.7,
+    .amplifierSettings.adjustableRatio=15.7,
 #endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef joyPult
+#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.02
 #else
-    .attenuatorSettings.attenuationK=0.01
+    .attenuatorSettings.attenuationK=0.02
 #endif
     };
 
@@ -93,18 +93,18 @@ Schematic::AttAmpSettings settingsThird = {
     .amplifierSettings.Vee=-230.0,
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
-#ifdef joyPult
+#ifdef bigWhell
     .amplifierSettings.adjustableRatio=4.0,
 #else
-    .amplifierSettings.adjustableRatio=3.0,
+    .amplifierSettings.adjustableRatio=4.0,
 #endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef joyPult
+#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.2
 #else
-    .attenuatorSettings.attenuationK=0.05
+    .attenuatorSettings.attenuationK=0.2
 #endif
     };
 
@@ -132,6 +132,7 @@ private:
 
     const float maxValue;
     float speedWheel;
+    float speedWheelIntegers;
     bool connect;
     uint8_t counter;
     float speedWheel2;
@@ -149,6 +150,7 @@ public:
                  Resistor* speedControl):maxValue(speedMax), JoyChanel(K, offset,speedControl,0.01, 0.015)
                     {
                     speedWheel=0.0,
+                    speedWheelIntegers=0.0;
                     isEnable   =false;
                     connect=false;
                     counter=0;
@@ -167,6 +169,7 @@ public:
             speedWheel=maxValue;
         if (speedWheel<-maxValue)
             speedWheel=-maxValue;
+        speedWheelIntegers+=speedWheel;
         return speedWheel;
         }
 

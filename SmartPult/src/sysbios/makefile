@@ -1,12 +1,12 @@
 
-XOPTS = -I"C:/ti/xdctools_3_32_02_25_core/packages/" -Dxdc_target_types__=C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/ti/targets/arm/elf/std.h -Dxdc_target_name__=M4F
+XOPTS = -I"C:/ti/ccs910/xdctools_3_32_02_25_core/packages/" -Dxdc_target_types__=C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/ti/targets/arm/elf/std.h -Dxdc_target_name__=M4F
 
 vpath % C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/ti/sysbios/
-vpath %.c C:/ti/xdctools_3_32_02_25_core/packages/
+vpath %.c C:/ti/ccs910/xdctools_3_32_02_25_core/packages/
 
 CCOPTS    = --endian=little -mv7M4 --abi=eabi --float_support=fpv4spd16 -q -ms --opt_for_speed=2  --program_level_compile -o3 -g --optimize_with_debug  -Dti_sysbios_family_arm_m3_Hwi_enableException__D=TRUE -Dti_sysbios_family_arm_m3_Hwi_disablePriority__D=32U -Dti_sysbios_family_arm_m3_Hwi_numSparseInterrupts__D=0U
 
-XDC_ROOT  = C:/ti/xdctools_3_32_02_25_core/packages/
+XDC_ROOT  = C:/ti/ccs910/xdctools_3_32_02_25_core/packages/
 
 BIOS_ROOT = C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/ti/sysbios/
 
@@ -18,9 +18,9 @@ TARGET_INC = -I"C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/
 
 INCS = $(BIOS_INC) $(TARGET_INC)  
 
-CC = C:/ti/bin/armcl -c $(CCOPTS) -I C:/ti/include
-ASM = C:/ti/bin/armcl -c $(CCOPTS) -I C:/ti/include
-AR = C:/ti/bin/armar rq
+CC = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include
+ASM = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include
+AR = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armar rq
 
 DEL = cmd.exe /q /c del /f
 CP = cmd.exe /q /c copy /Y

@@ -206,19 +206,18 @@ public:
     LCDBaseNoRotation(LCDHeaderSettings & settingsHeader,LCDWorkcEditSettings** setting):
         header(settingsHeader),
         encoderVertical(numberOfCell-1)
-    {
-        t_Pos_Size_XY freeDisplayField = {
-                                          .X=20,
-                                          .Xsize=279,
-                                          .Ysize=210,
-                                          .Y=30
-                                        };
-        calculateInformEdit(freeDisplayField);
-        for (int8_t i=0; i<numberOfCell; i++) {
-            cell[i].setup(setting[i]);
-
+            {
+            t_Pos_Size_XY freeDisplayField = {
+                                              .X=20,
+                                              .Xsize=279,
+                                              .Ysize=210,
+                                              .Y=30
+                                            };
+            calculateInformEdit(freeDisplayField);
+            for (int8_t i=0; i<numberOfCell; i++) {
+                cell[i].setup(setting[i]);
+                }
             }
-        }
 
     LCDBaseNoRotation(): encoderVertical(numberOfCell-1)
         {
@@ -269,11 +268,5 @@ public:
 
 
 }
-
-
-
-
-
-
 
 #endif /* PULT_INDICATOR_LCDBASE_HPP_ */
