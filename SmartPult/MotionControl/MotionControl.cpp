@@ -21,10 +21,11 @@ ExtendedMotionTrack motionTrack5("fat:"STR(DRIVE_NUM)":track5.txt");
 ExtendedMotionTrack motionTrack6("fat:"STR(DRIVE_NUM)":track6.txt");
 
 
-StaticList<MotionTrack*,6> motionTrackList;
+//StaticList<MotionTrack*,6> motionTrackList;
 
 MotionControl::MotionControl( MotionControlListener* pl):synchroPrescalerReload(42000),pult(pl)
 {
+    motionTrackList.setMaxSize(6);
 	motionTrackList.add(&motionTrack1);
 	motionTrackList.add(&motionTrack2);
 	motionTrackList.add(&motionTrack3);

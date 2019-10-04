@@ -38,9 +38,7 @@ bool secure()
 	return true;
 }
 
-
 Int main(){
-
     Board_initGeneral();
     Board_initGPIO();
     Board_initUART();

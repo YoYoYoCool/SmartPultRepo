@@ -154,7 +154,7 @@ public:
                     isEnable   =false;
                     connect=false;
                     counter=0;
-                    for (uint8_t i=0; i<transmissionMax; i++) {
+                    for (int8_t i=0; i<transmissionMax; i++) {
                         channal.setup(i,settings[i]);}
 
                     }

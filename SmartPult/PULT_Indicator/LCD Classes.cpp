@@ -1,4 +1,5 @@
 
+
 #include "../Board.h"
 
 #include "LCD Classes.h"
@@ -13,6 +14,8 @@
 #include "MotionControl/LogicController/MotionLogicController.hpp"
 #include "PultDBWork/Objective Select.hpp"
 #include "PultDBWork/Measure Sistem types.hpp"
+#include "UserInfoMenu.hpp"
+#include "LimitsMenu.hpp"
 //#include "tColor.h"
 //#include "LCD Lens.hpp"
 /*
@@ -49,7 +52,7 @@ static volatile UInt32 HourMeter_rawValue=0;
 tMenu_Link Main_Menu_Link[6]={
 		{"COEFF SETUP",NULL},
 		{"SETUP",NULL},
-		{"TILT LIMITER",NULL},
+		{"AXIS LIMITER",NULL},
 		{"MOTION CTRL",NULL},
 		{"EQUALIZER",NULL},
 		{"LENS CONTROL",NULL}
@@ -210,7 +213,7 @@ enum {SetSecretMenuSistem=0,
             {"SUSPENTION RESONANCE",NULL},
             {"MAX TORQUE",NULL},
             {"JOYSTICK DEADZONE",NULL},
-            {"TOTAL RUNTIME",NULL},
+            {"USER INFO MENU",NULL},
             {"PREROL",NULL},
             {"SYNCHRO SOURCE",NULL},
             {"DRIFT STOPPER",NULL}
@@ -236,7 +239,7 @@ enum {SetSecretMenuSistem=0,
     tMenu_Link tuningMenuText[6]={
             {"SUSPENTION RESONANCE",NULL},
             {"MAX TORQUE",NULL},
-            {"TOTAL RUNTIME",NULL},
+            {"USER INFO MENU",NULL},
             {"PREROL",NULL},
             {"SYNCHRO SOURCE",NULL},
             {"DRIFT STOPPER",NULL}
@@ -254,17 +257,11 @@ enum {SetSecretMenuSistem=0,
         PrerolTuningMenuSistem,
         SynchroSourceTuningMenuSistem,
         DriftStopperTuningMenuSistem};
-
-
-
 #endif
-
-
 
 tMenu_Link suspensionResonanceSelectMenuText[2]={
 		{"TILT",NULL},
 		{"PAN",NULL}
-
 };
 
 enum {TiltResonanceSuspensionResonance=1,
@@ -280,7 +277,6 @@ tMenu_Link profileMenuText[6]={
 		{"PROFILE 4", NULL},
 		{"PROFILE 5", NULL},
 		{"RST CURRENT PROFILE", NULL},
-
 };
 enum {ProfileProfileMenu=1,
     RstCurrentProfileProfileMenu=6};
@@ -300,6 +296,32 @@ enum {RigthSideHandSwitchAxesTextSistem=0,
 
 #ifdef joyPult
 
+#ifdef joyPultRussian
+tMenu_Link lensControlSetup[7]={
+        {"MOTOR MAPPING", NULL},
+        {"MOTOR MODELS", NULL},
+        {"CAMERA MODEL", NULL},
+        {"ZOOM SENSITIVITY", NULL},
+        {"LENS CALIBRATE", NULL},
+        {"ZOOM DRIFT", NULL},
+        {"EXTERNAL LENS CONTROL", NULL}
+};
+enum {MotorMappingLensControlSetup=1,
+    MotorModelLensControlSetup,
+    CameraModelLensControlSetup,
+    ZoomSensLensControlSetup,
+    LensCalibrateLensControlSetup,
+    ZoomDriftLensControlSetup,
+    externalLensControl};
+
+enum {MotorMappingLensControlSetupSistem=0,
+    MotorModelLensControlSetupSistem,
+    CameraModelLensControlSetupSistem,
+    ZoomSensLensControlSetupSistem,
+    LensCalibrateLensControlSetupSistem,
+    ZoomDriftLensControlSetupSistem,
+    externalLensControlSistem};
+#else
 tMenu_Link lensControlSetup[8]={
         {"MOTOR MAPPING", NULL},
         {"MOTOR MODELS", NULL},
@@ -327,6 +349,7 @@ enum {MotorMappingLensControlSetupSistem=0,
     ZoomDriftLensControlSetupSistem,
     ZIFReversSistem,
     externalLensControlSistem};
+#endif
 
 #else
 
@@ -496,7 +519,7 @@ LCD_Equalizer* pEqualizerDutch;
 LCD_Equalizer* pEqualizerTilt;
 LCD_Equalizer* pEqualizerZoom;
 LCD_Cell* pCell_Motion;
-
+LCD::Limits::LimitMenu *limitsMenuPointer;
 SecretMenu* secretMenuPointer;
 SecretMenuView* secretMenuViewPointer;
 LCD_Menu* secretMenuSelectorPointer;
@@ -523,6 +546,7 @@ LCD_Main* mainScreenPointer;
 HourMeterMenu* hourMeterMenuPointer;
 LCD::ZIFRevers * zifReversMenuPointer;
 LCD::LCDWheelMenu* wheelMenuPointer;
+LCD::InfoMenu::UserInfoMenu* userIfoMenuPointer;
 SelectMenuSpiderSelect* tiltSpiderSelectMenuPointer;
 SelectMenuSpiderSelect* panSpiderSelectMenuPointer;
 SetMaxTorque* setMaxTorqueMenuPointer;
@@ -574,7 +598,10 @@ void pultIndikator_Task(Pult* point_pult)
 	//ограничитель тангажа
 	LCD_Menu TiltLimit_Menu(Main_Menu_Link[2].Name, Txt_MenuTiltLimit, 5, 0, 5);
 	pTiltLimit_Menu = &TiltLimit_Menu;
-	Main_Menu_Link[2].pPointSub = pTiltLimit_Menu;
+	LCD::Limits::LimitMenu limitsMenu(&mainScreenPointer);
+	limitsMenuPointer=&limitsMenu;
+//	Main_Menu_Link[2].pPointSub = pTiltLimit_Menu;
+	Main_Menu_Link[2].pPointSub = limitsMenuPointer;
 
 	SecretMenu secretMenu("Secret Menu",10,5 );
 	secretMenu.updateDataFromPult();
@@ -636,6 +663,8 @@ void pultIndikator_Task(Pult* point_pult)
 
 	HourMeterMenu  hourMeterMenu("TOTAL RUNTIME");
 	hourMeterMenuPointer=&hourMeterMenu;
+	LCD::InfoMenu::UserInfoMenu userIfoMenu;
+	userIfoMenuPointer=&userIfoMenu;
 	HourMeter_rawValue=EE_Working::ReadCalibrationData(EE_CAL_HOURS);
 	if(HourMeter_rawValue==0xFFFFFFFF)
 	{
@@ -658,7 +687,8 @@ void pultIndikator_Task(Pult* point_pult)
 	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
 	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
 	tuningMenuText[2].pPointSub=&setJoyDeadZoneMenu;
-	tuningMenuText[3].pPointSub=&hourMeterMenu;
+//	tuningMenuText[3].pPointSub=&hourMeterMenu;
+	tuningMenuText[3].pPointSub=&userIfoMenu;
 	tuningMenuText[4].pPointSub=&motionPrerolMenu;
 	tuningMenuText[5].pPointSub=&syncroSouce;
 	tuningMenuText[6].pPointSub=&axisTurnsViewMenu;
@@ -667,15 +697,12 @@ void pultIndikator_Task(Pult* point_pult)
 	tuningMenuPointer=&tuningMenu;
 	tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
 	tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
-	tuningMenuText[2].pPointSub=&hourMeterMenu;
+//	tuningMenuText[2].pPointSub=&hourMeterMenu;
+	tuningMenuText[2].pPointSub=&userIfoMenu;
 	tuningMenuText[3].pPointSub=&motionPrerolMenu;
 	tuningMenuText[4].pPointSub=&syncroSouce;
 	tuningMenuText[5].pPointSub=&axisTurnsViewMenu;
 #endif
-
-
-
-
 	FolowingModeMenu folowingModeMenu("FOLLOWING MODE");
 	folowingModePointer=&folowingModeMenu;
 	folowingModeMenu.updateFromEeprom();
@@ -692,7 +719,6 @@ void pultIndikator_Task(Pult* point_pult)
 	setupMenuText[7].pPointSub=&folowingModeMenu;
 #else
 	LCD_Menu setupMenu("SETUP",  setupMenuText, 6, 0, 6 );
-
 	Main_Menu_Link[1].pPointSub = &setupMenu;
 	setupMenuText[0].pPointSub=pBright_Set;
 	setupMenuText[1].pPointSub=&profileMenu;
@@ -700,10 +726,8 @@ void pultIndikator_Task(Pult* point_pult)
 	setupMenuText[3].pPointSub=&wheelMenu;
 	setupMenuText[4].pPointSub=&tuningMenu;
 	setupMenuText[5].pPointSub=&folowingModeMenu;
-
 #endif
 	setupMenuPointer=&setupMenu;
-
 	//Motion
 	LCD_Cell Cell_Motion((char*)"Insert module",30,90,250,60);
 	Cell_Motion.Active_Style.Cell_Color = ClrLinen;
@@ -713,6 +737,7 @@ void pultIndikator_Task(Pult* point_pult)
 	Cell_Motion.SetText((char*)"Insert module");
 	pCell_Motion = &Cell_Motion;
 	Main_Menu_Link[3].pPointSub = pCell_Motion;
+
 
 	//эквалайзер
 	//сами эквалайзеры (3 шт)
@@ -741,12 +766,16 @@ void pultIndikator_Task(Pult* point_pult)
 	//todo
 	//"LENS CONTROL"
 #ifdef  joyPult
-	LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,8,0,8);
+    #ifdef joyPultRussian
+        LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,7,0,7);
+    #else
+        LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,8,0,8);
+        LCD::ZIFRevers  zifReversMenu;
+        zifReversMenuPointer=&zifReversMenu;
+        lensControlSetup[ZIFReversSistem].pPointSub=&zifReversMenu;
+    #endif
 	lensControlMenu.readEEPROM();
 	lensControlMenuPointer=&lensControlMenu;
-
-    LCD::ZIFRevers  zifReversMenu;
-    zifReversMenuPointer=&zifReversMenu;
 
     SelectMenuZoomSense lensControlZoomSense("ZOOM SENSE", lensControlZoomSenseText, 4, 4,EE_LC_ZOOM_SENSE);
     lensControlZoomSense.updateFromEEPROM();
@@ -758,7 +787,7 @@ void pultIndikator_Task(Pult* point_pult)
 
     lensControlSetup[ZoomSensLensControlSetupSistem].pPointSub=&lensControlZoomSense;
     lensControlSetup[ZoomDriftLensControlSetupSistem].pPointSub=&lensControlZoomDrift;
-    lensControlSetup[ZIFReversSistem].pPointSub=&zifReversMenu;
+
 #else
     LCD_Menu lensControlMenu("LENS CONTROL",lensControlSetup ,4,0,4);
     lensControlMenu.readEEPROM();
@@ -791,7 +820,7 @@ void pultIndikator_Task(Pult* point_pult)
 	lensControlZIF[FocusLensControlSistem].pPointSub=&lensControlMotorActionSelect;
 
 	lensControlMotorsText[MotorLensControlMotors1Sistem].pPointSub=&lensControlMotorTypeSelect;
-	lensControlMotorsText[MotorLensControlMotors2Sistem].pPointSub=&lensControlMotorTypeSelect;
+	lensControlMotorsText [MotorLensControlMotors2Sistem].pPointSub=&lensControlMotorTypeSelect;
 	lensControlMotorsText[MotorLensControlMotors3Sistem].pPointSub=&lensControlMotorTypeSelect;
 
 	Main_Menu_Link[5].pPointSub =&lensControlMenu;
@@ -817,6 +846,9 @@ void pultIndikator_Task(Pult* point_pult)
 		Task_sleep(10);	}
 
 	LCD_Main Main_Screen((char*)"Main_Screen");
+/*	pDispl = &userIfoMenu;
+	pDispl->Focused=true;*/
+
 	pDispl = &Main_Screen;
 	mainScreenPointer=&Main_Screen;
 
@@ -833,8 +865,9 @@ void pultIndikator_Task(Pult* point_pult)
 
 		pDispl->Listener();
 		motionLogicController.clocking();
+		userIfoMenu.calcelateRuntime();
 
-		newTTS=p_pult->getTimeToStart();
+/*		newTTS=p_pult->getTimeToStart();
 		if(newTTS>=(lastTimeToStart+10))
 		    {
 			rawValue=EE_Working::ReadCalibrationData(EE_CAL_HOURS);
@@ -848,7 +881,7 @@ void pultIndikator_Task(Pult* point_pult)
 			EE_Working::WriteCalibrationData(EE_CAL_HOURS, rawValue);
 			lastTimeToStart=newTTS;
 			HourMeter_rawValue=rawValue;
-            }
+            }*/
         }
     }
 
@@ -888,6 +921,8 @@ Cell_Motor_State((char*) "", 1,1,10,10),
 Cell_GV_Acc((char*) "", 1,1,10,10),
 ErrorLine((char*) "", 1,1,10,10),
 tiltLimiterState((char*) "", 1,1,10,10),
+panLimiterState((char*) "", 1,1,10,10),
+rollLimiterState((char*) "", 1,1,10,10),
 headVoltage((char*) "", 1,1,10,10),
 currentProfile((char*) "", 1,1,10,10),
 motionLimitTime((char*) "", 1,1,10,10),
@@ -897,6 +932,8 @@ motionState((char*) "", 1,1,10,10),
 motionPlayMode((char*) "", 1,1,10,10),
 motionMixMode((char*) "", 1,1,10,10)
 {
+    panLimiterStateFlag=TL_RESET;
+    rollLimiterStateFlag=TL_RESET;
 	tiltLimiterStateFlag=TL_RESET;
 	currentPanDirection=PAN_AXIS_STOP;
 	currentValue=0.0;
@@ -1237,16 +1274,29 @@ void LCD_Main::Draw() //рисование
 		ErrorLine.UnActive_Style= Cell_Joyst_State.UnActive_Style;
 		ErrorLine.FastDraw(2,208,316,30, (char*)"", Cell_UnActive);
 
-		tiltLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
-		tiltLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-		tiltLimiterState.Active_Style.Text_Centered=false;
-		tiltLimiterState.FastDraw(5,180,60,30, (char*)"", Cell_Active);
+		panLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
+		panLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+		panLimiterState.Active_Style.Text_Centered=false;
+		panLimiterState.FastDraw(5,55,60,30, (char*)"", Cell_Active);
+
+        tiltLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
+        tiltLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+        tiltLimiterState.Active_Style.Text_Centered=false;
+        tiltLimiterState.FastDraw(5,85,60,30, (char*)"", Cell_Active);
+
+        rollLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
+        rollLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+        rollLimiterState.Active_Style.Text_Centered=false;
+        rollLimiterState.FastDraw(5,155,60,30, (char*)"", Cell_Active);
+
+        headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
+        headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+        headVoltage.Active_Style.Text_Centered=false;
+        headVoltage.FastDraw(5,180,80,30, voltageString, Cell_Active);
+
 		updateTiltLimiterCell();
 
-		headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
-		headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-		headVoltage.Active_Style.Text_Centered=false;
-		headVoltage.FastDraw(5,150,80,30, voltageString, Cell_Active);
+
 
 		currentProfile.Active_Style = Cell_Joyst_State.Active_Style;
 		currentProfile.UnActive_Style = Cell_Joyst_State.UnActive_Style;
@@ -1296,9 +1346,7 @@ void LCD_Main::Draw() //рисование
 		Cell_Motor_State.Active_Style = Cell_Joyst_State.Active_Style;
 		Cell_Motor_State.UnActive_Style = Cell_Joyst_State.UnActive_Style;
 		Cell_Motor_State.FastDraw(5,110,130,20, (char*)"Motors OFF", Cell_UnActive);
-		Cell_GV_Acc.Active_Style = Cell_Joyst_State.Active_Style;
-		Cell_GV_Acc.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-		Cell_GV_Acc.FastDraw(5,135,130,20, (char*)"ACC", Cell_Active);
+
 
 		ErrorLine.Active_Style=Cell_Joyst_State.Active_Style;
 		ErrorLine.Active_Style.pFont=g_psFontCmsc22;
@@ -1308,16 +1356,32 @@ void LCD_Main::Draw() //рисование
 		ErrorLine.UnActive_Style= Cell_Joyst_State.UnActive_Style;
 		ErrorLine.FastDraw(2,208,316,30, (char*)"", Cell_UnActive);
 
+		panLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
+		panLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+//	    panLimiterState.Active_Style.Text_Centered=false;
+		panLimiterState.FastDraw(5,85,60,30, (char*)"", Cell_Active);
+
 		tiltLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
 		tiltLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-//		tiltLimiterState.Active_Style.Text_Centered=false;
-		tiltLimiterState.FastDraw(5,185,60,20, (char*)"", Cell_Active);
+//      tiltLimiterState.Active_Style.Text_Centered=false;
+	    tiltLimiterState.FastDraw(5,110,60,30, (char*)"", Cell_Active);
+
+	    rollLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
+	    rollLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+//		rollLimiterState.Active_Style.Text_Centered=false;
+	    rollLimiterState.FastDraw(5,135,60,30, (char*)"", Cell_Active);
+
+        Cell_GV_Acc.Active_Style = Cell_Joyst_State.Active_Style;
+        Cell_GV_Acc.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+        Cell_GV_Acc.FastDraw(5,160,130,20, (char*)"ACC", Cell_Active);
+
+        headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
+        headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
+//      headVoltage.Active_Style.Text_Centered=false;
+        headVoltage.FastDraw(5,185,60,20, voltageString, Cell_Active);
+
 		updateTiltLimiterCell();
 
-		headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
-		headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-//		headVoltage.Active_Style.Text_Centered=false;
-		headVoltage.FastDraw(5,160,60,20, voltageString, Cell_Active);
 		currentProfile.Active_Style = Cell_Joyst_State.Active_Style;
 		currentProfile.UnActive_Style = Cell_Joyst_State.UnActive_Style;
 		currentProfile.Active_Style.pFont=g_psFontCmsc22;
@@ -1536,25 +1600,86 @@ void LCD_Main::updateVoltageString(bool manual)
 
 void LCD_Main::updateTiltLimiterCell()
 {
-	switch(tiltLimiterStateFlag)
+	switch(panLimiterStateFlag)
 	{
 		case TL_UP:
-			tiltLimiterState.p_text="TL UP";
-			tiltLimiterState.ReDraw();
+		    panLimiterState.p_text="P LF";
+		    panLimiterState.ReDraw();
 			break;
 		case TL_DOWN:
-			tiltLimiterState.p_text="TL DOWN";
-			tiltLimiterState.ReDraw();
+		    panLimiterState.p_text="P RT";
+		    panLimiterState.ReDraw();
 			break;
 		case TL_UP_DOWN:
-			tiltLimiterState.p_text="TL ALL";
-			tiltLimiterState.ReDraw();
+		    panLimiterState.p_text="P ALL";
+		    panLimiterState.ReDraw();
 			break;
 		case TL_RESET:
 		default:
-			tiltLimiterState.Hide();
+		    panLimiterState.Hide();
 			break;
 	}
+    switch(tiltLimiterStateFlag)
+    {
+        case TL_UP:
+            tiltLimiterState.p_text="T UP";
+            tiltLimiterState.ReDraw();
+            break;
+        case TL_DOWN:
+            tiltLimiterState.p_text="T DOWN";
+            tiltLimiterState.ReDraw();
+            break;
+        case TL_UP_DOWN:
+            tiltLimiterState.p_text="T ALL";
+            tiltLimiterState.ReDraw();
+            break;
+        case TL_RESET:
+        default:
+            tiltLimiterState.Hide();
+            break;
+    }
+#ifdef USAEdition
+    switch(rollLimiterStateFlag)
+    {
+        case TL_UP:
+            rollLimiterState.p_text="R LF";
+            rollLimiterState.ReDraw();
+            break;
+        case TL_DOWN:
+            rollLimiterState.p_text="R RT";
+            rollLimiterState.ReDraw();
+            break;
+        case TL_UP_DOWN:
+            rollLimiterState.p_text="R ALL";
+            rollLimiterState.ReDraw();
+            break;
+        case TL_RESET:
+        default:
+            rollLimiterState.Hide();
+            break;
+    }
+#else
+    switch(rollLimiterStateFlag)
+        {
+            case TL_UP:
+                rollLimiterState.p_text="D LT";
+                rollLimiterState.ReDraw();
+                break;
+            case TL_DOWN:
+                rollLimiterState.p_text="D RT";
+                rollLimiterState.ReDraw();
+                break;
+            case TL_UP_DOWN:
+                rollLimiterState.p_text="D ALL";
+                rollLimiterState.ReDraw();
+                break;
+            case TL_RESET:
+            default:
+                rollLimiterState.Hide();
+                break;
+        }
+#endif
+
 }
 
 void LCD_Main::upToMotionMode()
@@ -1589,7 +1714,6 @@ void LCD_Main::switchMotionMode()
 }
 void LCD_Main::Listener()
 {
-
 	if(selectModeCounter!=0){selectModeCounter--;}
 	if((p_pult->getButton(pult_Button_Up)->state==HOLD)&&(p_pult->getButton(pult_Button_Dn)->state==HOLD)&&(selectModeCounter==0))
 	{
@@ -1951,6 +2075,23 @@ void LCD_Cell::Hide()
 
 }
 
+void LCD_Cell::DrawTecStile()
+{
+        PreDraw();
+        if(strlen(p_text)>0)
+        {
+            //Теперь там напишем текст
+            GrContextForegroundSetTranslated(&sContext, Tek_Style.Font_Color);
+            GrContextFontSet(&sContext, Tek_Style.pFont);
+            if(Tek_Style.Text_Centered)
+                GrStringDrawCentered(&sContext, p_text, strlen(p_text), pRect.i16XMin + (pRect.i16XMax-pRect.i16XMin)/2, pRect.i16YMin + (pRect.i16YMax-pRect.i16YMin)/2, false);
+            else
+                GrStringDraw(&sContext, p_text, strlen(p_text), pRect.i16XMin+5, pRect.i16YMin+2, 0);
+        }
+    }
+
+
+
 void LCD_Cell::FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active)
 {
 	Set_Coord(X, Y, Xsize, Ysize);
@@ -2232,10 +2373,16 @@ void LCD_Menu::readEEPROM() {
         }
     else {
 
-        if (prestonData)
+        if (prestonData) {
             Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM ON";
-        else
+            Table_Cell[externalLensControlSistem]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+            Table_Cell[externalLensControlSistem]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+        }
+        else {
             Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM OFF";
+            Table_Cell[externalLensControlSistem]->Active_Style.Cell_Color=ClrMediumOrchid;
+            Table_Cell[externalLensControlSistem]->UnActive_Style.Cell_Color=ClrMediumOrchid;
+        }
         }
     p_pult->setPreston((bool)prestonData);
 #endif
@@ -2333,8 +2480,18 @@ void LCD_Menu::Select() //выбор
 
 bool Menu_Listener(LCD_Listener* HoIs)
 {
-	if(HoIs == pTiltLimit_Menu) //обработчик ограничения тангажа
-	{
+
+#define newLimitMenu
+
+#ifdef newLimitMenu
+        if (HoIs ==limitsMenuPointer){
+	    pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
+	                    pDispl->Parent = HoIs;
+	                    pDispl->Focused = true;}
+
+#else
+	    if(HoIs == pTiltLimit_Menu) //обработчик ограничения тангажа
+	    {
 		((LCD_Menu*)HoIs )->Table_Cell[((LCD_Menu*)HoIs )->Tek_Count-1]->Hide();
 		Task_sleep(300);
 		((LCD_Menu*)HoIs )->Table_Cell[((LCD_Menu*)HoIs )->Tek_Count-1]->Draw();
@@ -2374,9 +2531,9 @@ bool Menu_Listener(LCD_Listener* HoIs)
 			return true;
 		    }
 	    }
+#endif
 
     #ifdef objDef
-	//todo
 	if (HoIs==lensControlObjectiveMenuPointer) {
 	    //if (){
 	    pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
@@ -2574,10 +2731,14 @@ void LCD_Menu::Listener()
             p_pult->xorPreston();
             if (p_pult->getEnablePreston()) {
                 Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM ON";
+                Table_Cell[externalLensControlSistem]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+                Table_Cell[externalLensControlSistem]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
                 EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 1);// записываем что престон включен
                 }
             else {
                 Table_Cell[externalLensControlSistem]->p_text="EXTERNAL ZOOM OFF";
+                Table_Cell[externalLensControlSistem]->Active_Style.Cell_Color=ClrMediumOrchid;
+                Table_Cell[externalLensControlSistem]->UnActive_Style.Cell_Color=ClrMediumOrchid;
                 EE_Working::Write(EE_LC_EXTERNAL_LENS_CONTROL, 0);// записываем что престон включен
                 }
             Table_Cell[externalLensControlSistem]->ReDraw();
@@ -3688,15 +3849,16 @@ void SelectMenu::DrawVert()
 
 void  SelectMenu::updateFromEEPROM()
 {
-	UInt32 tmp=EE_Working::Read(currentEepromAddress)+1;
-	if(tmp<1||tmp>Counter_Cell)
-	{
-		Tek_Count=1;
-		saveInEEPROM();
-		return;
-	}
-	Tek_Count=tmp;
-	action();
+    UInt32 tmp=EE_Working::Read(currentEepromAddress)+1;
+    Tek_Count=tmp;
+    if(tmp<1||tmp>Counter_Cell)
+    {
+        Tek_Count=1;
+        saveInEEPROM();
+    }
+    Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+    Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+    action();
 }
 void  SelectMenu::saveInEEPROM()
 {
@@ -3717,9 +3879,22 @@ void  SelectMenu::Listener()
 
 		if (getButtonState(pult_Button_Select) == PRESSED)
 		{
-			saveInEEPROM();
+		    uint8_t state = EE_Working::Read(currentEepromAddress);
+		    if (state == (Tek_Count-1)) return;
+		    Table_Cell[state]->Active_Style.Cell_Color=ClrMediumOrchid;
+		    Table_Cell[state]->UnActive_Style.Cell_Color=ClrMediumOrchid;
+		    uint8_t count = Tek_Count;
+		    Table_Cell[state]->Hide();
+		    Tek_Count=count;
+		    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
+		    Draw(Tek_Count);
+		    Task_sleep(400);
+		    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
+		    Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+		    Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+		    Draw(Tek_Count);
+		    this->saveInEEPROM();
 			action();
-			Draw(Tek_Count);
 		}
 
 		if (getButtonState(pult_Button_ESC) == PRESSED)
@@ -3897,15 +4072,32 @@ void SelectMenuZoomSense::action()
 {
 	p_pult->setJoystickPresetId(ZoomJoystickPreset,Tek_Count-1);
 }
-
+//---------------------------------------------------------------
 SelectMenuOverslang::SelectMenuOverslang (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress):
 		SelectMenu (pNam,  Link, Count,  Menu_Per_Scr, eepromAddress)
 {
 
 }
+
 void SelectMenuOverslang::action()
 {
-	p_pult->setOverslangState( Tek_Count==1 );
+/*    uint8_t state = EE_Working::Read(EE_LC_OVERSLANG_ON_OFF);
+    if (state == (Tek_Count-1)) return;
+    Table_Cell[state]->Active_Style.Cell_Color=ClrMediumOrchid;
+    Table_Cell[state]->UnActive_Style.Cell_Color=ClrMediumOrchid;
+    uint8_t count = Tek_Count;
+    Table_Cell[state]->Hide();
+    Tek_Count=count;
+    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
+    Draw(Tek_Count);
+    Task_sleep(400);
+    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
+    Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+    Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+    Draw(Tek_Count);
+    this->saveInEEPROM();*/
+    p_pult->setOverslangState( Tek_Count-1 );
+
 }
 //--------------------------------------------------------------------------------------------------
 SelectMenuSynchronization::SelectMenuSynchronization (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress):
@@ -3913,6 +4105,7 @@ SelectMenuSynchronization::SelectMenuSynchronization (char* pNam, tMenu_Link* Li
 {
 
 }
+
 void SelectMenuSynchronization::action()
 {
 	p_pult->setSynchroSource( Tek_Count-1 );
@@ -4229,6 +4422,8 @@ void SwitchAxsesMenu::updateFromEEPROM()
 		Tek_Count=1;
 		EE_Working::Write(EE_JOYSTIC_CONFIGURATION,0);
 	}
+	Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+	Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
 	p_pult->setJoysticConfiguration((PultJoysticConfigurations)(Tek_Count-1));
 }
 
@@ -4242,14 +4437,25 @@ void SwitchAxsesMenu::Listener()
 	}
 	if (getButtonState(pult_Button_Select) == PRESSED)
 	{
-		Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
-		Draw(Tek_Count);
-		Task_sleep(500);
-		Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
-		Draw(Tek_Count);
-
-		EE_Working::Write(EE_JOYSTIC_CONFIGURATION,Tek_Count-1);
-		p_pult->setJoysticConfiguration((PultJoysticConfigurations)(Tek_Count-1));
+	    uint32_t preferens=EE_Working::Read(EE_JOYSTIC_CONFIGURATION);
+	    if (preferens==(Tek_Count-1))
+	        return;
+	    else {
+            Table_Cell[preferens]->Active_Style.Cell_Color=ClrMediumOrchid;
+            Table_Cell[preferens]->UnActive_Style.Cell_Color=ClrMediumOrchid;
+            uint8_t count = Tek_Count;
+            Table_Cell[preferens]->Hide();
+            Tek_Count = count;
+            Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
+            Draw(Tek_Count);
+            Task_sleep(400);
+            Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
+            Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+            Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+            Draw(Tek_Count);
+            EE_Working::Write(EE_JOYSTIC_CONFIGURATION,Tek_Count-1);
+            p_pult->setJoysticConfiguration((PultJoysticConfigurations)(Tek_Count-1));
+	    }
 	}
 
 	if (getButtonState(pult_Button_ESC) == PRESSED)
@@ -4690,6 +4896,8 @@ ProfileSelectMenu::ProfileSelectMenu (char* pNam, tMenu_Link* Link, byte Count, 
 		Tek_Count=EE_Working::getProfileID()+1;
 		if(Tek_Count>Count||Tek_Count<=0){Tek_Count=1;}
 		old_position_number=Tek_Count;
+        Table_Cell[old_position_number-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+        Table_Cell[old_position_number-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
 	}
 // TODO qwekqkj
 void ProfileSelectMenu::Listener()
@@ -4712,7 +4920,7 @@ void ProfileSelectMenu::Listener()
 	        Table_Cell[RstCurrentProfileProfileMenuSistem]->Active_Style.Cell_Color=ClrLinen ;// запись красного цвета
 	        Draw(Tek_Count);// перерисовать область
 	        EE_Working::setDefaultProfile(old_position_number-1); //перезапись профиля на дефолт
-	        Task_sleep(500);
+	        Task_sleep(400);
 	        ClearDisp();
 	        Table_Cell[RstCurrentProfileProfileMenuSistem]->SetText((char*)text_need);// востановление старого названия
 	        Table_Cell[RstCurrentProfileProfileMenuSistem]->Active_Style.Cell_Color=tempColorProfile ;// востановление старого цвета
@@ -4721,10 +4929,17 @@ void ProfileSelectMenu::Listener()
 	        Tek_Count=old_position_number; //сохранение старой позиции
 	    }
 	    else {
+	        uint8_t count = Tek_Count;
+	        Table_Cell[old_position_number-1]->Active_Style.Cell_Color=ClrMediumOrchid;
+	        Table_Cell[old_position_number-1]->UnActive_Style.Cell_Color=ClrMediumOrchid;
+	        Table_Cell[old_position_number-1]->Hide();
+	        Tek_Count = count;
 	        Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
 	        Draw(Tek_Count);
-	        Task_sleep(500);
+	        Task_sleep(400);
 	        Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
+            Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+            Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
 	        Draw(Tek_Count);
 	        old_position_number=Tek_Count;
 	    }

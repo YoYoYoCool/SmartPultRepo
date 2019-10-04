@@ -63,11 +63,7 @@ typedef union GyConStateBitsLCD {
        UInt16 gvFault:1;
        UInt16 encodersFault:1;
        UInt16 pultFault:1;
-       UInt16 notConnectedSmartHead:1;
-       UInt16 bit7:1;
-       UInt16 bit8:1;
-       UInt16 bit9:1;
-       UInt16 bit10:1;
+       UInt16 GyConProgrammVersion:5;
        UInt16 bit11:1;
        UInt16 stateBits:4;
     } faultBits;
@@ -171,6 +167,11 @@ public:
 	    if (active)  ReDraw();
 	    else    ReHide();
 	    }
+	void setBoardVisible (bool visible) {
+	    Tek_Style.Border=visible;
+	    }
+
+	inline void setSizeText (const tFont* fontSize) { Tek_Style.pFont=fontSize;}
 	inline void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
 	void SetText(char* ptext) {p_text = ptext;} //сохран€ет текст дл€ себ€
 	void Draw(); //рисует €чейку в стиле Active_Style
@@ -179,6 +180,8 @@ public:
 	void ReHide(){  Hided = false; Hide();} //рисует €чейку в стиле UnActive_Style
 	void Clean(){PreDraw();} //очищает €чейку (рисует пустую)
 	virtual void Listener(); //будет наследоватьс€ всеми экранными формами дл€ анализа изменени€ кнопок и данных
+	void DrawTecStile();
+
 };
 
 class TikerCell: public LCD_Cell
@@ -224,12 +227,13 @@ typedef enum {
 	Horiz_Angle=12
 } Field;
 
-enum TiltLimiterState
+enum
 {
-	TL_UP=0,
+    TL_RESET=0,
+	TL_UP,
 	TL_DOWN,
 	TL_UP_DOWN,
-	TL_RESET
+
 };
 class LCD_Main: public LCD_Listener{
 private:
@@ -280,10 +284,10 @@ public:
 	LCD_Cell Cell_Joyst_State, Cell_Motor_State, Cell_GV_Acc/*, CellTiltLimitedState*/;
 	LCD_Cell motionLimitTime, motionCurrentTime,motionTrackNumber, motionState, motionPlayMode,motionMixMode;
 
-	TiltLimiterState tiltLimiterStateFlag;
+	uint8_t  panLimiterStateFlag, rollLimiterStateFlag, tiltLimiterStateFlag;
 	//Error line
 	TikerCell ErrorLine;
-	LCD_Cell tiltLimiterState;
+	LCD_Cell tiltLimiterState, panLimiterState,rollLimiterState;
 	LCD_Cell headVoltage;
 	LCD_Cell currentProfile;
 
@@ -547,7 +551,7 @@ class SelectMenuSpiderSelect:public SelectMenu
 public:
 	SelectMenuSpiderSelect (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress,UInt32 eepromEditAddr, SuspensionResonansChannel ch);
 	virtual void action();
-	void Listener();
+	virtual void Listener();
 	virtual void DrawVert();
 	virtual void updateFromEEPROM();
 };

@@ -38,7 +38,7 @@ public:
             count=0;
             }
 
-    inline void setMaxRisk(int16_t maxRisk) {   this->maxRisk=maxRisk;  }
+    inline void setMaxRisk(int16_t maxRisk) {   this->maxRisk=maxRisk-1;  }
 
     inline int16_t  getActualPosition () {       return count;      }
 

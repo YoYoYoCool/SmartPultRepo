@@ -26,6 +26,7 @@ public:
    List();
    ElementType get(UInt32 id);
    ElementType* getAll();
+   void setMaxSize(UInt32 size);
    UInt32 getSize();
    UInt32 getMaxSize();
    bool set(UInt32 id, ElementType element);
@@ -53,6 +54,11 @@ inline  ElementType List<ElementType>::get(UInt32 id) {
 	return elements[id];
 }
 
+template<typename ElementType>
+inline  void List<ElementType>::setMaxSize(UInt32 size) {
+    maxSize=size;
+}
+
 
 template<typename ElementType>
 inline UInt32 List<ElementType>::getSize() {
@@ -68,7 +74,8 @@ inline UInt32 List<ElementType>::getMaxSize() {
 template<typename ElementType>
 inline bool List<ElementType>::add(ElementType element) {
 	if (size<maxSize) {
-		elements[size++] = element;
+		elements[size] = element;
+		size++;
 		return true;
 	} else {
 		return false;
@@ -113,17 +120,21 @@ inline bool List<ElementType>::addAll(List<ElementType> *other) {
     return res;
 }
 
-template <typename ElementType, UInt32 maxSize> class StaticList: public List<ElementType> {
-    ElementType staticElements[maxSize];
+template <typename ElementType, UInt32 maxSizen> class StaticList: public List<ElementType> {
+    ElementType staticElements[maxSizen];
 public:
     StaticList();
+
+/*    StaticList(bool t): size(0), maxSize(maxSizen),elements(&staticElements[0]) {
+
+    }*/
 };
 
-template<typename ElementType, UInt32 maxSize>
-inline StaticList<ElementType, maxSize>::StaticList() {
+template<typename ElementType, UInt32 maxSizen>
+inline StaticList<ElementType, maxSizen>::StaticList()  {
 		this->size = 0;
-		this->maxSize = maxSize;
-		this->elements = staticElements;
+		this->maxSize = maxSizen;
+		this->elements = &staticElements[0];
 }
 
 //-------------- FIFO -----------------------------------------------------

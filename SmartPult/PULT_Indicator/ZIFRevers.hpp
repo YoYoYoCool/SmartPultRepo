@@ -53,13 +53,13 @@ LCDHeaderSettings settingsHeader = {
     char * focusText[maxText] = { (char*)focusReversOn,
                                         (char*)focusReversOff  };
 
-    LCDWorkcEditSettings zoomSetting = {    .maxRisk=maxText-1,
+    LCDWorkcEditSettings zoomSetting = {    .maxRisk=maxText,
                                             .text=&zoomText[0]    };
 
-    LCDWorkcEditSettings focusSetting = {    .maxRisk=maxText-1,
+    LCDWorkcEditSettings focusSetting = {    .maxRisk=maxText,
                                             .text=&focusText[0]    };
 
-    LCDWorkcEditSettings irisSetting = {    .maxRisk=maxText-1,
+    LCDWorkcEditSettings irisSetting = {    .maxRisk=maxText,
                                             .text=&irisText[0]    };
 
     LCDWorkcEditSettings * ZIFformSettings[maxString] = {&zoomSetting,&focusSetting,&irisSetting};
@@ -84,6 +84,7 @@ private:
 
     LCDBaseNoRotation <maxString> form;
     memoryZIFRevers reversData;
+    uint32_t color[maxText];
 
 public:
 

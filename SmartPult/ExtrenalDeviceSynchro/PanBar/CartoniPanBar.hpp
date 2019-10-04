@@ -12,6 +12,9 @@
 #include <ti/sysbios/knl/Semaphore.h>
 #include "../../GyConCommon/dataTypes.h"
 #include "../PultGlobalDefinitions.h"
+#include "Libs/StandartElement/kalmanFilterStage.hpp"
+#include "KalmanFilterFromPanBar.hpp"
+#include "Libs/StandartElement/KalmanFilter.hpp"
 
 
 
@@ -371,29 +374,49 @@ namespace ExtrenalDevices
 //            const float K;
     };
 
+//    enum {channalFilter=7};
+
     class CatoniPanBarChannel:public JoyChanel
     {
         public:
-            CatoniPanBarChannel(CartoniDataConverter& dc, CartoniChannelAxisList ax, float K,Resistor* speedControl,float deadZone, float T, float maxValue_ ):
+            CatoniPanBarChannel(CartoniDataConverter& dc,
+                                CartoniChannelAxisList ax,
+                                float K,
+                                Resistor* speedControl,
+                                float deadZone,
+                                float T,
+                                float maxValue_,
+                                FilterPanBar::FilterStaticSetting * setting):
                 JoyChanel(K, offset,speedControl,deadZone, T),
                 channelAxis(ax),
                 dataConverter(dc),
+#ifndef Garanin
+                filterPanBar(setting,&filterOut,&filterDynamic),
+//                filterPanBar(&filterOut,&filterDynamic),
+//                filterDynamic(&kalmanKoafDynamic),
+//                filterOut(&kalmanKoafSG),
+
+#endif
                 maxValue(maxValue_)
+
                 {
 
                 }
 
+
+            void setFilter( float ** parametr) {
+                for (uint8_t i=0;i<FilterPanBar::channalFilter;i++) {
+                    filterPanBarPoint[i]=&filterSystem[i];
+                    filterSystem[i].set(parametr[i],parametr[i]);           }
+                filterDynamic.set(parametr[FilterPanBar::channalFilter], parametr[FilterPanBar::channalFilter]);
+                filterOut.set(parametr[FilterPanBar::channalFilter+1], parametr[FilterPanBar::channalFilter+1]);
+                filterPanBar.set(&filterPanBarPoint[0]);
+            }
+
              virtual float getCurrentAdcValue()
                  {
-                 float rez=adcValue;
-/*                 if ((rez<0.50)&&(rez>-0.50)) {
-                     rez*=0.2;
-                     }
-                 else {
+                 rez=adcValue;
 
-                     }
-                rez=filter.calculate(rez);/*
-                rez=deadZone(rez, deadZoneValue);*/
                 if (channelAxis==CH_ZOOM) {
                     rez=rez*K;
                     if (rez>0)
@@ -402,9 +425,11 @@ namespace ExtrenalDevices
                         rez-=0.1;
                     }
                 else {
-                //rez=rez*(getSpeed());//задатчик смещения нуля
                 #ifndef Garanin
-                    //rez*=5.0;
+                    rez*=5.0;
+                    rez=filterPanBar.calculate(&rez);
+
+          //          rez=kalmanFilterSystem.calculate(rez);
                 #endif
                 }
                 if (rez>maxValue) {
@@ -444,10 +469,21 @@ namespace ExtrenalDevices
             CartoniChannelAxisList channelAxis;
             CartoniDataConverter& dataConverter;
             CartoniAxis axis;
+            float rez;
             const float maxValue;
             #ifdef Garanin
             int32_t * speed;
+            #else
+            FilterPanBar::PanBarFilter filterPanBar;
+            KalmanFilter::KalmanLineUpr filterDynamic;
+            KalmanFilter::KalmanLineUpr filterOut;
+            KalmanFilter::KalmanLineUpr filterSystem[FilterPanBar::channalFilter];
+            KalmanFilter::KalmanBase * filterPanBarPoint[FilterPanBar::channalFilter];
+//            KalmanFilter::KalmanFilterLine<channalFilter> kalmanFilterSystem;
+
             #endif
+
+
     };
 
 }

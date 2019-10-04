@@ -12,10 +12,10 @@
 #define LANDSCAPE       //isDisplayOrientation
 
 //#define Garanin
-#define USAEdition
+//#define USAEdition
 #define joyPult
 //#define PanBarDebug
-
+//#define joyPultRussian
 
 #ifdef joyPult
 #else
@@ -32,5 +32,10 @@
 //#define tiltWheelDebug
 //#define debugWheel
 
-
 #endif /* PULTGLOBALDEFINITIONS_H_ */
+
+
+
+
+
+

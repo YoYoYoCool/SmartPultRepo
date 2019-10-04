@@ -465,6 +465,7 @@ class MotionControl
 
 public:
 	MotionControlListener* pult;
+	StaticList<MotionTrack*,6> motionTrackList;
 	MotionControl( MotionControlListener* pl);
 
 	UInt32 getFreeSpace(){return this->freeSpace;}

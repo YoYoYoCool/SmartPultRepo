@@ -259,6 +259,16 @@ public:
     void resetTiltUpLimit();
     void resetTiltDnLimit();
 
+    void setLeftPanLimit();
+    void setRightPanLimit();
+    void resetLeftPanLimit();
+    void resetRightPanLimit();
+
+    void setLeftRollLimit();
+    void setRightRollLimit();
+    void resetLeftRollLimit();
+    void resetRightRollLimit();
+
     void setPlatform(UInt8 num); //выбор платформы (1 или 2)
     char* getGvAcc();
     void setXY(char* pName, UInt8 num, float x, float y);

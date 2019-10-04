@@ -17,7 +17,7 @@
 
 namespace StandartElement {
 
-enum SwitchPosition {
+enum  {
 	off=0,
 	one,
 	two,
@@ -36,48 +36,44 @@ enum SwitchPosition {
 class GaletniyPerecluxhatel {
 
 private:
-	SwitchPosition min;
-	SwitchPosition max;
-	SwitchPosition actualPosition;
-	SwitchPosition oldStepPosition;
+	int8_t min;
+	int8_t max;
+	int8_t actualPosition;
+
 
 public:
-	GaletniyPerecluxhatel(int8_t min=(int8_t)off, int8_t max=(int8_t)twelve)  {
-	    this->actualPosition=((SwitchPosition)min);
-	    this->min=((SwitchPosition)min);
-	    this->max=((SwitchPosition)max);
+	GaletniyPerecluxhatel(int8_t min=off, int8_t max=twelve)  {
+	    this->actualPosition=min;
+	    this->min=min;
+	    this->max=max;
 		}
 
 	void stepLeft () {
-		oldStepPosition=actualPosition;
-		int8_t newPosition=(int8_t)actualPosition;
-		newPosition--;
-		if (newPosition<(int8_t)min)
-		    newPosition=(int8_t)min;
-		actualPosition=(SwitchPosition)newPosition;
+
+		actualPosition--;
+		if (actualPosition<min)
+		    actualPosition=min;
+
 		}
 
 	void stepRight () {
-		oldStepPosition=actualPosition;
-		int8_t newPosition=(int8_t)actualPosition;
-		newPosition++;
-		if (newPosition>(int8_t)max)
-		    newPosition=(int8_t)max;
-		actualPosition=(SwitchPosition)newPosition;
+		actualPosition++;
+		if (actualPosition>max)
+		    actualPosition=max;
+
 
 		}
 
 	bool setNeedPosition (int8_t needPosition) {
-		oldStepPosition=actualPosition;
 		if (needPosition< min)
 			return false;
 		if (needPosition> max)
 			return false;
-		actualPosition=(SwitchPosition)needPosition;
+		actualPosition=needPosition;
 		return true;
 		}
 
-	inline uint8_t getActualPosition () { return (uint8_t)actualPosition;}
+	inline int8_t getActualPosition () { return actualPosition;}
 
 	};
 

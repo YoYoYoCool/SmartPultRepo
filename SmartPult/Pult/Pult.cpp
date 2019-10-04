@@ -27,6 +27,7 @@
 #include "PULT_Indicator/ServoPwm.h"
 #include "backlight.hpp"
 #include "../ExtrenalDeviceSynchro/Preston/Preston.hpp"
+#include "Libs/StandartElement/KalmanFilter.hpp"
 
 
 #define MAX_TRANSFER_TIMEOUT 350
@@ -256,13 +257,51 @@ JoyChanel panExtern1Channel     (0.4, 	panExtrenal1Offset,		&panChanelDeadResist
 JoyChanel dutchExtern1Channel   (0.4,	dutchExtrenal1Offset,	&dutchChanelDeadResistor,   5,  0.015 );
 JoyChanel tiltExtern1Channel    (0.4,	tiltExtrenal1Offset,	&tiltChanelDeadResistor,    5,  0.015 );
 
+ExtrenalDevices::FilterPanBar::FilterStaticSetting settingFilterPanBar = {
+                                             .counterStepDn=0,
+                                             .counterStepUp=0,
+                                             .counterStepZero=0,
+                                             .exponent=3,
+                                             .maxCounterStep=10,
+                                             .stepPorogUp=1,
+                                             .stepPorogDn=0
+};
+
+float kalmanKoaf1 = 0.001;
+
+float kalmanKoaf2 = 0.009;
+
+float kalmanKoaf3 = 0.05;
+
+float kalmanKoaf4 = 0.1;
+
+float kalmanKoaf5 = 0.2;
+
+float kalmanKoaf6 = 0.35;
+
+float kalmanKoaf7 = 0.5;
+
+float kalmanKoafDynamic = 0.5;
+
+float kalmanKoafSG = 0.5;
+
+float * kalmanKoef[ExtrenalDevices::FilterPanBar::channalFilter+2] = {&kalmanKoaf1,
+                                                    &kalmanKoaf2,
+                                                    &kalmanKoaf3,
+                                                    &kalmanKoaf4,
+                                                    &kalmanKoaf5,
+                                                    &kalmanKoaf6,
+                                                    &kalmanKoaf7,
+                                                    &kalmanKoafDynamic,
+                                                    &kalmanKoafSG};
+
 ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_PAN,
         1.0, &panJoySpeedResistor,
        // &dummySpecRes,
-        0.02,0.015,230.0
+        0.02,0.015,230.0,&settingFilterPanBar
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
 (
@@ -270,7 +309,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
         ExtrenalDevices::CH_TILT,
         1.0, &tiltJoySpeedResistor,
         //&dummySpecRes,
-        0.02,0.015,230.0
+        0.02,0.015,230.0,&settingFilterPanBar
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
 (
@@ -278,7 +317,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
         ExtrenalDevices::CH_DUTCH,
         1.0, &dutchJoySpeedResistor,
         //&dummySpecRes,
-        0.02,0.015,230.0
+        0.02,0.015,230.0,&settingFilterPanBar
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel
 (
@@ -287,7 +326,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel
         0.0000275/*0.0000305*//**/, &zoomSpeedResistor,
         15,
         0.015,
-        1.0
+        1.0, &settingFilterPanBar
 );
 ExtrenalDevices::CatoniPanBarResistor cartoniFocusAxisChannel
 (
@@ -472,6 +511,14 @@ typedef union PultControlBitsA
     {
         volatile FolowingModes  panSuspentionFollowingMode  : 2;
         volatile UInt16         panFollowingSectorSize      : 5;
+        volatile UInt16         setLeftPanLimits            : 1;
+        volatile UInt16         setRightPanLimits           : 1;
+        volatile UInt16         resetLeftPanLimits          : 1;
+        volatile UInt16         resetRightPanLimits         : 1;
+        volatile UInt16         setLeftDutchLimits          : 1;
+        volatile UInt16         setRightDutchLimits         : 1;
+        volatile UInt16         resetLeftDutchLimits        : 1;
+        volatile UInt16         resetRightDutchLimits       : 1;
     } bit;
 } PultControlBitsA;
 
@@ -485,11 +532,7 @@ typedef union GyConStateBitsLCD {
 	   UInt16 gvFault:1;
 	   UInt16 encodersFault:1;
 	   UInt16 pultFault:1;
-	   UInt16 connectedSmartHead:1;
-	   UInt16 bit7:1;
-	   UInt16 bit8:1;
-	   UInt16 bit9:1;
-	   UInt16 bit10:1;
+	   UInt16 GyConProgrammVersion:5;
 	   UInt16 bit11:1;
 	   UInt16 stateBits:4;
 	} faultBits;
@@ -556,6 +599,17 @@ static volatile bool setUpTiltLimitsFlag    = 0;
 static volatile bool setDwTiltLimitsFlag    = 0;
 static volatile bool resetUpTiltLimitsFlag  = 0;
 static volatile bool resetDwTiltLimitsFlag  = 0;
+
+static volatile bool setRightPanLimitsFlag    = 0;
+static volatile bool setLeftPanLimitsFlag    = 0;
+static volatile bool resetRightPanLimitsFlag  = 0;
+static volatile bool resetLeftPanLimitsFlag  = 0;
+
+static volatile bool setRightRollLimitsFlag    = 0;
+static volatile bool setLeftRollLimitsFlag    = 0;
+static volatile bool resetRightRollLimitsFlag  = 0;
+static volatile bool resetLefttRollLimitsFlag  = 0;
+
 static volatile bool estimationFlag         = 0;
 
 float getAngle(float angleH, float angleL) {return angleH + angleL;}
@@ -719,6 +773,9 @@ void Pult::driverTask()
 	backlight.setButton(sharedButtons[backLightOff]);
 	backlight.setDriver(&backlightDriver);
 	preston.setDriver(&prestonDriver);
+	cartoniPanAxisChannel.setFilter(&kalmanKoef[0]);
+	cartoniTiltAxisChannel.setFilter(&kalmanKoef[0]);
+	cartoniDutchAxisChannel.setFilter(&kalmanKoef[0]);
 
 #ifdef WhellSmartPult
 	panJoyChannel.disable();
@@ -972,12 +1029,16 @@ extern "C"
         ExtrenalDevieExchDriver_fastClockInt();
 //-------- HOUR METER ------------------
         minuteCounter++;
-        if(minuteCounter>=60000)
+        /*if(minuteCounter>=60000)
         {
             minuteCounter=0;
             timeToStart++;
             if(timeToStart>=0xFFFFFFF0){timeToStart=0xFFFFFFF0;}
-        }
+        }*/
+        if (minuteCounter>1000) {
+            timeToStart++;
+            minuteCounter=0;
+            }
 //--------------------------------------
         counter++;
         if(counter>100){counter=100;}
@@ -992,7 +1053,6 @@ extern "C"
             return;
         }
         transferDelayCurrent++;
-
     }
 }
 
@@ -1429,6 +1489,35 @@ static void inversLogic() {
 
 #endif
 	//ZIF REVERS
+#ifdef joyPultRussian
+    switch (zoomReversButton.state)
+        {
+            case PRESSED:
+                zoomJoy.setInversOrientation();
+                break;
+            case RELESASED:
+                zoomJoy.setNormalOrientation();
+                break;
+        }
+        switch (irisReversButton.state)
+        {
+            case PRESSED:
+                IrisResistor.setInversOrientation();
+                break;
+            case RELESASED:
+                IrisResistor.setNormalOrientation();
+                break;
+        }
+        switch (focusReversButton.state)
+        {
+            case PRESSED:
+                focusResistor.setInversOrientation();
+                break;
+            case RELESASED:
+                focusResistor.setNormalOrientation();
+                break;
+        }
+#else
 	switch (virtualZoomReversButton.state)
 	{
 		case PRESSED:
@@ -1456,6 +1545,7 @@ static void inversLogic() {
 			focusResistor.setNormalOrientation();
 			break;
 	}
+#endif
 }
 
 
@@ -1605,6 +1695,17 @@ static void controlLogic() {
 	static UInt8 setDwTiltLimitsCounter = 0;
 	static UInt8 resetUpTiltLimitsCounter = 0;
 	static UInt8 resetDwTiltLimitsCounter = 0;
+
+	static UInt8 setLeftPanLimitsCounter = 0;
+	static UInt8 setRightPanLimitsCounter = 0;
+	static UInt8 resetLeftPanLimitsCounter = 0;
+	static UInt8 resetRightPanLimitsCounter = 0;
+
+    static UInt8 setLeftRollLimitsCounter = 0;
+    static UInt8 setRightRollLimitsCounter = 0;
+    static UInt8 resetLeftRollLimitsCounter = 0;
+    static UInt8 resetRightRollLimitsCounter = 0;
+
 	static UInt8 lensCalibrationCounter = 0;
 	static UInt8 estimationBitCounter=0;
 
@@ -1627,7 +1728,18 @@ static void controlLogic() {
 	if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
 	if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
 	if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 3; resetDwTiltLimitsFlag = false;};
-#ifdef USAEdition || WhellSmartPult
+
+	if (setRightPanLimitsFlag == true) {setRightPanLimitsCounter = 3; setRightPanLimitsFlag = false;};
+	if (setLeftPanLimitsFlag == true) {setLeftPanLimitsCounter = 3; setLeftPanLimitsFlag = false;};
+	if (resetRightPanLimitsFlag == true) {resetRightPanLimitsCounter = 3; resetRightPanLimitsFlag = false;};
+	if (resetLeftPanLimitsFlag == true) {resetLeftPanLimitsCounter = 3; resetLeftPanLimitsFlag = false;};
+
+    if (setRightRollLimitsFlag == true) {setRightRollLimitsCounter = 3; setRightRollLimitsFlag = false;};
+    if (setLeftRollLimitsFlag == true) {setLeftRollLimitsCounter = 3; setLeftRollLimitsFlag = false;};
+    if (resetRightRollLimitsFlag == true) {resetRightRollLimitsCounter = 3; resetRightRollLimitsFlag = false;};
+    if (resetLefttRollLimitsFlag == true) {resetLeftRollLimitsCounter = 3; resetLefttRollLimitsFlag = false;};
+
+	#ifdef USAEdition || WhellSmartPult
 	if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
 #else
 	if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
@@ -1641,11 +1753,13 @@ static void controlLogic() {
 	else
 		// set false;
 
+
 	if (lensCalibrationCounter) {
 		lensCalibrationCounter--;
 		motorControlBits.bit.tuningStart = true;
 	} else
 		motorControlBits.bit.tuningStart = false;
+
 	if (setUpTiltLimitsCounter) {
 		setUpTiltLimitsCounter--;
 		controlBits.bit.setUpTiltLimits = true;
@@ -1669,6 +1783,54 @@ static void controlLogic() {
 		controlBits.bit.resetDwTiltLimits = true;
 	} else
 		controlBits.bit.resetDwTiltLimits = false;
+
+	if (setLeftPanLimitsCounter) {
+	    setLeftPanLimitsCounter--;
+	    controlBitsA.bit.setLeftPanLimits = true;
+	} else
+	    controlBitsA.bit.setLeftPanLimits = false;
+
+	if (setRightPanLimitsCounter) {
+	    setRightPanLimitsCounter--;
+	    controlBitsA.bit.setRightPanLimits = true;
+	} else
+	    controlBitsA.bit.setRightPanLimits = false;
+
+	if (resetLeftPanLimitsCounter) {
+	    resetLeftPanLimitsCounter--;
+	    controlBitsA.bit.resetLeftPanLimits = true;
+	} else
+	    controlBitsA.bit.resetLeftPanLimits = false;
+
+	if (resetRightPanLimitsCounter) {
+	    resetRightPanLimitsCounter--;
+	    controlBitsA.bit.resetRightPanLimits = true;
+	} else
+	    controlBitsA.bit.resetRightPanLimits = false;
+
+	if (setLeftRollLimitsCounter) {
+	    setLeftRollLimitsCounter--;
+	    controlBitsA.bit.setLeftDutchLimits = true;
+	} else
+	    controlBitsA.bit.setLeftDutchLimits = false;
+
+	if (setRightRollLimitsCounter) {
+	    setRightRollLimitsCounter--;
+	    controlBitsA.bit.setRightDutchLimits = true;
+	} else
+	    controlBitsA.bit.setRightDutchLimits = false;
+
+    if (resetLeftRollLimitsCounter) {
+        resetLeftRollLimitsCounter--;
+        controlBitsA.bit.resetLeftDutchLimits = true;
+    } else
+        controlBitsA.bit.resetLeftDutchLimits = false;
+
+    if (resetRightRollLimitsCounter) {
+        resetRightRollLimitsCounter--;
+        controlBitsA.bit.resetRightDutchLimits = true;
+    } else
+        controlBitsA.bit.resetRightDutchLimits = false;
 
 #ifdef joyPult
 	if (gvAccButton.isClicked()) {
@@ -1782,21 +1944,29 @@ char* Pult::getTiltPreset() {
 	return "PS ";
 }
 
-void Pult::setTiltUpLimit() {
-	setUpTiltLimitsFlag = true;
-}
+void Pult::setTiltUpLimit() {	setUpTiltLimitsFlag = true;}
 
-void Pult::setTiltDnLimit() {
-	setDwTiltLimitsFlag = true;
-}
+void Pult::setTiltDnLimit() {	setDwTiltLimitsFlag = true;}
 
-void Pult::resetTiltUpLimit() {
-	resetUpTiltLimitsFlag = true;
-}
+void Pult::resetTiltUpLimit() {	resetUpTiltLimitsFlag = true;}
 
-void Pult::resetTiltDnLimit() {
-	resetDwTiltLimitsFlag = true;
-}
+void Pult::resetTiltDnLimit() {	resetDwTiltLimitsFlag = true;}
+
+void Pult::setLeftPanLimit() {   setLeftPanLimitsFlag = true;}
+
+void Pult::setRightPanLimit() {   setRightPanLimitsFlag = true;}
+
+void Pult::resetLeftPanLimit() { resetLeftPanLimitsFlag = true;}
+
+void Pult::resetRightPanLimit() { resetRightPanLimitsFlag = true;}
+
+void Pult::setLeftRollLimit() {   setLeftRollLimitsFlag = true;}
+
+void Pult::setRightRollLimit() {   setRightRollLimitsFlag = true;}
+
+void Pult::resetLeftRollLimit() { resetLefttRollLimitsFlag = true;}
+
+void Pult::resetRightRollLimit() { resetRightRollLimitsFlag = true;}
 
 void Pult::setPlatform(UInt8 num) {
 /*	if (num<4) {
@@ -2736,7 +2906,8 @@ UInt16 Pult::getControlBits ()
 //-------------------------------------------------------------------------------
 UInt16 Pult::getGyConFaultBits ()
 {
-    return gyConFaultBits.stateBits.faultBits;
+    //return gyConFaultBits.stateBits.faultBits;
+    return gyConFaultBits.all;
 }
 //-------------------------------------------------------------------------------
 void Pult::setDriftStopperMode(bool val)
@@ -2761,6 +2932,7 @@ void   Pult::setSynchroSource(UInt32 value)
 {
     switch(value)
     {
+
         case 1:
             ExtrSyncroization::ExtrenalDevieExchDriver::selectMode(ExtrSyncroization::EXT_DEV_PAN_BAR);
             break;

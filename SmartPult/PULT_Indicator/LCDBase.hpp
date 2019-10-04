@@ -129,6 +129,12 @@ struct LCDWorkcEditSettings {
     int16_t maxRisk;
     };
 
+template <size_t longStr>
+struct LCDStaticText {
+    char text[longStr];
+    uint16_t sizeStr;
+};
+
 
 class LCDWorkcEdit {
 private:
@@ -169,14 +175,82 @@ public:
         cell.ReDraw();
         }
 
+    void stepRight(bool reDraw) {
+        encoder.increment();
+        cell.p_text=text[encoder.getActualPosition()];
+        if (reDraw) cell.ReDraw();
+    }
+
+    void stepLeft(bool reDraw) {
+        encoder.decrement();
+        cell.p_text=text[encoder.getActualPosition()];
+        if (reDraw) cell.ReDraw();
+    }
+
      void updateText () {
          cell.p_text=text[encoder.getActualPosition()];
         }
 };
 
+class LCDStatic {
+
+public:
+
+    LCDStatic(uint8_t maxRisc): encoderVertical(maxRisc-1) {
+
+    }
+
+    StandartElement::Encoder encoderVertical;
+
+    virtual void setBackGroundColor(uint32_t color, uint8_t cellID) {    }
+
+    virtual void setTextColor(uint32_t color, uint8_t cellID) {    }
+
+    virtual void setBorderColor(uint32_t color, uint8_t cellID) {    }
+
+    virtual void drawForm() {        }
+
+    virtual void drawNoActiveForm() {           }
+
+    virtual void drawNoActiveFormTecStile() {        }
+
+    virtual void drawCell () {        }
+
+    virtual void drawCell (uint8_t id, bool active=true) { }
+
+    virtual void drawCellTecStile() {    }
+
+    virtual void drawCellTecStile (uint8_t id) {       }
+
+    virtual void setFontSizeAll (const tFont * fontSize) {        }
+
+    virtual void setFontSize (uint8_t id,const tFont* fontSize) {    }
+
+    virtual void setCoordSell (uint8_t id,t_Pos_Size_XY& pos) {        }
+
+    virtual void borderVisible (uint8_t id, bool visible) {          }
+
+    virtual void setGorizontalEncoder(int8_t id, int16_t count) {        }
+
+    virtual int8_t getCellEncoderPosition(uint8_t i=0) {      }
+
+    virtual void stepDown() {        }
+
+    virtual void stepUp() {        }
+
+    virtual void stepLeft() {      }
+
+    virtual void stepRight() {    }
+
+    virtual void stepRight(bool reDraw,int8_t offset=0) {    }
+
+    virtual void stepLeft(bool reDraw,int8_t offset=0) {    }
+
+};
+
 
 template <uint8_t numberOfCell>
-class LCDBaseNoRotation {
+class LCDBaseNoRotation: public LCDStatic{
 private:
 
     void calculateInformEdit(t_Pos_Size_XY freeDisplayField) {
@@ -188,24 +262,24 @@ private:
             freeDisplayField.Y+=5;
             }
         }
+    void calculateInformEdit(t_Pos_Size_XY freeDisplayField, uint8_t s) {
+            freeDisplayField.Ysize=((freeDisplayField.Ysize-s)-(s*(numberOfCell)))/numberOfCell;
+            freeDisplayField.Y+=s;
+            for (uint32_t i=0; i<numberOfCell; i++) {
+                cell[i].cell.Set_Coord(freeDisplayField);
+                freeDisplayField.Y+=freeDisplayField.Ysize;
+                freeDisplayField.Y+=s;
+                }
+            }
 
     LCDHeader header;
     LCDWorkcEdit    cell[numberOfCell];
 
-    void drawCell () {
-        for (uint8_t i=0; i<numberOfCell; i++) {
-            cell[i].cell.ReHide();   }
-        }
-
-
 public:
 
-    StandartElement::Encoder encoderVertical;
+    LCDBaseNoRotation(LCDHeaderSettings & settingsHeader,LCDWorkcEditSettings** setting):LCDStatic(numberOfCell),
+        header(settingsHeader)
 
-
-    LCDBaseNoRotation(LCDHeaderSettings & settingsHeader,LCDWorkcEditSettings** setting):
-        header(settingsHeader),
-        encoderVertical(numberOfCell-1)
             {
             t_Pos_Size_XY freeDisplayField = {
                                               .X=20,
@@ -219,6 +293,21 @@ public:
                 }
             }
 
+    LCDBaseNoRotation(LCDHeaderSettings & settingsHeader,LCDWorkcEditSettings** setting, uint8_t s): LCDStatic(numberOfCell),
+            header(settingsHeader)
+                {
+                t_Pos_Size_XY freeDisplayField = {
+                                                  .X=20,
+                                                  .Xsize=279,
+                                                  .Ysize=210,
+                                                  .Y=30
+                                                };
+                calculateInformEdit(freeDisplayField,s);
+                for (int8_t i=0; i<numberOfCell; i++) {
+                    cell[i].setup(setting[i]);
+                    }
+                }
+
     LCDBaseNoRotation(): encoderVertical(numberOfCell-1)
         {
         t_Pos_Size_XY freeDisplayField = {
@@ -230,20 +319,68 @@ public:
         calculateInformEdit(freeDisplayField);
         }
 
-    void drawForm() {
+    virtual void setBackGroundColor(uint32_t color, uint8_t cellID) {
+        cell[cellID].cell.Active_Style.Cell_Color=color;
+        cell[cellID].cell.UnActive_Style.Cell_Color=color;
+    }
+
+    virtual void setTextColor(uint32_t color, uint8_t cellID) {
+        cell[cellID].cell.Active_Style.Font_Color=color;
+    }
+
+    virtual void setBorderColor(uint32_t color, uint8_t cellID) {
+        cell[cellID].cell.Active_Style.Border_Color=color;
+    }
+
+    virtual void drawForm() {
         header.draw();
         drawCell();
         cell[encoderVertical.getActualPosition()].cell.ReDraw();
         }
 
-    void setGorizontalEncoder(int8_t id, int16_t count) {
+    virtual void drawNoActiveForm() {
+            header.draw();
+            drawCell();
+           }
+
+    virtual void drawNoActiveFormTecStile() {
+        header.draw();
+        drawCellTecStile();
+        }
+
+    virtual void drawCell () {
+        for (uint8_t i=0; i<numberOfCell; i++) {
+            cell[i].cell.ReHide();   }
+        }
+
+    virtual void drawCell (uint8_t id, bool active=true) {
+        if (active) cell[id].cell.ReDraw();
+        else cell[id].cell.ReHide();}
+
+    virtual void drawCellTecStile() {
+        for (uint8_t i=0; i<numberOfCell; i++) {
+            cell[i].cell.DrawTecStile();   }
+    }
+
+    virtual void drawCellTecStile (uint8_t id) {        cell[id].cell.DrawTecStile();    }
+
+    virtual void setFontSizeAll (const tFont * fontSize) {
+        for (uint8_t i=0; i<numberOfCell; i++) {
+            cell[i].cell.setSizeText(fontSize);   }
+        }
+
+    virtual void setFontSize (uint8_t id,const tFont* fontSize) {  cell[id].cell.setSizeText(fontSize);    }
+
+    virtual void setCoordSell (uint8_t id,t_Pos_Size_XY& pos) {        cell[id].cell.p_Pos_Size_XY=pos;        }
+
+    virtual void borderVisible (uint8_t id, bool visible) {    cell[id].cell.setBoardVisible(visible);         }
+
+    virtual void setGorizontalEncoder(int8_t id, int16_t count) {
         cell[id].encoder.setActualPosition(count);
         cell[id].updateText();
         }
 
-    int8_t getCellEncoderPosition() {
-        return cell[encoderVertical.getActualPosition()].encoder.getActualPosition();
-        }
+    virtual int8_t getCellEncoderPosition(uint8_t i=0) {   return cell[encoderVertical.getActualPosition()-i].encoder.getActualPosition();    }
 
     virtual void stepDown() {
         cell[encoderVertical.getActualPosition()].cell.ReHide();
@@ -257,13 +394,13 @@ public:
         cell[encoderVertical.getActualPosition()].cell.ReDraw();
         }
 
-    void stepLeft() {
-        cell[encoderVertical.getActualPosition()].stepLeft();
-        }
+    virtual void stepLeft() {   cell[encoderVertical.getActualPosition()].stepLeft();   }
 
-    void stepRight() {
-        cell[encoderVertical.getActualPosition()].stepRight();
-        }
+    virtual void stepRight() {  cell[encoderVertical.getActualPosition()].stepRight();  }
+
+    virtual void stepRight(bool reDraw,int8_t offset=0) {  cell[encoderVertical.getActualPosition()-offset].stepRight(reDraw);  }
+
+    virtual void stepLeft(bool reDraw,int8_t offset=0) {  cell[encoderVertical.getActualPosition()-offset].stepLeft(reDraw);  }
 };
 
 
