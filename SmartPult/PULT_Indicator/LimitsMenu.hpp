@@ -40,7 +40,7 @@ namespace LCD {
                                                "RESET ROLL LEFT LIMIT",
                                                "SET ROLL RIGHT LIMIT",
                                                "RESET ROLL RIGHT LIMIT",
-                                               "RESET ALL PAN LIMIT",
+                                               "RESET ALL ROLL LIMIT",
     #else
                                                "SET DUTCH LEFT LIMIT",
                                                "RESET DUTCH LEFT LIMIT",
@@ -273,6 +273,8 @@ namespace LCD {
                 p_pult->resetRightRollLimit();
                 p_pult->resetTiltUpLimit();
                 p_pult->resetTiltDnLimit();
+                mainMenu->panLimiterStateFlag = TL_RESET;
+                mainMenu->rollLimiterStateFlag=TL_RESET;
                 mainMenu->tiltLimiterStateFlag=TL_RESET;}
         };
 

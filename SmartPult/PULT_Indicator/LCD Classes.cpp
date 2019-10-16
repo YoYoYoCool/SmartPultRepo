@@ -4081,23 +4081,7 @@ SelectMenuOverslang::SelectMenuOverslang (char* pNam, tMenu_Link* Link, byte Cou
 
 void SelectMenuOverslang::action()
 {
-/*    uint8_t state = EE_Working::Read(EE_LC_OVERSLANG_ON_OFF);
-    if (state == (Tek_Count-1)) return;
-    Table_Cell[state]->Active_Style.Cell_Color=ClrMediumOrchid;
-    Table_Cell[state]->UnActive_Style.Cell_Color=ClrMediumOrchid;
-    uint8_t count = Tek_Count;
-    Table_Cell[state]->Hide();
-    Tek_Count=count;
-    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuSelected;
-    Draw(Tek_Count);
-    Task_sleep(400);
-    Table_Cell[Tek_Count-1]->Active_Style=Style_MenuActive;
-    Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
-    Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-    Draw(Tek_Count);
-    this->saveInEEPROM();*/
-    p_pult->setOverslangState( Tek_Count-1 );
-
+    p_pult->setOverslangState( Tek_Count==1 );
 }
 //--------------------------------------------------------------------------------------------------
 SelectMenuSynchronization::SelectMenuSynchronization (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress):

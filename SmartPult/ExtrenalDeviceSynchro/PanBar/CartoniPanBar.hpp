@@ -374,7 +374,11 @@ namespace ExtrenalDevices
 //            const float K;
     };
 
-//    enum {channalFilter=7};
+static ExtrenalDevices::FilterPanBar::PanBarFilterSetting settins = {
+                                                                     .koafMinBase=0.001,
+                                                                     .maxSpidQuad=59600,
+                                                                     .koafMinBase=5.0
+    };
 
     class CatoniPanBarChannel:public JoyChanel
     {
@@ -385,33 +389,19 @@ namespace ExtrenalDevices
                                 Resistor* speedControl,
                                 float deadZone,
                                 float T,
-                                float maxValue_,
-                                FilterPanBar::FilterStaticSetting * setting):
+                                float maxValue_):
                 JoyChanel(K, offset,speedControl,deadZone, T),
                 channelAxis(ax),
                 dataConverter(dc),
 #ifndef Garanin
-                filterPanBar(setting,&filterOut,&filterDynamic),
-//                filterPanBar(&filterOut,&filterDynamic),
-//                filterDynamic(&kalmanKoafDynamic),
-//                filterOut(&kalmanKoafSG),
-
+                filterPanBar(filterUse,settins),
+                filterUse(settins.koafMinBase),
 #endif
                 maxValue(maxValue_)
 
                 {
 
                 }
-
-
-            void setFilter( float ** parametr) {
-                for (uint8_t i=0;i<FilterPanBar::channalFilter;i++) {
-                    filterPanBarPoint[i]=&filterSystem[i];
-                    filterSystem[i].set(parametr[i],parametr[i]);           }
-                filterDynamic.set(parametr[FilterPanBar::channalFilter], parametr[FilterPanBar::channalFilter]);
-                filterOut.set(parametr[FilterPanBar::channalFilter+1], parametr[FilterPanBar::channalFilter+1]);
-                filterPanBar.set(&filterPanBarPoint[0]);
-            }
 
              virtual float getCurrentAdcValue()
                  {
@@ -427,9 +417,7 @@ namespace ExtrenalDevices
                 else {
                 #ifndef Garanin
                     rez*=5.0;
-                    rez=filterPanBar.calculate(&rez);
-
-          //          rez=kalmanFilterSystem.calculate(rez);
+                    rez=filterPanBar.calculate(rez);
                 #endif
                 }
                 if (rez>maxValue) {
@@ -474,13 +462,8 @@ namespace ExtrenalDevices
             #ifdef Garanin
             int32_t * speed;
             #else
-            FilterPanBar::PanBarFilter filterPanBar;
-            KalmanFilter::KalmanLineUpr filterDynamic;
-            KalmanFilter::KalmanLineUpr filterOut;
-            KalmanFilter::KalmanLineUpr filterSystem[FilterPanBar::channalFilter];
-            KalmanFilter::KalmanBase * filterPanBarPoint[FilterPanBar::channalFilter];
-//            KalmanFilter::KalmanFilterLine<channalFilter> kalmanFilterSystem;
-
+            ExtrenalDevices::FilterPanBar::PanBarFilter filterPanBar;
+            KalmanFilter::KalmanLineUpr filterUse;
             #endif
 
 

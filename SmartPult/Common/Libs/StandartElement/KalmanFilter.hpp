@@ -11,7 +11,7 @@
 
 
 
-    namespace KalmanFilter {
+namespace KalmanFilter {
 
     class KalmanBase {
     private:
@@ -21,22 +21,17 @@
 
     public:
 
-        void setData(float xOpt) { this->xOpt=xOpt;}
-
-        virtual void calculate (float * inputData) {
+        virtual float calculate (float  inputData) {
 
         }
 
-        virtual void calculate (float  inputData) {
+        virtual float calculate (float * inputData) {
 
         }
 
-        virtual void set(float  parametr1, float parametr2) {
+        virtual void updateKoafficient(float kalmanKoaf) {
 
         }
-
-        virtual float getData() {}
-
 
     };
 
@@ -56,67 +51,45 @@
         }
 
 
-        virtual void calculate (float * inputData) {
-            float neweOptUp = (sigmaEta[0]*sigmaEta[0])*(eOpt+(sigmaPsi[0]*sigmaPsi[0]));
-            float neweOptDn = (sigmaEta[0]*sigmaEta[0])+eOpt+(sigmaPsi[0]*sigmaPsi[0]);
-            eOpt=neweOptUp/neweOptDn;
-            kalmanKoaf=eOpt/(sigmaEta[0]*sigmaEta[0]);
-            xOpt*=(1-kalmanKoaf);
-            xOpt+=kalmanKoaf*inputData[0];
-            }
-
-        virtual void calculate (float  inputData) {
+        virtual float calculate (float inputData) {
             float neweOptUp = (sigmaEta[0]*sigmaEta[0])*(eOpt+(sigmaPsi[0]*sigmaPsi[0]));
             float neweOptDn = (sigmaEta[0]*sigmaEta[0])+eOpt+(sigmaPsi[0]*sigmaPsi[0]);
             eOpt=neweOptUp/neweOptDn;
             kalmanKoaf=eOpt/(sigmaEta[0]*sigmaEta[0]);
             xOpt*=(1-kalmanKoaf);
             xOpt+=kalmanKoaf*inputData;
-        }
-
-
-        virtual float getData() { return xOpt;}
-
-        virtual void set(float*  parametr1, float* parametr2) {
-            this->sigmaEta=parametr1;
-            this->sigmaPsi=parametr2;
-            eOpt=sigmaEta[0];
+            return xOpt;
             }
-
         };
 
     class KalmanLineUpr: public KalmanBase {
 
     private:
 
-        float * kalmanKoaf;
+        float kalmanKoaf;
 
     public:
 
-        KalmanLineUpr(float * kalmanKoaf): kalmanKoaf(kalmanKoaf)
+        KalmanLineUpr(float  kalmanKoaf): kalmanKoaf(kalmanKoaf)
                 {
 
                 }
 
-        KalmanLineUpr()
-                {
-
-                }
-
-        virtual void calculate (float* inputData) {
-            xOpt*=(1-kalmanKoaf[0]);
-            xOpt+=kalmanKoaf[0]*inputData[0];
-            }
-
-        virtual void calculate (float inputData) {
-            xOpt*=(1-kalmanKoaf[0]);
-            xOpt+=kalmanKoaf[0]*inputData;
+        virtual float calculate (float inputData) {
+            xOpt*=(1-kalmanKoaf);
+            xOpt+=kalmanKoaf*inputData;
+            return xOpt;
         }
 
-        virtual float getData() { return xOpt;}
+        virtual float calculate (float * inputData) {
+            xOpt*=(1-kalmanKoaf);
+            xOpt+=kalmanKoaf*inputData[0];
+            return xOpt;
+        }
 
-        virtual void set(float * parametr1, float* parametr2) {     kalmanKoaf=parametr1;   }
-
+        virtual void updateKoafficient(float kalmanKoaf) {
+            this->kalmanKoaf=kalmanKoaf;
+        }
     };
 
 

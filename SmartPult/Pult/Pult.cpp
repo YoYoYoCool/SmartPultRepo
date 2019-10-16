@@ -257,43 +257,6 @@ JoyChanel panExtern1Channel     (0.4, 	panExtrenal1Offset,		&panChanelDeadResist
 JoyChanel dutchExtern1Channel   (0.4,	dutchExtrenal1Offset,	&dutchChanelDeadResistor,   5,  0.015 );
 JoyChanel tiltExtern1Channel    (0.4,	tiltExtrenal1Offset,	&tiltChanelDeadResistor,    5,  0.015 );
 
-ExtrenalDevices::FilterPanBar::FilterStaticSetting settingFilterPanBar = {
-                                             .counterStepDn=0,
-                                             .counterStepUp=0,
-                                             .counterStepZero=0,
-                                             .exponent=3,
-                                             .maxCounterStep=10,
-                                             .stepPorogUp=1,
-                                             .stepPorogDn=0
-};
-
-float kalmanKoaf1 = 0.001;
-
-float kalmanKoaf2 = 0.009;
-
-float kalmanKoaf3 = 0.05;
-
-float kalmanKoaf4 = 0.1;
-
-float kalmanKoaf5 = 0.2;
-
-float kalmanKoaf6 = 0.35;
-
-float kalmanKoaf7 = 0.5;
-
-float kalmanKoafDynamic = 0.5;
-
-float kalmanKoafSG = 0.5;
-
-float * kalmanKoef[ExtrenalDevices::FilterPanBar::channalFilter+2] = {&kalmanKoaf1,
-                                                    &kalmanKoaf2,
-                                                    &kalmanKoaf3,
-                                                    &kalmanKoaf4,
-                                                    &kalmanKoaf5,
-                                                    &kalmanKoaf6,
-                                                    &kalmanKoaf7,
-                                                    &kalmanKoafDynamic,
-                                                    &kalmanKoafSG};
 
 ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
 (
@@ -301,7 +264,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
         ExtrenalDevices::CH_PAN,
         1.0, &panJoySpeedResistor,
        // &dummySpecRes,
-        0.02,0.015,230.0,&settingFilterPanBar
+        0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
 (
@@ -309,7 +272,7 @@ ExtrenalDevices::CatoniPanBarChannel cartoniTiltAxisChannel
         ExtrenalDevices::CH_TILT,
         1.0, &tiltJoySpeedResistor,
         //&dummySpecRes,
-        0.02,0.015,230.0,&settingFilterPanBar
+        0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
 (
@@ -317,16 +280,16 @@ ExtrenalDevices::CatoniPanBarChannel cartoniDutchAxisChannel
         ExtrenalDevices::CH_DUTCH,
         1.0, &dutchJoySpeedResistor,
         //&dummySpecRes,
-        0.02,0.015,230.0,&settingFilterPanBar
+        0.02,0.015,230.0
 );
 ExtrenalDevices::CatoniPanBarChannel cartoniZoomAxisChannel
 (
         ExtrSyncroization::ExtrenalDevieExchDriver::dataConverter,
         ExtrenalDevices::CH_ZOOM,
-        0.0000275/*0.0000305*//**/, &zoomSpeedResistor,
+        0.0000275, &zoomSpeedResistor,
         15,
         0.015,
-        1.0, &settingFilterPanBar
+        1.0
 );
 ExtrenalDevices::CatoniPanBarResistor cartoniFocusAxisChannel
 (
@@ -773,9 +736,7 @@ void Pult::driverTask()
 	backlight.setButton(sharedButtons[backLightOff]);
 	backlight.setDriver(&backlightDriver);
 	preston.setDriver(&prestonDriver);
-	cartoniPanAxisChannel.setFilter(&kalmanKoef[0]);
-	cartoniTiltAxisChannel.setFilter(&kalmanKoef[0]);
-	cartoniDutchAxisChannel.setFilter(&kalmanKoef[0]);
+
 
 #ifdef WhellSmartPult
 	panJoyChannel.disable();

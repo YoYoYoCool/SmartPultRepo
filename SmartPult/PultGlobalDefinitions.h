@@ -13,7 +13,7 @@
 
 //#define Garanin
 //#define USAEdition
-#define joyPult
+//#define joyPult
 //#define PanBarDebug
 //#define joyPultRussian
 
