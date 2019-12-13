@@ -29,6 +29,8 @@ enum {transmissionMax=5};
 
 
 
+
+
 Schematic::AttAmpSettings settingsDummi = {
     .amplifierSettings.Vcc=12.0,
     .amplifierSettings.Vee=-12.0,
@@ -138,10 +140,7 @@ private:
     float speedWheel2;
     int32_t speedWheelRaw;
 
-
-
 public:
-
 
     Schematic::AttAmpDinamicChannal<transmissionMax> channal;
 
