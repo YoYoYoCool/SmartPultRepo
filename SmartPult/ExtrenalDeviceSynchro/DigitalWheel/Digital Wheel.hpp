@@ -25,9 +25,7 @@ enum {
     delitelSpeed=100
 };
 
-enum {transmissionMax=5};
-
-
+enum {transmissionMax=6};
 
 
 
@@ -45,49 +43,29 @@ Schematic::AttAmpSettings settingsDummi = {
 
 Schematic::AttAmpSettings settingsFirst = {
 
-#ifdef bigWhell
+
      .amplifierSettings.Vcc=24.0,
-     .amplifierSettings.Vee=-24.0,
-#else
-     .amplifierSettings.Vcc=24.0,
-     .amplifierSettings.Vee=-24.0,
-#endif
-    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.Vee=-24.0,
+    .amplifierSettings.stableRatio=3.0,
     .amplifierSettings.resistenceMax=3722,
-    .amplifierSettings.adjustableRatio=15.7,
+    .amplifierSettings.adjustableRatio=13.7,
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.002
-#else
-    .attenuatorSettings.attenuationK=0.002
-#endif
     };
 
 Schematic::AttAmpSettings settingsSecond = {
-#ifdef bigWhell
+
     .amplifierSettings.Vcc=200.0,
     .amplifierSettings.Vee=-200.0,
-#else
-    .amplifierSettings.Vcc=200.0,
-    .amplifierSettings.Vee=-200.0,
-#endif
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
-#ifdef bigWhell
     .amplifierSettings.adjustableRatio=15.7,
-#else
-    .amplifierSettings.adjustableRatio=15.7,
-#endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.02
-#else
-    .attenuatorSettings.attenuationK=0.02
-#endif
     };
 
 Schematic::AttAmpSettings settingsThird = {
@@ -95,19 +73,11 @@ Schematic::AttAmpSettings settingsThird = {
     .amplifierSettings.Vee=-230.0,
     .amplifierSettings.stableRatio=1.0,
     .amplifierSettings.resistenceMax=3722,
-#ifdef bigWhell
     .amplifierSettings.adjustableRatio=4.0,
-#else
-    .amplifierSettings.adjustableRatio=4.0,
-#endif
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
-#ifdef bigWhell
     .attenuatorSettings.attenuationK=0.2
-#else
-    .attenuatorSettings.attenuationK=0.2
-#endif
     };
 
 Schematic::AttAmpSettings settingsFast = {
@@ -122,12 +92,25 @@ Schematic::AttAmpSettings settingsFast = {
     .attenuatorSettings.attenuationK=1.0,
     };
 
+Schematic::AttAmpSettings settingsExtended = {
+    .amplifierSettings.Vcc=230.0,
+    .amplifierSettings.Vee=-230.0,
+    .amplifierSettings.stableRatio=0.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=1.2,
+    .attenuatorSettings.Vcc=0.0,
+    .attenuatorSettings.Vee=0.0,
+    .attenuatorSettings.deadZone=0.0,
+    .attenuatorSettings.attenuationK=1.0,
+    };
+
 
 Schematic::AttAmpSettings * settings[transmissionMax] = {  &settingsDummi,
                                                            &settingsFirst,
                                                            &settingsSecond,
                                                            &settingsThird,
-                                                            &settingsFast};
+                                                            &settingsFast,
+                                                            &settingsExtended};
 
 class WheelChannel:public JoyChanel {
 private:
@@ -140,7 +123,10 @@ private:
     float speedWheel2;
     int32_t speedWheelRaw;
 
+
+
 public:
+
 
     Schematic::AttAmpDinamicChannal<transmissionMax> channal;
 

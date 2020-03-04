@@ -168,10 +168,10 @@ static DummyResistor zoomDeadDriftResistor;
 
 
 static Resistor* resistors[15] = {&panJoySpeedResistor, &panJoyFluidResistor, &panJoyDriftResistor, &dutchJoySpeedResistor, &dutchJoyFluidResistor, &dutchJoyDriftResistor,
-		                          &tiltJoySpeedResistor, &tiltJoyFluidResistor, &tiltJoyDriftResistor, &IrisResistor, &zoomSpeedResistor, &speedLevelCorrectResistor,
-								  &focusResistor,
-								  &dutchWheelResistor,
-								  &dutchPedalResistor};
+                                  &tiltJoySpeedResistor, &tiltJoyFluidResistor, &tiltJoyDriftResistor, &IrisResistor, &zoomSpeedResistor, &speedLevelCorrectResistor,
+                                  &focusResistor,
+                                  &dutchWheelResistor,
+                                  &dutchPedalResistor};
 // виртуальные кнопки
 static PultButton virtualButtonJoysticOff, virtualZoomReversButton,virtualFocusReversButton,virtualIrisReversButton;
 
@@ -191,24 +191,24 @@ static PultButton lensCalibrationButton,rollWheelReversButton,tiltWheelReversBut
 
 #define BUTTONS_1_16_COUNT 16
 static PultButton panReversButton(0), panSenseButton(1),
-	   dutchReversButton(2), dutchSenseButton(3),
-	   tiltReversButton(4), tiltSenseButton(5),
-	   gvCalibrationButton(6), levelCorrectButton(7),
-	   fastLevelCorrectButton(8), dutchLevelSetupButton(9), motorOnOffButton(10),
-	   joyStickOnOffButton(11);
+       dutchReversButton(2), dutchSenseButton(3),
+       tiltReversButton(4), tiltSenseButton(5),
+       gvCalibrationButton(6), levelCorrectButton(7),
+       fastLevelCorrectButton(8), dutchLevelSetupButton(9), motorOnOffButton(10),
+       joyStickOnOffButton(11);
 
 static PultButton* buttons_1_16[BUTTONS_1_16_COUNT] =
 {
-		&panReversButton, &panSenseButton,
-	   &dutchReversButton, &dutchSenseButton,
-	   &tiltReversButton, &tiltSenseButton,
-	   &gvCalibrationButton, &levelCorrectButton,
-	   &fastLevelCorrectButton, &dutchLevelSetupButton, &motorOnOffButton,
-	   &joyStickOnOffButton,
+        &panReversButton, &panSenseButton,
+       &dutchReversButton, &dutchSenseButton,
+       &tiltReversButton, &tiltSenseButton,
+       &gvCalibrationButton, &levelCorrectButton,
+       &fastLevelCorrectButton, &dutchLevelSetupButton, &motorOnOffButton,
+       &joyStickOnOffButton,
 #ifdef joyPult
-	   &lensCalibrationButton,&zoomReversButton,&irisReversButton,&focusReversButton
+       &lensCalibrationButton,&zoomReversButton,&irisReversButton,&focusReversButton
 #else
-	   &lensCalibrationButton,&rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
+       &lensCalibrationButton,&rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
 #endif
 };
 
@@ -225,11 +225,11 @@ static PultButton* buttons_33_48[BUTTONS_33_48_COUNT] = {&cameraStartButton, &sa
 
 #ifdef USAEdition
 static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
-		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel3, &motionTrackSel6, &motionTrackSel2, &motionTrackSel5, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
+        &motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel4, &motionTrackSel3, &motionTrackSel6, &motionTrackSel2, &motionTrackSel5, &sa11, &sa12, &sa13, &sa14, &sa15, &cameraStartButton, &sa17, &backlightButton//&inp47
 };
 
 static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
-		&motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel2, &motionTrackSel3, &motionTrackSel4, &motionTrackSel5, &motionTrackSel6
+        &motionPlayButton, &motionStopButton, &motionDeleteButton, &motionReversPlayButton, &motionTrackSel1, &motionTrackSel2, &motionTrackSel3, &motionTrackSel4, &motionTrackSel5, &motionTrackSel6
 };
 #else
 static PultButton* sharedButtons[PULT_BUTTONS_COUNT] = {
@@ -242,7 +242,7 @@ static PultButton* motionButtons[MOTION_BUTTON_COUNT] = {
 #endif
 //-------------------------------------------------------------------------------------
 //-------------- NEW JOYSTIC ----------------------------------------------------------
-										//CHANELS DEFINITION
+                                        //CHANELS DEFINITION
 static VirtualMenuResistor panChanelDeadResistor;
 static VirtualMenuResistor dutchChanelDeadResistor;
 static VirtualMenuResistor tiltChanelDeadResistor;
@@ -253,9 +253,9 @@ JoyChanel dutchJoyChannel   (dutchScaler,   dutchOffset,    &dutchJoySpeedResist
 JoyChanel tiltJoyChannel    (tiltScaler,    tiltOffset,     &tiltJoySpeedResistor,  15,0 );
 JoyChanel zoomJoyChannel    (zoomScaler,    zoomOffset,     &zoomSpeedResistor,     15,0 );
 
-JoyChanel panExtern1Channel     (0.4, 	panExtrenal1Offset,		&panChanelDeadResistor,     5,  0.015 );
-JoyChanel dutchExtern1Channel   (0.4,	dutchExtrenal1Offset,	&dutchChanelDeadResistor,   5,  0.015 );
-JoyChanel tiltExtern1Channel    (0.4,	tiltExtrenal1Offset,	&tiltChanelDeadResistor,    5,  0.015 );
+JoyChanel panExtern1Channel     (0.4,   panExtrenal1Offset,     &panChanelDeadResistor,     5,  0.015 );
+JoyChanel dutchExtern1Channel   (0.4,   dutchExtrenal1Offset,   &dutchChanelDeadResistor,   5,  0.015 );
+JoyChanel tiltExtern1Channel    (0.4,   tiltExtrenal1Offset,    &tiltChanelDeadResistor,    5,  0.015 );
 
 
 ExtrenalDevices::CatoniPanBarChannel cartoniPanAxisChannel
@@ -372,7 +372,7 @@ JoyChannels zoomChannals    (zoomChannelsArray,1);
     JoyChannels zoomChannals    (zoomChannelsArray,1);
     #endif
 #endif
-									//joystics
+                                    //joystics
 
 MultiJoystic panJoy     (230, &panCubitorFunc,      &panJoyDriftResistor,   &panJoyFluidResistor,   &(panChannals.channels));
 MultiJoystic dutchJoy   (230, &dutchCubitorFunc,    &dutchJoyDriftResistor, &dutchJoyFluidResistor, &(dutchChannals.channels));
@@ -386,45 +386,45 @@ MultiJoystic zoomJoy    (1.0, &zoomLinearFunc,      &zoomDeadDriftResistor, &zoo
 //--------------- ZIF structers  ---------------------
 typedef union ZifControl1
 {
-	UInt16 all;
-	struct
-	{
-		volatile UInt16 motor1Type:5;
-		volatile UInt16 motor2Type:5;
-		volatile UInt16 motor3Type:5;
-	}bit;
+    UInt16 all;
+    struct
+    {
+        volatile UInt16 motor1Type:5;
+        volatile UInt16 motor2Type:5;
+        volatile UInt16 motor3Type:5;
+    }bit;
 }ZifControl1;
 
 typedef union ZifControl2
 {
-	UInt16 all;
-	struct
-	{
-		volatile UInt16 zoomMotorNO:2;
-		volatile UInt16 irisMotorNO:2;
-		volatile UInt16 focusMotorNO:2;
-		volatile UInt16 controlBits:10;
-	}bit;
+    UInt16 all;
+    struct
+    {
+        volatile UInt16 zoomMotorNO:2;
+        volatile UInt16 irisMotorNO:2;
+        volatile UInt16 focusMotorNO:2;
+        volatile UInt16 controlBits:10;
+    }bit;
 }ZifControl2;
 
 typedef union MotorControlBits
 {
-	UInt16 all;
-	struct
-	{
-		volatile UInt16 cameraStart:1;
-		volatile UInt16 tuningStart:1;
-		volatile UInt16 cameraStartType:1;
-	}bit;
+    UInt16 all;
+    struct
+    {
+        volatile UInt16 cameraStart:1;
+        volatile UInt16 tuningStart:1;
+        volatile UInt16 cameraStartType:1;
+    }bit;
 }MotorControlBits;
 
 struct ZifParams
 {
-	volatile float zoomRef;
-	volatile float irisRef;
-	volatile float focusRef;
-	volatile float control1;
-	volatile float control2;
+    volatile float zoomRef;
+    volatile float irisRef;
+    volatile float focusRef;
+    volatile float control1;
+    volatile float control2;
 };
 
 static ZifControl1 control1;
@@ -434,9 +434,9 @@ static ZifParams zifParams;
 //----------- Axces structers ------------------------
 struct AxisReference
 {
-	volatile float panRef;
-	volatile float dutchRef;
-	volatile float tiltRef;
+    volatile float panRef;
+    volatile float dutchRef;
+    volatile float tiltRef;
 };
 static AxisReference axisRef={0.0,0.0,0.0};
 
@@ -446,25 +446,25 @@ volatile float inputPoleCntrl        =0.0;
 
 //Биты управления
 typedef union PultControlBitsLCD {
-	UInt16 all;
-	struct {
-		volatile UInt16 onOffMotors:1;
-		volatile UInt16 levelCorrect:1;//
-		volatile UInt16 fastLevelCorrect:1;//
-		volatile UInt16 levelSetup:1;//
-		volatile UInt16 gvCalibration:1;
-		volatile UInt16 gvAcc:1;
-		volatile UInt16 setUpTiltLimits:1;
-		volatile UInt16 setDwTiltLimits:1;
-		volatile UInt16 resetUpTiltLimits:1;
-		volatile UInt16 resetDwTiltLimits:1;
-		volatile UInt16 overslangUnderslang:1;
-		volatile UInt16 goToAngels:1;
-		volatile UInt16 joysticOn:1;
-		volatile UInt16 panSuspensionResonatorDisable:1;
-		volatile UInt16 driftStopperOn:1;
-		volatile Uint16 ecoMode:1;
-	} bit;
+    UInt16 all;
+    struct {
+        volatile UInt16 onOffMotors:1;
+        volatile UInt16 levelCorrect:1;//
+        volatile UInt16 fastLevelCorrect:1;//
+        volatile UInt16 levelSetup:1;//
+        volatile UInt16 gvCalibration:1;
+        volatile UInt16 gvAcc:1;
+        volatile UInt16 setUpTiltLimits:1;
+        volatile UInt16 setDwTiltLimits:1;
+        volatile UInt16 resetUpTiltLimits:1;
+        volatile UInt16 resetDwTiltLimits:1;
+        volatile UInt16 overslangUnderslang:1;
+        volatile UInt16 goToAngels:1;
+        volatile UInt16 joysticOn:1;
+        volatile UInt16 panSuspensionResonatorDisable:1;
+        volatile UInt16 driftStopperOn:1;
+        volatile Uint16 ecoMode:1;
+    } bit;
 } PultControlBits;
 
 typedef union PultControlBitsA
@@ -489,36 +489,36 @@ typedef union PultControlBitsA
 typedef union GyConStateBitsLCD {
    UInt16 all;
    struct {
-	   UInt16 panDusFault:1;
-	   UInt16 dutchDusFault:1;
-	   UInt16 tiltDusFault:1;
-	   UInt16 gvFault:1;
-	   UInt16 encodersFault:1;
-	   UInt16 pultFault:1;
-	   UInt16 GyConProgrammVersion:5;
-	   UInt16 bit11:1;
-	   UInt16 stateBits:4;
-	} faultBits;
+       UInt16 panDusFault:1;
+       UInt16 dutchDusFault:1;
+       UInt16 tiltDusFault:1;
+       UInt16 gvFault:1;
+       UInt16 encodersFault:1;
+       UInt16 pultFault:1;
+       UInt16 GyConProgrammVersion:5;
+       UInt16 bit11:1;
+       UInt16 stateBits:4;
+    } faultBits;
 
    struct {
-	   UInt16 faultBits:12;
-	   UInt16 goToAngleComplete:1;
-	   UInt16 bit13:1;
-	   UInt16 bit14:1;
-	   UInt16 bit15:1;
+       UInt16 faultBits:12;
+       UInt16 goToAngleComplete:1;
+       UInt16 bit13:1;
+       UInt16 bit14:1;
+       UInt16 bit15:1;
    } stateBits;
 } GyConStateBits;
 
 union TourqueValues
 {
-	volatile UInt16 all;
-	struct
-	{
-		volatile UInt16 pan:5;
-		volatile UInt16 dutch:5;
-		volatile UInt16 tilt:5;
-		volatile UInt16 bit15:1;
-	}axis;
+    volatile UInt16 all;
+    struct
+    {
+        volatile UInt16 pan:5;
+        volatile UInt16 dutch:5;
+        volatile UInt16 tilt:5;
+        volatile UInt16 bit15:1;
+    }axis;
 };
 
 static TourqueValues maxTourqueValues =         {0x7FFF};
@@ -581,23 +581,23 @@ float getAngleH(float angle) {   return (float)((Int32)(angle));}
 
 float getAngleL(float angle)
 {
-	Int32 angleH = getAngleH(angle);
-	float angleL = angle - angleH;
-	return angleL;
+    Int32 angleH = getAngleH(angle);
+    float angleL = angle - angleH;
+    return angleL;
 }
 
 
 Pult::Pult(Semaphore_Handle* s,Semaphore_Handle* sA):
-		exchangeSem(s),
-		exchangeAltSem(sA)
+        exchangeSem(s),
+        exchangeAltSem(sA)
 {
-	connectedFlag = false;
-	joysticsConfig=COUNT_JOY_CONFIG;
-	control2.bit.controlBits=0x0000;
-	debugMenuCmdFlag=false;
-	autonegComplete=false;
-	transferDelay=0;
-	lensCalibrateFlag=false;
+    connectedFlag = false;
+    joysticsConfig=COUNT_JOY_CONFIG;
+    control2.bit.controlBits=0x0000;
+    debugMenuCmdFlag=false;
+    autonegComplete=false;
+    transferDelay=0;
+    lensCalibrateFlag=false;
 }
 
 PrestonBoard prestonEnableDriver;
@@ -700,143 +700,143 @@ void Pult::driverTask()
     a-=5;
 #endif
 
-	filesSystemAPI.initFS();
-	motionControlAPI.init();
+    filesSystemAPI.initFS();
+    motionControlAPI.init();
 
     #ifdef Garanin
-	Var elementPan("Pan Speed:",&digitalWheelPanPasha.getSpeedWheel());
-	Var elementTilt("Tilt Speed:",&digitalWheelTiltPasha.getSpeedWheel());
-	Var elementDutch("Dutch Speed:",&digitalWheelRollPasha.getSpeedWheel());
-	cartoniPanAxisChannel.setSpeed(digitalWheelPanPasha.getSpeedWheelRaw());
-	cartoniDutchAxisChannel.setSpeed(digitalWheelRollPasha.getSpeedWheelRaw());
-	cartoniTiltAxisChannel.setSpeed(digitalWheelTiltPasha.getSpeedWheelRaw());
+    Var elementPan("Pan Speed:",&digitalWheelPanPasha.getSpeedWheel());
+    Var elementTilt("Tilt Speed:",&digitalWheelTiltPasha.getSpeedWheel());
+    Var elementDutch("Dutch Speed:",&digitalWheelRollPasha.getSpeedWheel());
+    cartoniPanAxisChannel.setSpeed(digitalWheelPanPasha.getSpeedWheelRaw());
+    cartoniDutchAxisChannel.setSpeed(digitalWheelRollPasha.getSpeedWheelRaw());
+    cartoniTiltAxisChannel.setSpeed(digitalWheelTiltPasha.getSpeedWheelRaw());
 
     #else
         #ifdef PanBarDebug
-	        Var elementPan ("Pan Speed: ",&cartoniPanAxisChannel.getAxisVal());
-	        Var elementTilt ("Tilt Speed: ",&cartoniTiltAxisChannel.getAxisVal());
-	        Var elementDutch ("Roll Speed: ",&cartoniDutchAxisChannel.getAxisVal());
+            Var elementPan ("Pan Speed: ",&cartoniPanAxisChannel.getAxisVal());
+            Var elementTilt ("Tilt Speed: ",&cartoniTiltAxisChannel.getAxisVal());
+            Var elementDutch ("Roll Speed: ",&cartoniDutchAxisChannel.getAxisVal());
         #else
-	        Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
-	        Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
+            Var elementPan("Pan Speed:",&digitalWheelPan.getSpeedWheel());
+            Var elementTilt("Tilt Speed:",&digitalWheelTilt.getSpeedWheel());
             #ifdef USAEdition
-	            Var elementDutch("Roll Speed:",&digitalWheelRoll.getSpeedWheel());
+                Var elementDutch("Roll Speed:",&digitalWheelRoll.getSpeedWheel());
             #else
-	            Var elementDutch("Dutch Speed:",&digitalWheelRoll.getSpeedWheel());
+                Var elementDutch("Dutch Speed:",&digitalWheelRoll.getSpeedWheel());
             #endif
         #endif
     #endif
 
-	viewLists.setVarList(0, &elementPan);
-	viewLists.setVarList(1, &elementTilt);
-	viewLists.setVarList(2, &elementDutch);
+    viewLists.setVarList(0, &elementPan);
+    viewLists.setVarList(1, &elementTilt);
+    viewLists.setVarList(2, &elementDutch);
 
-	Pwm backlightDriver  (GyConBoard_BrightPwm,10000);
-	Pwm prestonDriver (GyConBoard_PrestonPWM,3);
-	backlight.setButton(sharedButtons[backLightOff]);
-	backlight.setDriver(&backlightDriver);
-	preston.setDriver(&prestonDriver);
+    Pwm backlightDriver  (GyConBoard_BrightPwm,10000);
+    Pwm prestonDriver (GyConBoard_PrestonPWM,3);
+    backlight.setButton(sharedButtons[backLightOff]);
+    backlight.setDriver(&backlightDriver);
+    preston.setDriver(&prestonDriver);
 
 
 #ifdef WhellSmartPult
-	panJoyChannel.disable();
-	dutchJoyChannel.disable();
-	tiltJoyChannel.disable();
-	zoomJoyChannel.disable();
+    panJoyChannel.disable();
+    dutchJoyChannel.disable();
+    tiltJoyChannel.disable();
+    zoomJoyChannel.disable();
 #endif
-	while(true) {
-		watchDogTimer.useKey(WD_KEY2);
+    while(true) {
+        watchDogTimer.useKey(WD_KEY2);
 //Обработка аналоговых сигналов
-		UInt32* result = signalsReader.read();
+        UInt32* result = signalsReader.read();
 #ifdef joyPult
-		switch(joysticsConfig)
-		    {
-			case JOYSTIC_REVERS_JOY_CONFIG:
+        switch(joysticsConfig)
+            {
+            case JOYSTIC_REVERS_JOY_CONFIG:
 
-			    panJoyChannel.setRef(result[SIGNAL_DUTCH]);
-				dutchJoyChannel.setRef(result[SIGNAL_PAN]);
-				tiltJoyChannel.setRef(result[SIGNAL_ZOOM]);
-				zoomJoyChannel.setRef(result[SIGNAL_TILT]);
-				break;
+                panJoyChannel.setRef(result[SIGNAL_DUTCH]);
+                dutchJoyChannel.setRef(result[SIGNAL_PAN]);
+                tiltJoyChannel.setRef(result[SIGNAL_ZOOM]);
+                zoomJoyChannel.setRef(result[SIGNAL_TILT]);
+                break;
 
-			case DEFAULT_JOY_CONFIG:
-			default:
+            case DEFAULT_JOY_CONFIG:
+            default:
 
-			    panJoyChannel.setRef(result[SIGNAL_PAN]);
-				dutchJoyChannel.setRef(result[SIGNAL_DUTCH]);
-				tiltJoyChannel.setRef(result[SIGNAL_TILT]);
-				zoomJoyChannel.setRef(result[SIGNAL_ZOOM]);
-				break;
-		    }
+                panJoyChannel.setRef(result[SIGNAL_PAN]);
+                dutchJoyChannel.setRef(result[SIGNAL_DUTCH]);
+                tiltJoyChannel.setRef(result[SIGNAL_TILT]);
+                zoomJoyChannel.setRef(result[SIGNAL_ZOOM]);
+                break;
+            }
 #endif
-		panExtern1Channel.setRef(result[SIGNAL_PAN_WHEEL]);
-		tiltExtern1Channel.setRef(result[SIGNAL_TILT_WHEEL]);
-		cartoniPanAxisChannel.setData();
-		cartoniTiltAxisChannel.setData();
-		cartoniDutchAxisChannel.setData();
+        panExtern1Channel.setRef(result[SIGNAL_PAN_WHEEL]);
+        tiltExtern1Channel.setRef(result[SIGNAL_TILT_WHEEL]);
+        cartoniPanAxisChannel.setData();
+        cartoniTiltAxisChannel.setData();
+        cartoniDutchAxisChannel.setData();
 #ifdef Garanin
 #else
-		cartoniZoomAxisChannel.setData();
+        cartoniZoomAxisChannel.setData();
 #endif
-		cartoniFocusAxisChannel.setData();
+        cartoniFocusAxisChannel.setData();
         cartoniIrisAxisChannel.setData();
         //запихиваем суда объектив для отлаки
 
-		UInt8 muxPos = signalsReader.getMultiplexer();
-		if(muxPos==14){	dutchExtern2Channel.setRef(result[SIGNAL_SLOW]);}
-		if(muxPos==13){	dutchExtern1Channel.setRef(result[SIGNAL_SLOW]);}
+        UInt8 muxPos = signalsReader.getMultiplexer();
+        if(muxPos==14){ dutchExtern2Channel.setRef(result[SIGNAL_SLOW]);}
+        if(muxPos==13){ dutchExtern1Channel.setRef(result[SIGNAL_SLOW]);}
 
-		panJoy.calculate();
-		dutchJoy.calculate();
-		tiltJoy.calculate();
-		zoomJoy.calculate();
-		cartoniFocusAxisChannel.calculate(0.0);
-		cartoniIrisAxisChannel.calculate(0.0);
+        panJoy.calculate();
+        dutchJoy.calculate();
+        tiltJoy.calculate();
+        zoomJoy.calculate();
+        cartoniFocusAxisChannel.calculate(0.0);
+        cartoniIrisAxisChannel.calculate(0.0);
 
-	    resistors[muxPos]->calculate(result[SIGNAL_SLOW]);
+        resistors[muxPos]->calculate(result[SIGNAL_SLOW]);
 
-	    backlight.update();
-	    preston.update(zoomJoy.getValue());
+        backlight.update();
+        preston.update(zoomJoy.getValue());
 
-		muxPos++;
-		if (muxPos > 14) muxPos = 0;
-		if (muxPos == muxPosRef) {
-			muxPos = muxPosRef;
-		}
-		signalsReader.setMultiplexer(muxPos);
+        muxPos++;
+        if (muxPos > 14) muxPos = 0;
+        if (muxPos == muxPosRef) {
+            muxPos = muxPosRef;
+        }
+        signalsReader.setMultiplexer(muxPos);
 
-/*		signalsReader.prestonOn(state);
-		signalsReader.cameraStartFront(state);
-		signalsReader.cameraStartLevel(state);*/
+/*      signalsReader.prestonOn(state);
+        signalsReader.cameraStartFront(state);
+        signalsReader.cameraStartLevel(state);*/
 //Обработка кнопок
 #ifdef PULT_DEVELOPING_BOARD
-	sharedButtons[pult_Button_Up]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX0));
-	sharedButtons[pult_Button_Left]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX1));
-	sharedButtons[pult_Button_Select]->update(GPIO_read(EK_TM4C1294XL_BUTTON_1_16_MUX0));
-	sharedButtons[pult_Button_Right]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX2));
-	sharedButtons[pult_Button_Dn]->update(GPIO_read(EK_TM4C1294XL_BUTTON_1_16_MUX1));
-	sharedButtons[ pult_Button_ESC]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX3));
+    sharedButtons[pult_Button_Up]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX0));
+    sharedButtons[pult_Button_Left]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX1));
+    sharedButtons[pult_Button_Select]->update(GPIO_read(EK_TM4C1294XL_BUTTON_1_16_MUX0));
+    sharedButtons[pult_Button_Right]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX2));
+    sharedButtons[pult_Button_Dn]->update(GPIO_read(EK_TM4C1294XL_BUTTON_1_16_MUX1));
+    sharedButtons[ pult_Button_ESC]->update(GPIO_read(EK_TM4C1294XL_SIGNAL_MUX3));
 
-	Task_sleep(1);
+    Task_sleep(1);
 
 #else
-		bool buttonState;
-		muxPos = buttonsReader.getMultiplexer();
+        bool buttonState;
+        muxPos = buttonsReader.getMultiplexer();
 
-		buttonState = buttonsReader.read(Board_BUTTON_1_16_READ_PIN);
-		if (muxPos<BUTTONS_1_16_COUNT) buttons_1_16[muxPos]->update(buttonState);
+        buttonState = buttonsReader.read(Board_BUTTON_1_16_READ_PIN);
+        if (muxPos<BUTTONS_1_16_COUNT) buttons_1_16[muxPos]->update(buttonState);
 
-		buttonState = buttonsReader.read(Board_BUTTON_17_32_READ_PIN);
-		if (muxPos<BUTTONS_17_32_COUNT) buttons_17_32[muxPos]->update(buttonState);
+        buttonState = buttonsReader.read(Board_BUTTON_17_32_READ_PIN);
+        if (muxPos<BUTTONS_17_32_COUNT) buttons_17_32[muxPos]->update(buttonState);
 
-		buttonState = buttonsReader.read(Board_BUTTON_33_48_READ_PIN);
-		if (muxPos<BUTTONS_33_48_COUNT) buttons_33_48[muxPos]->update(buttonState);
-		muxPos++;
-		if (muxPos > 15) muxPos = 0;
-		buttonsReader.setMultiplexer(muxPos);
-		Task_sleep(1);
+        buttonState = buttonsReader.read(Board_BUTTON_33_48_READ_PIN);
+        if (muxPos<BUTTONS_33_48_COUNT) buttons_33_48[muxPos]->update(buttonState);
+        muxPos++;
+        if (muxPos > 15) muxPos = 0;
+        buttonsReader.setMultiplexer(muxPos);
+        Task_sleep(1);
 #endif
-	}
+    }
 }
 
 //=====================================================================================================
@@ -850,101 +850,101 @@ void Pult::driverTask()
 //Инициализация данных
 #define WRITE_CONTROL_CMD_DATA_COUNT 5
 BasicCmdValue writeControlCmdData[] = {
-		{&axisRef.panRef, IQ6},
-		{&axisRef.dutchRef, IQ6},
-		{&axisRef.tiltRef, IQ6},
-		{&speedLevelCorrectionExchange, IQ15},
-		{&controlBitsExchange, IQ0},
-		{&PK , IQ15},//5
-		{&PI , IQ15},
-		{&DK , IQ15},
-		{&DI , IQ15},
-		{&TK , IQ15},
-		{&TI , IQ15},
-		{&zifParams.zoomRef, IQ15},
-		{&zifParams.focusRef, IQ15},
-		{&zifParams.irisRef, IQ15},
-		{&zifParams.control1, IQ0},
-		{&zifParams.control2, IQ0},
-		{&tiltSuspentionResonantFreq, IQ10},
-		{&maxTourqueValuesExchange, IQ0},
-		{&controlBitsExchangeA, IQ0},
-//		{&panSuspentionResonantFreq, IQ10},
-		NULL
+        {&axisRef.panRef, IQ6},
+        {&axisRef.dutchRef, IQ6},
+        {&axisRef.tiltRef, IQ6},
+        {&speedLevelCorrectionExchange, IQ15},
+        {&controlBitsExchange, IQ0},
+        {&PK , IQ15},//5
+        {&PI , IQ15},
+        {&DK , IQ15},
+        {&DI , IQ15},
+        {&TK , IQ15},
+        {&TI , IQ15},
+        {&zifParams.zoomRef, IQ15},
+        {&zifParams.focusRef, IQ15},
+        {&zifParams.irisRef, IQ15},
+        {&zifParams.control1, IQ0},
+        {&zifParams.control2, IQ0},
+        {&tiltSuspentionResonantFreq, IQ10},
+        {&maxTourqueValuesExchange, IQ0},
+        {&controlBitsExchangeA, IQ0},
+//      {&panSuspentionResonantFreq, IQ10},
+        NULL
 };
 
 
 BasicCmdValue writeAnglesCmdData[] = {
-		{&panWriteAngleH   , IQ0},
-		{&dutchWriteAngleH , IQ0},
-		{&tiltWriteAngleH  , IQ0},
-		{&panWriteAngleL, IQ15},
-		{&dutchWriteAngleL, IQ15},
-		{&tiltWriteAngleL , IQ15},
-		{&PI , IQ15},
-		{&DK , IQ15},
-		{&DI , IQ15},
-		{&TK , IQ15},
-		{&TI , IQ15},
-		{&zifParams.zoomRef, IQ15},
-		{&zifParams.focusRef, IQ15},
-		{&zifParams.irisRef, IQ15},
-		{&zifParams.control1, IQ0},
-		{&zifParams.control2, IQ0},
-		{&zoomWriteAngleH, IQ0},
-		{&zoomWriteAngleL, IQ15},
-		NULL
+        {&panWriteAngleH   , IQ0},
+        {&dutchWriteAngleH , IQ0},
+        {&tiltWriteAngleH  , IQ0},
+        {&panWriteAngleL, IQ15},
+        {&dutchWriteAngleL, IQ15},
+        {&tiltWriteAngleL , IQ15},
+        {&PI , IQ15},
+        {&DK , IQ15},
+        {&DI , IQ15},
+        {&TK , IQ15},
+        {&TI , IQ15},
+        {&zifParams.zoomRef, IQ15},
+        {&zifParams.focusRef, IQ15},
+        {&zifParams.irisRef, IQ15},
+        {&zifParams.control1, IQ0},
+        {&zifParams.control2, IQ0},
+        {&zoomWriteAngleH, IQ0},
+        {&zoomWriteAngleL, IQ15},
+        NULL
 };
 
 BasicCmdValue askAnglesCmdData[] = {
-		{&panReadAngleH, IQ0},
-		{&dutchReadAngleH, IQ0},
-		{&tiltReadAngleH, IQ0},
-		{&panReadAngleL, IQ15},
-		{&dutchReadAngleL, IQ15},
-		{&tiltReadAngleL, IQ15},
-		NULL
+        {&panReadAngleH, IQ0},
+        {&dutchReadAngleH, IQ0},
+        {&tiltReadAngleH, IQ0},
+        {&panReadAngleL, IQ15},
+        {&dutchReadAngleL, IQ15},
+        {&tiltReadAngleL, IQ15},
+        NULL
 };
 
 BasicCmdValue askAnglesCmdDataZIF[] = {
-		{&zoomReadAngleH, IQ0},
-		{&zoomReadAngleL, IQ15},
-		NULL
+        {&zoomReadAngleH, IQ0},
+        {&zoomReadAngleL, IQ15},
+        NULL
 };
 
 
 #define ASK_BASIC_CMD_DATA_COUNT 3
 static BasicCmdValue askBasicCmdData[] = {
-		{&panTurns,                 IQ12},
-		{&gyConFaultBitsExchange,   IQ6},
-		{&headSupplyVoltage,        IQ7},
-		{&dutchDriftFactor,         IQ15},
-		{&tiltDriftFactor,          IQ15},
-		{&panDriftFactor,           IQ15},
-		NULL
-	};
+        {&panTurns,                 IQ12},
+        {&gyConFaultBitsExchange,   IQ0},
+        {&headSupplyVoltage,        IQ7},
+        {&dutchDriftFactor,         IQ15},
+        {&tiltDriftFactor,          IQ15},
+        {&panDriftFactor,           IQ15},
+        NULL
+    };
 
 static BasicCmdValue writeDebugVarsCmdData[] = {
-		{&debugValue0,IQ10},
-		{&debugValue1,IQ10},
-		{&debugValue2,IQ10},
-		{&debugValue3,IQ10},
-		{&debugValue4,IQ10},
-		{&debugValue5,IQ10},
-		{&debugValue6,IQ10},
-		{&debugValue7,IQ10},
-		NULL
-	};
+        {&debugValue0,IQ10},
+        {&debugValue1,IQ10},
+        {&debugValue2,IQ10},
+        {&debugValue3,IQ10},
+        {&debugValue4,IQ10},
+        {&debugValue5,IQ10},
+        {&debugValue6,IQ10},
+        {&debugValue7,IQ10},
+        NULL
+    };
 
 static BasicCmd commands[] = {
-		{writeControlCmdData, WRITE_CONTROL_CMD_DATA_COUNT},
-		{askBasicCmdData, ASK_BASIC_CMD_DATA_COUNT},
-		{writeDebugVarsCmdData, AXIS_SETTINGS_COUNT},
-		{writeAnglesCmdData, 0},
-		{askAnglesCmdData, 0},
-		{askAnglesCmdDataZIF, 0}
+        {writeControlCmdData, WRITE_CONTROL_CMD_DATA_COUNT},
+        {askBasicCmdData, ASK_BASIC_CMD_DATA_COUNT},
+        {writeDebugVarsCmdData, AXIS_SETTINGS_COUNT},
+        {writeAnglesCmdData, 0},
+        {askAnglesCmdData, 0},
+        {askAnglesCmdDataZIF, 0}
 
-	};
+    };
 static BasicCmdList cmdList = {commands, PULT_COMMANDS_COUNT};
 //=================================================
 // ALT command definition
@@ -1021,128 +1021,128 @@ extern "C"
 
 inline void dataRenderLogic()
 {
-	PultControlBitsLCD contBitsTemp;
-	PultControlBitsLCD contBitsTempMotion;
+    PultControlBitsLCD contBitsTemp;
+    PultControlBitsLCD contBitsTempMotion;
 
-	contBitsTemp.all=controlBits.all;
-	controlBitsExchange = controlBits.all;
-	controlBitsExchangeA = controlBitsA.all;
+    contBitsTemp.all=controlBits.all;
+    controlBitsExchange = controlBits.all;
+    controlBitsExchangeA = controlBitsA.all;
 
-	maxTourqueValuesExchange=maxTourqueValues.all;
-	speedLevelCorrectionExchange=speedLevelCorrectResistor.value;
+    maxTourqueValuesExchange=maxTourqueValues.all;
+    speedLevelCorrectionExchange=speedLevelCorrectResistor.value;
 
-	axisRef.panRef=panJoy.getValue();
-	axisRef.dutchRef=dutchJoy.getValue();
-	axisRef.tiltRef=tiltJoy.getValue();
+    axisRef.panRef=panJoy.getValue();
+    axisRef.dutchRef=dutchJoy.getValue();
+    axisRef.tiltRef=tiltJoy.getValue();
 
-	control2.bit.controlBits= motorControlBits.all;
+    control2.bit.controlBits= motorControlBits.all;
 
 
     cartoniFocusAxisChannel.setData();
     cartoniIrisAxisChannel.setData();
 
-	if(cartoniFocusAxisChannel.isActive())  {	    zifParams.focusRef=cartoniFocusAxisChannel.value;	}
-	else                                    {       zifParams.focusRef=focusResistor.value;             }
-	if(cartoniIrisAxisChannel.isActive())   {	    zifParams.irisRef=cartoniIrisAxisChannel.value;     }
-	else                                    {       zifParams.irisRef=IrisResistor.value;       	}
+    if(cartoniFocusAxisChannel.isActive())  {       zifParams.focusRef=cartoniFocusAxisChannel.value;   }
+    else                                    {       zifParams.focusRef=focusResistor.value;             }
+    if(cartoniIrisAxisChannel.isActive())   {       zifParams.irisRef=cartoniIrisAxisChannel.value;     }
+    else                                    {       zifParams.irisRef=IrisResistor.value;           }
 
-	zifParams.zoomRef=zoomJoy.getValue();
+    zifParams.zoomRef=zoomJoy.getValue();
 
-	zifParams.control1=control1.all;
-	zifParams.control2=control2.all;
+    zifParams.control1=control1.all;
+    zifParams.control2=control2.all;
 
 
-	outputPoleCntrl=inputPoleCntrl;
+    outputPoleCntrl=inputPoleCntrl;
 
-	 if(motionControlAPI.isRec())
-	 {
-		 motionControlAPI.getCurrentPoint()->panRef=panJoy.getRawValue();
-		 motionControlAPI.getCurrentPoint()->dutchRef=dutchJoy.getRawValue();
-		 motionControlAPI.getCurrentPoint()->tiltRef=tiltJoy.getRawValue();
-		 motionControlAPI.getCurrentPoint()->zoomRef=zoomJoy.getRawValue();
+     if(motionControlAPI.isRec())
+     {
+         motionControlAPI.getCurrentPoint()->panRef=panJoy.getRawValue();
+         motionControlAPI.getCurrentPoint()->dutchRef=dutchJoy.getRawValue();
+         motionControlAPI.getCurrentPoint()->tiltRef=tiltJoy.getRawValue();
+         motionControlAPI.getCurrentPoint()->zoomRef=zoomJoy.getRawValue();
 
-		 motionControlAPI.getCurrentPoint()->irisRef=zifParams.irisRef;
-		 motionControlAPI.getCurrentPoint()->focusRef=zifParams.focusRef;
+         motionControlAPI.getCurrentPoint()->irisRef=zifParams.irisRef;
+         motionControlAPI.getCurrentPoint()->focusRef=zifParams.focusRef;
 
-		 motionControlAPI.getCurrentPoint()->levelCorrectionSpeed=speedLevelCorrectionExchange;
-		 motionControlAPI.getCurrentPoint()->controlBits=controlBits.all;
+         motionControlAPI.getCurrentPoint()->levelCorrectionSpeed=speedLevelCorrectionExchange;
+         motionControlAPI.getCurrentPoint()->controlBits=controlBits.all;
 
-		 motionControlAPI.getCurrentPoint()->poleRef=inputPoleCntrl;
+         motionControlAPI.getCurrentPoint()->poleRef=inputPoleCntrl;
 
-		 motionControlAPI.strobe();
+         motionControlAPI.strobe();
 
-	 }
+     }
 
-	 if(motionControlAPI.isPlay())
-	 {
-		 motionControlAPI.strobe();
+     if(motionControlAPI.isPlay())
+     {
+         motionControlAPI.strobe();
 
-	     switch(motionControlAPI.getMixMode())
-	     {
-	     	 case MOTION_MIX_PDTZ:
-	     		 axisRef.panRef=	panJoy.getValue(	motionControlAPI.getCurrentPoint()->panRef+panJoy.getRawValue());
-	     		 axisRef.dutchRef=	dutchJoy.getValue(	motionControlAPI.getCurrentPoint()->dutchRef+dutchJoy.getRawValue());
-	     		 axisRef.tiltRef=	tiltJoy.getValue(	motionControlAPI.getCurrentPoint()->tiltRef+tiltJoy.getRawValue());
-	     		 zifParams.zoomRef=	zoomJoy.getValue(	motionControlAPI.getCurrentPoint()->zoomRef+zoomJoy.getRawValue());
+         switch(motionControlAPI.getMixMode())
+         {
+             case MOTION_MIX_PDTZ:
+                 axisRef.panRef=    panJoy.getValue(    motionControlAPI.getCurrentPoint()->panRef+panJoy.getRawValue());
+                 axisRef.dutchRef=  dutchJoy.getValue(  motionControlAPI.getCurrentPoint()->dutchRef+dutchJoy.getRawValue());
+                 axisRef.tiltRef=   tiltJoy.getValue(   motionControlAPI.getCurrentPoint()->tiltRef+tiltJoy.getRawValue());
+                 zifParams.zoomRef= zoomJoy.getValue(   motionControlAPI.getCurrentPoint()->zoomRef+zoomJoy.getRawValue());
 
-	     		 zifParams.irisRef=motionControlAPI.getCurrentPoint()->irisRef;;
-   				 zifParams.focusRef=motionControlAPI.getCurrentPoint()->focusRef;
+                 zifParams.irisRef=motionControlAPI.getCurrentPoint()->irisRef;;
+                 zifParams.focusRef=motionControlAPI.getCurrentPoint()->focusRef;
 
-   				 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
-   				 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-   				 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
-   				 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
-   				 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
-   				 controlBitsExchange=contBitsTemp.all;
+                 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
+                 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
+                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
+                 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
+                 controlBitsExchange=contBitsTemp.all;
 
-   				 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef+inputPoleCntrl;
-	     		 break;
-	     	 case MOTION_MIX_ALL:
-	     		 axisRef.panRef=	panJoy.getValue(	motionControlAPI.getCurrentPoint()->panRef+panJoy.getRawValue());
-	     		 axisRef.dutchRef=	dutchJoy.getValue(	motionControlAPI.getCurrentPoint()->dutchRef+dutchJoy.getRawValue());
-	     		 axisRef.tiltRef=	tiltJoy.getValue(	motionControlAPI.getCurrentPoint()->tiltRef+tiltJoy.getRawValue());
-	     		 zifParams.zoomRef=	zoomJoy.getValue(	motionControlAPI.getCurrentPoint()->zoomRef+zoomJoy.getRawValue());
+                 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef+inputPoleCntrl;
+                 break;
+             case MOTION_MIX_ALL:
+                 axisRef.panRef=    panJoy.getValue(    motionControlAPI.getCurrentPoint()->panRef+panJoy.getRawValue());
+                 axisRef.dutchRef=  dutchJoy.getValue(  motionControlAPI.getCurrentPoint()->dutchRef+dutchJoy.getRawValue());
+                 axisRef.tiltRef=   tiltJoy.getValue(   motionControlAPI.getCurrentPoint()->tiltRef+tiltJoy.getRawValue());
+                 zifParams.zoomRef= zoomJoy.getValue(   motionControlAPI.getCurrentPoint()->zoomRef+zoomJoy.getRawValue());
 
-   				 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
-   				 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-   				 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
-   				 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
-   				 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
-   				 controlBitsExchange=contBitsTemp.all;
+                 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
+                 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
+                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
+                 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
+                 controlBitsExchange=contBitsTemp.all;
 
-   				 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef+inputPoleCntrl;
-	     		 break;
-	     	 case MOTION_MIX_TRACK_ONLY:
-	     	 default:
-	     		 axisRef.panRef=	panJoy.getValue(	motionControlAPI.getCurrentPoint()->panRef);
-	     		 axisRef.dutchRef=	dutchJoy.getValue(	motionControlAPI.getCurrentPoint()->dutchRef);
-	     		 axisRef.tiltRef=	tiltJoy.getValue(	motionControlAPI.getCurrentPoint()->tiltRef);
-	     		 zifParams.zoomRef=	zoomJoy.getValue(	motionControlAPI.getCurrentPoint()->zoomRef);
+                 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef+inputPoleCntrl;
+                 break;
+             case MOTION_MIX_TRACK_ONLY:
+             default:
+                 axisRef.panRef=    panJoy.getValue(    motionControlAPI.getCurrentPoint()->panRef);
+                 axisRef.dutchRef=  dutchJoy.getValue(  motionControlAPI.getCurrentPoint()->dutchRef);
+                 axisRef.tiltRef=   tiltJoy.getValue(   motionControlAPI.getCurrentPoint()->tiltRef);
+                 zifParams.zoomRef= zoomJoy.getValue(   motionControlAPI.getCurrentPoint()->zoomRef);
 
-	     		 zifParams.irisRef=motionControlAPI.getCurrentPoint()->irisRef;;
-				 zifParams.focusRef=motionControlAPI.getCurrentPoint()->focusRef;
+                 zifParams.irisRef=motionControlAPI.getCurrentPoint()->irisRef;;
+                 zifParams.focusRef=motionControlAPI.getCurrentPoint()->focusRef;
 
-				 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
-				 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-				 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
-				 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
-				 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
-				 controlBitsExchange=contBitsTemp.all;
+                 speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
+                 contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
+                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
+                 contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
+                 controlBitsExchange=contBitsTemp.all;
 
-				 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef;
-	     }
+                 outputPoleCntrl=motionControlAPI.getCurrentPoint()->poleRef;
+         }
 
-	 }
+     }
 
-	 	zifParams.zoomRef+= zoomDriftValue;
-		if(zifParams.zoomRef>=0.99){zifParams.zoomRef=0.99;}
-		if(zifParams.zoomRef<=-0.99){zifParams.zoomRef=-0.99;}
+        zifParams.zoomRef+= zoomDriftValue;
+        if(zifParams.zoomRef>=0.99){zifParams.zoomRef=0.99;}
+        if(zifParams.zoomRef<=-0.99){zifParams.zoomRef=-0.99;}
 
-		if(zifParams.focusRef>=0.99){zifParams.focusRef=0.99;}
-		if(zifParams.focusRef<=-0.99){zifParams.focusRef=-0.99;}
+        if(zifParams.focusRef>=0.99){zifParams.focusRef=0.99;}
+        if(zifParams.focusRef<=-0.99){zifParams.focusRef=-0.99;}
 
-		if(zifParams.irisRef>=0.99){zifParams.irisRef=0.99;}
-		if(zifParams.irisRef<=-0.99){zifParams.irisRef=-0.99;}
+        if(zifParams.irisRef>=0.99){zifParams.irisRef=0.99;}
+        if(zifParams.irisRef<=-0.99){zifParams.irisRef=-0.99;}
 
 }
 
@@ -1202,180 +1202,182 @@ static volatile bool gtaComplite=false;
 #pragma CODE_SECTION(".secure")
 void Pult::exchangeTask()
 {
-	watchDogTimer.registerKey(WD_KEY1);
-	ExtrSyncroization::ExtrenalDevieExchDriver::init();
+    watchDogTimer.registerKey(WD_KEY1);
+    ExtrSyncroization::ExtrenalDevieExchDriver::init();
 
 //Инициализация протокола
-	BasicProtocolParams params (
-			1,
-			&cmdList,
-			Board_PULT_GYCON_UART,
-			MAX_TRANSFER_TIMEOUT,//33
-			Board_PULT_RS485RW
-	);
-	BasicProtocolMaster protocol(&params);
-	protocol.writeCmdId = 0;
-	protocol.askCmdId = 1;
-	GPIO_write(Board_PULT_RS485RW, Board_RS485_WRITE_MODE);
+    BasicProtocolParams params (
+            1,
+            &cmdList,
+            Board_PULT_GYCON_UART,
+            MAX_TRANSFER_TIMEOUT,//33
+            Board_PULT_RS485RW
+    );
+    BasicProtocolMaster protocol(&params);
+    protocol.writeCmdId = 0;
+    protocol.askCmdId = 1;
+    GPIO_write(Board_PULT_RS485RW, Board_RS485_WRITE_MODE);
 
-	while (true) {
-		watchDogTimer.useKey(WD_KEY1);
+    while (true) {
+        watchDogTimer.useKey(WD_KEY1);
 
 
 //Поготовка комманды записи
-		if (transmitAxisSettingsCommand) {
-			if (!noBasicWriteCmdCounter) {
-				protocol.writeCmdId = 2;
-				noBasicWriteCmdCounter = NO_BASIC_WRITE_CMD_PERIOD;
-				if (stopTransmitAxisSettingsCommand) {
-					transmitAxisSettingsCommand = false;
-					stopTransmitAxisSettingsCommand  = false;
-				}
-			}
-		}
+        if (transmitAxisSettingsCommand) {
+            if (!noBasicWriteCmdCounter) {
+                protocol.writeCmdId = 2;
+                noBasicWriteCmdCounter = NO_BASIC_WRITE_CMD_PERIOD;
+                if (stopTransmitAxisSettingsCommand) {
+                    transmitAxisSettingsCommand = false;
+                    stopTransmitAxisSettingsCommand  = false;
+                }
+            }
+        }
 //Обмен
-		dataRenderLogic();
+        dataRenderLogic();
 
-		transferDelay=counter;
-		counter=0;
+        transferDelay=counter;
+        counter=0;
 
-		if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE)
-		{
-			protocol.askCmdId = 4;
-			*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
-		}
+        if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE)
+        {
+            protocol.askCmdId = 4;
+            *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
+        }
 
-		if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE_ZIF)
-		{
-			protocol.askCmdId = 5;
-			*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
-		}
+        if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE_ZIF)
+        {
+            protocol.askCmdId = 5;
+            *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
+        }
 
-		if(*motionControlAPI.getAnglesFlag()==MOTION_SET_ANGLE)
-		{
-			protocol.writeCmdId = 3;
-
-
-			panWriteAngleH=		getAngleH(motionControlAPI.getAnglesData()->panRef);
-			dutchWriteAngleH=	getAngleH(motionControlAPI.getAnglesData()->dutchRef);
-			tiltWriteAngleH=	getAngleH(motionControlAPI.getAnglesData()->tiltRef);
-			zoomWriteAngleH=	getAngleH(motionControlAPI.getAnglesData()->zoomRef);
-
-			panWriteAngleL=		getAngleL(motionControlAPI.getAnglesData()->panRef);
-			dutchWriteAngleL=	getAngleL(motionControlAPI.getAnglesData()->dutchRef);
-			tiltWriteAngleL=	getAngleL(motionControlAPI.getAnglesData()->tiltRef);
-			zoomWriteAngleL=	getAngleL(motionControlAPI.getAnglesData()->zoomRef);
-
-			*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
-		}
-		if(*motionControlAPI.getAnglesFlag()==MOTION_APPLY_SET_ANGLE)
-		{
-			controlBits.bit.goToAngels=1;
-			*motionControlAPI.getAnglesFlag()=MOTION_APPLY_SET_WAIT;
-		}
-		if(*motionControlAPI.getAnglesFlag()==MOTION_APPLY_SET_WAIT)
-		{
-			if((gyConFaultBits.stateBits.goToAngleComplete==1)&&(!gtaComplite))
-			{
-				controlBits.bit.goToAngels=0;
-				*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
-			}
-			else
-			{
-				controlBits.bit.goToAngels=1;
-			}
-		}
-		if(*motionControlAPI.getAnglesFlag()==MOTION_ANGLE_RESET)
-		{
-			controlBits.bit.goToAngels=0;
-			protocol.writeCmdId = 0;
-			protocol.askCmdId = 1;
-			*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
-		}
-
-		if(gyConFaultBits.stateBits.goToAngleComplete==1){	gtaComplite=true;}else{	gtaComplite=false;	}
+        if(*motionControlAPI.getAnglesFlag()==MOTION_SET_ANGLE)
+        {
+            protocol.writeCmdId = 3;
 
 
-		if((*motionControlAPI.getAnglesFlag()==MOTION_ANGLE_READY)&&debugMenuCmdFlag)
-		{
-			debugValue0=viewLists.getEditVarList()->get(0)->getValue();
-			debugValue1=viewLists.getEditVarList()->get(1)->getValue();
-			debugValue2=viewLists.getEditVarList()->get(2)->getValue();
-			debugValue3=viewLists.getEditVarList()->get(3)->getValue();
-			debugValue4=viewLists.getEditVarList()->get(4)->getValue();
-			debugValue5=viewLists.getEditVarList()->get(5)->getValue();
-			debugValue6=viewLists.getEditVarList()->get(6)->getValue();
-			debugValue7=viewLists.getEditVarList()->get(7)->getValue();
-			protocol.writeCmdId=2;
-			protocol.askCmdId = 1;
-		}
+            panWriteAngleH=     getAngleH(motionControlAPI.getAnglesData()->panRef);
+            dutchWriteAngleH=   getAngleH(motionControlAPI.getAnglesData()->dutchRef);
+            tiltWriteAngleH=    getAngleH(motionControlAPI.getAnglesData()->tiltRef);
+            zoomWriteAngleH=    getAngleH(motionControlAPI.getAnglesData()->zoomRef);
+
+            panWriteAngleL=     getAngleL(motionControlAPI.getAnglesData()->panRef);
+            dutchWriteAngleL=   getAngleL(motionControlAPI.getAnglesData()->dutchRef);
+            tiltWriteAngleL=    getAngleL(motionControlAPI.getAnglesData()->tiltRef);
+            zoomWriteAngleL=    getAngleL(motionControlAPI.getAnglesData()->zoomRef);
+
+            *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
+        }
+        if(*motionControlAPI.getAnglesFlag()==MOTION_APPLY_SET_ANGLE)
+        {
+            controlBits.bit.goToAngels=1;
+            *motionControlAPI.getAnglesFlag()=MOTION_APPLY_SET_WAIT;
+        }
+        if(*motionControlAPI.getAnglesFlag()==MOTION_APPLY_SET_WAIT)
+        {
+            if((gyConFaultBits.stateBits.goToAngleComplete==1)&&(!gtaComplite))
+            {
+                controlBits.bit.goToAngels=0;
+                *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
+            }
+            else
+            {
+                controlBits.bit.goToAngels=1;
+            }
+        }
+        if(*motionControlAPI.getAnglesFlag()==MOTION_ANGLE_RESET)
+        {
+            controlBits.bit.goToAngels=0;
+            protocol.writeCmdId = 0;
+            protocol.askCmdId = 1;
+            *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
+        }
+
+        if(gyConFaultBits.stateBits.goToAngleComplete==1){
+            gtaComplite=true;}
+        else{   gtaComplite=false;  }
 
 
-//		Wait synchronization
-		if(motionControlAPI.isActive())
-		{
-			if(!Semaphore_pend(	*exchangeSem,BIOS_WAIT_FOREVER))
-			{
-			uint32_t a=10;
-			a++;
-			//TODO Критическая ошибка надо обработать
-			}
-		}
+        if((*motionControlAPI.getAnglesFlag()==MOTION_ANGLE_READY)&&debugMenuCmdFlag)
+        {
+            debugValue0=viewLists.getEditVarList()->get(0)->getValue();
+            debugValue1=viewLists.getEditVarList()->get(1)->getValue();
+            debugValue2=viewLists.getEditVarList()->get(2)->getValue();
+            debugValue3=viewLists.getEditVarList()->get(3)->getValue();
+            debugValue4=viewLists.getEditVarList()->get(4)->getValue();
+            debugValue5=viewLists.getEditVarList()->get(5)->getValue();
+            debugValue6=viewLists.getEditVarList()->get(6)->getValue();
+            debugValue7=viewLists.getEditVarList()->get(7)->getValue();
+            protocol.writeCmdId=2;
+            protocol.askCmdId = 1;
+        }
+
+
+//      Wait synchronization
+        if(motionControlAPI.isActive())
+        {
+            if(!Semaphore_pend( *exchangeSem,BIOS_WAIT_FOREVER))
+            {
+            uint32_t a=10;
+            a++;
+            //TODO Критическая ошибка надо обработать
+            }
+        }
 
 
 
 //TODO могут быть нюансы при отсуствии ОС,
 //система может бесконечно пытаться передать альтернативную комманду
-		if (protocol.transaction(PULT_EXCHANGE_ADDR, BASIC_PROTOCOL_BROADCAST_ADDRESS))
-		{
-			if(protocol.askCmdId == 4)
-			{
-				motionControlAPI.getAnglesData()->panRef=	getAngle(panReadAngleH,panReadAngleL);
-				motionControlAPI.getAnglesData()->dutchRef=	getAngle(dutchReadAngleH,dutchReadAngleL);
-				motionControlAPI.getAnglesData()->tiltRef=	getAngle(tiltReadAngleH,tiltReadAngleL);
-//				motionControlAPI.getAnglesData()->zoomRef=	getAngle(zoomReadAngleH,zoomReadAngleL);
-				*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
-			}
+        if (protocol.transaction(PULT_EXCHANGE_ADDR, BASIC_PROTOCOL_BROADCAST_ADDRESS))
+        {
+            if(protocol.askCmdId == 4)
+            {
+                motionControlAPI.getAnglesData()->panRef=   getAngle(panReadAngleH,panReadAngleL);
+                motionControlAPI.getAnglesData()->dutchRef= getAngle(dutchReadAngleH,dutchReadAngleL);
+                motionControlAPI.getAnglesData()->tiltRef=  getAngle(tiltReadAngleH,tiltReadAngleL);
+//              motionControlAPI.getAnglesData()->zoomRef=  getAngle(zoomReadAngleH,zoomReadAngleL);
+                *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
+            }
 
-			if(protocol.askCmdId == 5)
-			{
-				motionControlAPI.getAnglesData()->zoomRef=	getAngle(zoomReadAngleH,zoomReadAngleL);
-				*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
-			}
+            if(protocol.askCmdId == 5)
+            {
+                motionControlAPI.getAnglesData()->zoomRef=  getAngle(zoomReadAngleH,zoomReadAngleL);
+                *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
+            }
 
-			if(protocol.writeCmdId == 3)
-			{
-				*motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
-			}
+            if(protocol.writeCmdId == 3)
+            {
+                *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
+            }
 
-			if(protocol.writeCmdId == 2)
-			{
-				debugMenuCmdFlag=false;
-			}
+            if(protocol.writeCmdId == 2)
+            {
+                debugMenuCmdFlag=false;
+            }
 
-			protocol.writeCmdId = 0; //Восстановление стандартной комманды записи
-			protocol.askCmdId = 1;
-//			readAngles = false;
-//			writeAngles = false;
-			if (noBasicWriteCmdCounter)
-				noBasicWriteCmdCounter--;
-			gyConFaultBits.all = gyConFaultBitsExchange;
-			okCounter++;
-		} else {
+            protocol.writeCmdId = 0; //Восстановление стандартной комманды записи
+            protocol.askCmdId = 1;
+//          readAngles = false;
+//          writeAngles = false;
+            if (noBasicWriteCmdCounter)
+                noBasicWriteCmdCounter--;
+            gyConFaultBits.all = gyConFaultBitsExchange;
+            okCounter++;
+        } else {
 
-			faultCounter++;
-		}
+            faultCounter++;
+        }
 
-		if(!motionControlAPI.isActive())
-		{
-			Task_sleep(3);
-		}
-		pultController();
-		connectedFlag = protocol.isConnected();
+        if(!motionControlAPI.isActive())
+        {
+            Task_sleep(3);
+        }
+        pultController();
+        connectedFlag = protocol.isConnected();
 
-		checkErrorLogic();
+        checkErrorLogic();
 
-	}
+    }
 }
 
 //====================================================================================================
@@ -1383,44 +1385,44 @@ void Pult::exchangeTask()
 
 static void inversLogic() {
 #ifdef joyPult
-	switch (panReversButton.state) {
-	case PRESSED:
-		panJoy.setInversOrientation();
-		break;
-	case RELESASED:
-		panJoy.setNormalOrientation();
-		break;
-	}
-	switch (dutchReversButton.state) {
-	case PRESSED:
-		dutchJoy.setInversOrientation();
-		break;
-	case RELESASED:
-		dutchJoy.setNormalOrientation();
-		break;
-	}
-	switch (tiltReversButton.state) {
-	case PRESSED:
-		tiltJoy.setInversOrientation();
-		break;
-	case RELESASED:
-		tiltJoy.setNormalOrientation();
-		break;
-	}
+    switch (panReversButton.state) {
+    case PRESSED:
+        panJoy.setInversOrientation();
+        break;
+    case RELESASED:
+        panJoy.setNormalOrientation();
+        break;
+    }
+    switch (dutchReversButton.state) {
+    case PRESSED:
+        dutchJoy.setInversOrientation();
+        break;
+    case RELESASED:
+        dutchJoy.setNormalOrientation();
+        break;
+    }
+    switch (tiltReversButton.state) {
+    case PRESSED:
+        tiltJoy.setInversOrientation();
+        break;
+    case RELESASED:
+        tiltJoy.setNormalOrientation();
+        break;
+    }
 #else
-//	&rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
-	if(panReversButton.isPressed()) {
-	    panJoy.enable();
-	    panJoy.setNormalOrientation();
-	    }
-	else if (!panReversButton.isPressed()&&!panWheelReversButton.isPressed()) {
-	    panJoy.disable();
-	    }
+//  &rollWheelReversButton,&tiltWheelReversButton,&panWheelReversButton
+    if(panReversButton.isPressed()) {
+        panJoy.enable();
+        panJoy.setNormalOrientation();
+        }
+    else if (!panReversButton.isPressed()&&!panWheelReversButton.isPressed()) {
+        panJoy.disable();
+        }
 
-	else {
-	    panJoy.enable();
-	    panJoy.setInversOrientation();
-	    }
+    else {
+        panJoy.enable();
+        panJoy.setInversOrientation();
+        }
 
     if(dutchReversButton.isPressed()) {
         dutchJoy.enable();
@@ -1449,7 +1451,7 @@ static void inversLogic() {
         }
 
 #endif
-	//ZIF REVERS
+    //ZIF REVERS
 #ifdef joyPultRussian
     switch (zoomReversButton.state)
         {
@@ -1479,59 +1481,59 @@ static void inversLogic() {
                 break;
         }
 #else
-	switch (virtualZoomReversButton.state)
-	{
-		case PRESSED:
-			zoomJoy.setInversOrientation();
-			break;
-		case RELESASED:
-			zoomJoy.setNormalOrientation();
-			break;
-	}
-	switch (virtualIrisReversButton.state)
-	{
-		case PRESSED:
-		    IrisResistor.setInversOrientation();
-			break;
-		case RELESASED:
-		    IrisResistor.setNormalOrientation();
-			break;
-	}
-	switch (virtualFocusReversButton.state)
-	{
-		case PRESSED:
-			focusResistor.setInversOrientation();
-			break;
-		case RELESASED:
-			focusResistor.setNormalOrientation();
-			break;
-	}
+    switch (virtualZoomReversButton.state)
+    {
+        case PRESSED:
+            zoomJoy.setInversOrientation();
+            break;
+        case RELESASED:
+            zoomJoy.setNormalOrientation();
+            break;
+    }
+    switch (virtualIrisReversButton.state)
+    {
+        case PRESSED:
+            IrisResistor.setInversOrientation();
+            break;
+        case RELESASED:
+            IrisResistor.setNormalOrientation();
+            break;
+    }
+    switch (virtualFocusReversButton.state)
+    {
+        case PRESSED:
+            focusResistor.setInversOrientation();
+            break;
+        case RELESASED:
+            focusResistor.setNormalOrientation();
+            break;
+    }
 #endif
 }
 
 
 static void joySticksOnOffLogic() {
 #ifdef joyPult
-	switch (joyStickOnOffButton.state) {
-	case PRESSED:
-		panJoyChannel.enable();
-		dutchJoyChannel.enable();
-		tiltJoyChannel.enable();
-		zoomJoyChannel.enable();
-		ledControl.getData()->resetLed(LED_JOYSTIC);
-		ledControl.invalidate();
-		controlBits.bit.joysticOn=1;
-		break;
-	case RELESASED:
-		panJoyChannel.disable();
-		dutchJoyChannel.disable();
-		tiltJoyChannel.disable();
-		zoomJoyChannel.disable();
-		ledControl.getData()->setLed(LED_JOYSTIC);
-		ledControl.invalidate();
-		controlBits.bit.joysticOn=0;
-		break;
-	    }
+    switch (joyStickOnOffButton.state) {
+    case PRESSED:
+        panJoyChannel.enable();
+        dutchJoyChannel.enable();
+        tiltJoyChannel.enable();
+        zoomJoyChannel.enable();
+        ledControl.getData()->resetLed(LED_JOYSTIC);
+        ledControl.invalidate();
+        controlBits.bit.joysticOn=1;
+        break;
+    case RELESASED:
+        panJoyChannel.disable();
+        dutchJoyChannel.disable();
+        tiltJoyChannel.disable();
+        zoomJoyChannel.disable();
+        ledControl.getData()->setLed(LED_JOYSTIC);
+        ledControl.invalidate();
+        controlBits.bit.joysticOn=0;
+        break;
+        }
 #else
     switch (joyStickOnOffButton.state) {
     case PRESSED:
@@ -1552,17 +1554,17 @@ static void joySticksOnOffLogic() {
         break;
         }
 #endif
-	if (virtualButtonJoysticOff.state==RELESASED) {
-	    zoomJoy.enable();
-	    panJoy.enable();
-	    dutchJoy.enable();
-	    tiltJoy.enable();}
-	else {
-	    zoomJoy.disable();
-	    panJoy.disable();
-	    dutchJoy.disable();
-	    tiltJoy.disable();
-	}
+    if (virtualButtonJoysticOff.state==RELESASED) {
+        zoomJoy.enable();
+        panJoy.enable();
+        dutchJoy.enable();
+        tiltJoy.enable();}
+    else {
+        zoomJoy.disable();
+        panJoy.disable();
+        dutchJoy.disable();
+        tiltJoy.disable();
+    }
 
 }
 
@@ -1585,90 +1587,90 @@ volatile static UInt8 transCounterLast=0;
 
 void Pult::checkErrorLogic()
 {
-	stErrorBits=stErrorBits|(gyConFaultBits.all);
-	checkPoints.parseBytes(gyConFaultBits.all,stErrorBits);
+    stErrorBits=stErrorBits|(gyConFaultBits.all);
+    checkPoints.parseBytes(gyConFaultBits.all,stErrorBits);
 
-	if(!connectedFlag)
-	{
-//		autonegComplete=false;
-		if(discTrigger)
-		{
-			discTrigger=false;
-			disconnectedCounter++;
-		}
-	}
-	else
-	{
-		if(!discTrigger){discTrigger=true;}
-	}
+    if(!connectedFlag)
+    {
+//      autonegComplete=false;
+        if(discTrigger)
+        {
+            discTrigger=false;
+            disconnectedCounter++;
+        }
+    }
+    else
+    {
+        if(!discTrigger){discTrigger=true;}
+    }
 
-	if(f1Last!=gyConFaultBits.all)
-	{
-		f1Last=gyConFaultBits.all;
-		erUpdated=true;
-	}
+    if(f1Last!=gyConFaultBits.all)
+    {
+        f1Last=gyConFaultBits.all;
+        erUpdated=true;
+    }
 
-	if(f2Last!=stErrorBits)
-	{
-		f2Last=stErrorBits;
-		erUpdated=true;
-	}
+    if(f2Last!=stErrorBits)
+    {
+        f2Last=stErrorBits;
+        erUpdated=true;
+    }
 
-	if(trLast!=discTrigger)
-	{
-		trLast=discTrigger;
-		erUpdated=true;
-	}
+    if(trLast!=discTrigger)
+    {
+        trLast=discTrigger;
+        erUpdated=true;
+    }
 
-	if(transCounterLast!=transferDelay)
-	{
-		transCounterLast=transferDelay;
-		erUpdated=true;
+    if(transCounterLast!=transferDelay)
+    {
+        transCounterLast=transferDelay;
+        erUpdated=true;
 
-//		if(transferDelay>maxTransferDelay)
-//		{
-//			maxTransferDelay=transferDelay;
-//		}
+//      if(transferDelay>maxTransferDelay)
+//      {
+//          maxTransferDelay=transferDelay;
+//      }
 
-	}
+    }
 }
 
 static void joyStickSensLogic() {
    if (panSenseButton.isClicked()) {
-	   panSensId++;
-	   if (panSensId >= JOYSTICK_FUNCS_COUNT) panSensId = 0;
-	   panJoy.func = panFuncs[panSensId];
+       panSensId++;
+       if (panSensId >= JOYSTICK_FUNCS_COUNT) panSensId = 0;
+       panJoy.func = panFuncs[panSensId];
    }
    if (dutchSenseButton.isClicked()) {
-	   dutchSensId++;
-	   if (dutchSensId >= JOYSTICK_FUNCS_COUNT) dutchSensId = 0;
-	   dutchJoy.func = dutchFuncs[dutchSensId];
+       dutchSensId++;
+       if (dutchSensId >= JOYSTICK_FUNCS_COUNT) dutchSensId = 0;
+       dutchJoy.func = dutchFuncs[dutchSensId];
    }
    if (tiltSenseButton.isClicked()) {
-	   tiltSensId++;
-	   if (tiltSensId >= JOYSTICK_FUNCS_COUNT) tiltSensId = 0;
-	   tiltJoy.func = tiltFuncs[tiltSensId];
+       tiltSensId++;
+       if (tiltSensId >= JOYSTICK_FUNCS_COUNT) tiltSensId = 0;
+       tiltJoy.func = tiltFuncs[tiltSensId];
    }
 }
 
 static void controlLogic() {
-	static UInt8 setUpTiltLimitsCounter = 0;
-	static UInt8 setDwTiltLimitsCounter = 0;
-	static UInt8 resetUpTiltLimitsCounter = 0;
-	static UInt8 resetDwTiltLimitsCounter = 0;
+    static UInt8 setUpTiltLimitsCounter = 0;
+    static UInt8 setDwTiltLimitsCounter = 0;
+    static UInt8 resetUpTiltLimitsCounter = 0;
+    static UInt8 resetDwTiltLimitsCounter = 0;
 
-	static UInt8 setLeftPanLimitsCounter = 0;
-	static UInt8 setRightPanLimitsCounter = 0;
-	static UInt8 resetLeftPanLimitsCounter = 0;
-	static UInt8 resetRightPanLimitsCounter = 0;
+    static UInt8 setLeftPanLimitsCounter = 0;
+    static UInt8 setRightPanLimitsCounter = 0;
+    static UInt8 resetLeftPanLimitsCounter = 0;
+    static UInt8 resetRightPanLimitsCounter = 0;
 
     static UInt8 setLeftRollLimitsCounter = 0;
     static UInt8 setRightRollLimitsCounter = 0;
     static UInt8 resetLeftRollLimitsCounter = 0;
     static UInt8 resetRightRollLimitsCounter = 0;
 
-	static UInt8 lensCalibrationCounter = 0;
-	static UInt8 estimationBitCounter=0;
+    static UInt8 lensCalibrationCounter = 0;
+    static UInt8 estimationBitCounter=0;
 
     controlBits.bit.onOffMotors = motorOnOffButton.isPressed();
     if (controlBits.bit.onOffMotors) {
@@ -1685,101 +1687,101 @@ static void controlLogic() {
     controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
 
 
-	if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 3; setUpTiltLimitsFlag = false;};
-	if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
-	if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
-	if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 3; resetDwTiltLimitsFlag = false;};
+    if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 3; setUpTiltLimitsFlag = false;};
+    if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
+    if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
+    if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 3; resetDwTiltLimitsFlag = false;};
 
-	if (setRightPanLimitsFlag == true) {setRightPanLimitsCounter = 3; setRightPanLimitsFlag = false;};
-	if (setLeftPanLimitsFlag == true) {setLeftPanLimitsCounter = 3; setLeftPanLimitsFlag = false;};
-	if (resetRightPanLimitsFlag == true) {resetRightPanLimitsCounter = 3; resetRightPanLimitsFlag = false;};
-	if (resetLeftPanLimitsFlag == true) {resetLeftPanLimitsCounter = 3; resetLeftPanLimitsFlag = false;};
+    if (setRightPanLimitsFlag == true) {setRightPanLimitsCounter = 3; setRightPanLimitsFlag = false;};
+    if (setLeftPanLimitsFlag == true) {setLeftPanLimitsCounter = 3; setLeftPanLimitsFlag = false;};
+    if (resetRightPanLimitsFlag == true) {resetRightPanLimitsCounter = 3; resetRightPanLimitsFlag = false;};
+    if (resetLeftPanLimitsFlag == true) {resetLeftPanLimitsCounter = 3; resetLeftPanLimitsFlag = false;};
 
     if (setRightRollLimitsFlag == true) {setRightRollLimitsCounter = 3; setRightRollLimitsFlag = false;};
     if (setLeftRollLimitsFlag == true) {setLeftRollLimitsCounter = 3; setLeftRollLimitsFlag = false;};
     if (resetRightRollLimitsFlag == true) {resetRightRollLimitsCounter = 3; resetRightRollLimitsFlag = false;};
     if (resetLefttRollLimitsFlag == true) {resetLeftRollLimitsCounter = 3; resetLefttRollLimitsFlag = false;};
 
-	#ifdef USAEdition || WhellSmartPult
-	if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+    #ifdef USAEdition || WhellSmartPult
+    if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
 #else
-	if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+    if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
 #endif
-	if (estimationFlag==true){estimationBitCounter=3;estimationFlag=false;}
+    if (estimationFlag==true){estimationBitCounter=3;estimationFlag=false;}
 
-	if (estimationBitCounter){
-		estimationBitCounter--;
-		//todo set true
-	}
-	else
-		// set false;
+    if (estimationBitCounter){
+        estimationBitCounter--;
+        //todo set true
+    }
+    else
+        // set false;
 
 
-	if (lensCalibrationCounter) {
-		lensCalibrationCounter--;
-		motorControlBits.bit.tuningStart = true;
-	} else
-		motorControlBits.bit.tuningStart = false;
+    if (lensCalibrationCounter) {
+        lensCalibrationCounter--;
+        motorControlBits.bit.tuningStart = true;
+    } else
+        motorControlBits.bit.tuningStart = false;
 
-	if (setUpTiltLimitsCounter) {
-		setUpTiltLimitsCounter--;
-		controlBits.bit.setUpTiltLimits = true;
-	} else
-		controlBits.bit.setUpTiltLimits = false;
+    if (setUpTiltLimitsCounter) {
+        setUpTiltLimitsCounter--;
+        controlBits.bit.setUpTiltLimits = true;
+    } else
+        controlBits.bit.setUpTiltLimits = false;
 
-	if (setDwTiltLimitsCounter) {
-		setDwTiltLimitsCounter--;
-		controlBits.bit.setDwTiltLimits = true;
-	} else
-		controlBits.bit.setDwTiltLimits = false;
+    if (setDwTiltLimitsCounter) {
+        setDwTiltLimitsCounter--;
+        controlBits.bit.setDwTiltLimits = true;
+    } else
+        controlBits.bit.setDwTiltLimits = false;
 
-	if (resetUpTiltLimitsCounter) {
-		resetUpTiltLimitsCounter--;
-		controlBits.bit.resetUpTiltLimits = true;
-	} else
-		controlBits.bit.resetUpTiltLimits = false;
+    if (resetUpTiltLimitsCounter) {
+        resetUpTiltLimitsCounter--;
+        controlBits.bit.resetUpTiltLimits = true;
+    } else
+        controlBits.bit.resetUpTiltLimits = false;
 
-	if (resetDwTiltLimitsCounter) {
-		resetDwTiltLimitsCounter--;
-		controlBits.bit.resetDwTiltLimits = true;
-	} else
-		controlBits.bit.resetDwTiltLimits = false;
+    if (resetDwTiltLimitsCounter) {
+        resetDwTiltLimitsCounter--;
+        controlBits.bit.resetDwTiltLimits = true;
+    } else
+        controlBits.bit.resetDwTiltLimits = false;
 
-	if (setLeftPanLimitsCounter) {
-	    setLeftPanLimitsCounter--;
-	    controlBitsA.bit.setLeftPanLimits = true;
-	} else
-	    controlBitsA.bit.setLeftPanLimits = false;
+    if (setLeftPanLimitsCounter) {
+        setLeftPanLimitsCounter--;
+        controlBitsA.bit.setLeftPanLimits = true;
+    } else
+        controlBitsA.bit.setLeftPanLimits = false;
 
-	if (setRightPanLimitsCounter) {
-	    setRightPanLimitsCounter--;
-	    controlBitsA.bit.setRightPanLimits = true;
-	} else
-	    controlBitsA.bit.setRightPanLimits = false;
+    if (setRightPanLimitsCounter) {
+        setRightPanLimitsCounter--;
+        controlBitsA.bit.setRightPanLimits = true;
+    } else
+        controlBitsA.bit.setRightPanLimits = false;
 
-	if (resetLeftPanLimitsCounter) {
-	    resetLeftPanLimitsCounter--;
-	    controlBitsA.bit.resetLeftPanLimits = true;
-	} else
-	    controlBitsA.bit.resetLeftPanLimits = false;
+    if (resetLeftPanLimitsCounter) {
+        resetLeftPanLimitsCounter--;
+        controlBitsA.bit.resetLeftPanLimits = true;
+    } else
+        controlBitsA.bit.resetLeftPanLimits = false;
 
-	if (resetRightPanLimitsCounter) {
-	    resetRightPanLimitsCounter--;
-	    controlBitsA.bit.resetRightPanLimits = true;
-	} else
-	    controlBitsA.bit.resetRightPanLimits = false;
+    if (resetRightPanLimitsCounter) {
+        resetRightPanLimitsCounter--;
+        controlBitsA.bit.resetRightPanLimits = true;
+    } else
+        controlBitsA.bit.resetRightPanLimits = false;
 
-	if (setLeftRollLimitsCounter) {
-	    setLeftRollLimitsCounter--;
-	    controlBitsA.bit.setLeftDutchLimits = true;
-	} else
-	    controlBitsA.bit.setLeftDutchLimits = false;
+    if (setLeftRollLimitsCounter) {
+        setLeftRollLimitsCounter--;
+        controlBitsA.bit.setLeftDutchLimits = true;
+    } else
+        controlBitsA.bit.setLeftDutchLimits = false;
 
-	if (setRightRollLimitsCounter) {
-	    setRightRollLimitsCounter--;
-	    controlBitsA.bit.setRightDutchLimits = true;
-	} else
-	    controlBitsA.bit.setRightDutchLimits = false;
+    if (setRightRollLimitsCounter) {
+        setRightRollLimitsCounter--;
+        controlBitsA.bit.setRightDutchLimits = true;
+    } else
+        controlBitsA.bit.setRightDutchLimits = false;
 
     if (resetLeftRollLimitsCounter) {
         resetLeftRollLimitsCounter--;
@@ -1794,35 +1796,35 @@ static void controlLogic() {
         controlBitsA.bit.resetRightDutchLimits = false;
 
 #ifdef joyPult
-	if (gvAccButton.isClicked()) {
-		controlBits.bit.gvAcc = !controlBits.bit.gvAcc;
-	}
+    if (gvAccButton.isClicked()) {
+        controlBits.bit.gvAcc = !controlBits.bit.gvAcc;
+    }
 #else
-	if (gvAccButton.isPressed())
-	    controlBits.bit.gvAcc = 1;
-	else
-	    controlBits.bit.gvAcc = 0;
+    if (gvAccButton.isPressed())
+        controlBits.bit.gvAcc = 1;
+    else
+        controlBits.bit.gvAcc = 0;
 #endif
-	if (cameraStartButton.isClicked()) {
-		motorControlBits.bit.cameraStart=!motorControlBits.bit.cameraStart;
-	}
+    if (cameraStartButton.isClicked()) {
+        motorControlBits.bit.cameraStart=!motorControlBits.bit.cameraStart;
+    }
 }
 
 
 static void pultController()
 {
-	controlLogic();
-	joySticksOnOffLogic();
-	inversLogic();
-	joyStickSensLogic();
+    controlLogic();
+    joySticksOnOffLogic();
+    inversLogic();
+    joyStickSensLogic();
 }
 
 PultButton* Pult::getButton(PultButtons btn) {
-	if (btn<PULT_BUTTONS_COUNT) {
-		return sharedButtons[btn];
-	} else {
-		return NULL;
-	}
+    if (btn<PULT_BUTTONS_COUNT) {
+        return sharedButtons[btn];
+    } else {
+        return NULL;
+    }
 }
 
 PultButton* Pult::getButton_1_16(uint8_t ID) {
@@ -1842,76 +1844,76 @@ PultButton* Pult::getButtonVirtual(uint8_t ID) {
 }
 
 void Pult::setAxisSetting(PultAxisSettings setting, float value) {
-	if (setting<AXIS_SETTINGS_COUNT) {
-		 *writeControlCmdData[setting+5].ptr=value;
-	}
+    if (setting<AXIS_SETTINGS_COUNT) {
+         *writeControlCmdData[setting+5].ptr=value;
+    }
 }
 
 void Pult::startTransmitAxisSettings() {
-	transmitAxisSettingsCommand = true;
+    transmitAxisSettingsCommand = true;
 }
 
 void Pult::stopTransmitAxisSettings() {
-	stopTransmitAxisSettingsCommand = true;
+    stopTransmitAxisSettingsCommand = true;
 }
 
 float Pult::getPanTurns()
 {
-	return (float)panTurns; //   /100
+    return (float)panTurns; //   /100
 }
 
 GyConState Pult::getGyConState() {
-	return GyConState_Normal;
+    return GyConState_Normal;
 }
 
 char* Pult::getFaultMessage() {
-	return "";
+    return "";
 }
 
 bool Pult::isConnected() {
-	return connectedFlag;
+    return connectedFlag;
 }
 
 bool Pult::isJoySticksEnabled() {
-	return joyStickOnOffButton.isPressed();
+    return joyStickOnOffButton.isPressed();
 }
 
 bool Pult::isMotorsEnabled() {
-	return motorOnOffButton.isPressed();
+    return motorOnOffButton.isPressed();
 }
 bool Pult::isBackLightEnabled()
 {
-	return sharedButtons[backLightOff]->isPressed();
+    return sharedButtons[backLightOff]->isPressed();
 }
 
 char* Pult::getPanPreset() {
-	if(panSensId==0) return "Cube";
-	if(panSensId==1) return "Sqr";
-	if(panSensId==2) return "Lin";
-	return "PS ";
+    if(panSensId==0) return "Cube";
+    if(panSensId==1) return "Sqr";
+    if(panSensId==2) return "Lin";
+    return "PS ";
 }
 
 char* Pult::getDutchPreset() {
-	if(dutchSensId==0) return "Cube";
-	if(dutchSensId==1) return "Sqr";
-	if(dutchSensId==2) return "Lin";
-	return "PS ";
+    if(dutchSensId==0) return "Cube";
+    if(dutchSensId==1) return "Sqr";
+    if(dutchSensId==2) return "Lin";
+    return "PS ";
 }
 
 char* Pult::getTiltPreset() {
-	if(tiltSensId==0) return "Cube";
-	if(tiltSensId==1) return "Sqr";
-	if(tiltSensId==2) return "Lin";
-	return "PS ";
+    if(tiltSensId==0) return "Cube";
+    if(tiltSensId==1) return "Sqr";
+    if(tiltSensId==2) return "Lin";
+    return "PS ";
 }
 
-void Pult::setTiltUpLimit() {	setUpTiltLimitsFlag = true;}
+void Pult::setTiltUpLimit() {   setUpTiltLimitsFlag = true;}
 
-void Pult::setTiltDnLimit() {	setDwTiltLimitsFlag = true;}
+void Pult::setTiltDnLimit() {   setDwTiltLimitsFlag = true;}
 
-void Pult::resetTiltUpLimit() {	resetUpTiltLimitsFlag = true;}
+void Pult::resetTiltUpLimit() { resetUpTiltLimitsFlag = true;}
 
-void Pult::resetTiltDnLimit() {	resetDwTiltLimitsFlag = true;}
+void Pult::resetTiltDnLimit() { resetDwTiltLimitsFlag = true;}
 
 void Pult::setLeftPanLimit() {   setLeftPanLimitsFlag = true;}
 
@@ -1930,17 +1932,17 @@ void Pult::resetLeftRollLimit() { resetLefttRollLimitsFlag = true;}
 void Pult::resetRightRollLimit() { resetRightRollLimitsFlag = true;}
 
 void Pult::setPlatform(UInt8 num) {
-/*	if (num<4) {
-		controlBits.bit.algorithmNum = num;
-	}*/
+/*  if (num<4) {
+        controlBits.bit.algorithmNum = num;
+    }*/
 }
 
 char* Pult::getGvAcc() {
-	if (!controlBits.bit.gvAcc) {
-		return "GV";
-	} else {
-		return "ACC";
-	}
+    if (!controlBits.bit.gvAcc) {
+        return "GV";
+    } else {
+        return "ACC";
+    }
 }
 
 void Pult::setXY(char* pName, UInt8 num, float x, float y) {
@@ -1960,281 +1962,281 @@ void Pult::setPultCalibratesCoeff(PultCalibrateCoeffs name, float value) {
 }
 
 float Pult::getPultDebugValue(PultDebugValues name) {
-	return 0.1;
+    return 0.1;
 }
 
 
 Warnings* Pult::getWarnings() {
-	return &warnings;
+    return &warnings;
 }
 
 ViewLists* Pult::getViewLists() {
     return &viewLists;
 }
 
-Warning headDisconnectedWarning("Head disconnected!",	WT_WARNING);
-Warning pDusFail("Pan ARS Fail", 						WT_WARNING);
-Warning dDusFail("Dutch ARS Fail", 						WT_WARNING);
-Warning tDusFail("Tilt ARS Fail", 						WT_WARNING);
-Warning gvFail("GV Fail", 								WT_WARNING);
-Warning encoderFail("Encoder Fail", 					WT_WARNING);
-Warning pultFail("Pult Fail", 							WT_WARNING);
+Warning headDisconnectedWarning("Head disconnected!",   WT_WARNING);
+Warning pDusFail("Pan ARS Fail",                        WT_WARNING);
+Warning dDusFail("Dutch ARS Fail",                      WT_WARNING);
+Warning tDusFail("Tilt ARS Fail",                       WT_WARNING);
+Warning gvFail("GV Fail",                               WT_WARNING);
+Warning encoderFail("Encoder Fail",                     WT_WARNING);
+Warning pultFail("Pult Fail",                           WT_WARNING);
 Warning pultGVCalibrat ("Gyro vertical calibration", WT_WARNING);
 
 void Pult::updateWarningsList()
 {
-	warnings.getRunStrWarnings()->removeAll();
+    warnings.getRunStrWarnings()->removeAll();
 
-	if(!connectedFlag){
-	    warnings.getRunStrWarnings()->add(&headDisconnectedWarning);}
-	if (gyConFaultBits.all!=0) {
-	    int a=0;
-	    a++;
-	    }
-	if(gyConFaultBits.faultBits.panDusFault!=0){	warnings.getRunStrWarnings()->add(&pDusFail);}
-	if(gyConFaultBits.faultBits.dutchDusFault!=0){	warnings.getRunStrWarnings()->add(&dDusFail);}
-	if(gyConFaultBits.faultBits.tiltDusFault!=0){	warnings.getRunStrWarnings()->add(&tDusFail);}
-	if(gyConFaultBits.faultBits.gvFault!=0){	warnings.getRunStrWarnings()->add(&gvFail);}
-	if(gyConFaultBits.faultBits.encodersFault!=0){	warnings.getRunStrWarnings()->add(&encoderFail);}
-	if(gyConFaultBits.faultBits.pultFault!=0){	warnings.getRunStrWarnings()->add(&pultFail);}
-	//здесь дописываем индикацию калибровки ГВ
-	if (controlBits.bit.gvCalibration) {warnings.getRunStrWarnings()->add(&pultGVCalibrat);}
+    if(!connectedFlag){
+        warnings.getRunStrWarnings()->add(&headDisconnectedWarning);}
+    if (gyConFaultBits.all!=0) {
+        int a=0;
+        a++;
+        }
+    if(gyConFaultBits.faultBits.panDusFault!=0){    warnings.getRunStrWarnings()->add(&pDusFail);}
+    if(gyConFaultBits.faultBits.dutchDusFault!=0){  warnings.getRunStrWarnings()->add(&dDusFail);}
+    if(gyConFaultBits.faultBits.tiltDusFault!=0){   warnings.getRunStrWarnings()->add(&tDusFail);}
+    if(gyConFaultBits.faultBits.gvFault!=0){    warnings.getRunStrWarnings()->add(&gvFail);}
+    if(gyConFaultBits.faultBits.encodersFault!=0){  warnings.getRunStrWarnings()->add(&encoderFail);}
+    if(gyConFaultBits.faultBits.pultFault!=0){  warnings.getRunStrWarnings()->add(&pultFail);}
+    //здесь дописываем индикацию калибровки ГВ
+    if (controlBits.bit.gvCalibration) {warnings.getRunStrWarnings()->add(&pultGVCalibrat);}
 }
 
 const char* Pult::getJoystickPresetName(PultJoystickPresets preset) {
-	switch (preset) {
-	case PanJoystickPreset:
-		return joystickPresetNames[panSensId];
-	case DutchJoystickPreset:
-		return joystickPresetNames[dutchSensId];
-	case TiltJoystickPreset:
-		return joystickPresetNames[tiltSensId];
-	case ZoomJoystickPreset:
-	        return zoomJoystickPresetNames[zoomSensId];
-	}
-	return "";
+    switch (preset) {
+    case PanJoystickPreset:
+        return joystickPresetNames[panSensId];
+    case DutchJoystickPreset:
+        return joystickPresetNames[dutchSensId];
+    case TiltJoystickPreset:
+        return joystickPresetNames[tiltSensId];
+    case ZoomJoystickPreset:
+            return zoomJoystickPresetNames[zoomSensId];
+    }
+    return "";
 }
 
 UInt8 Pult::getJoystickPresetId(PultJoystickPresets preset) {
-	switch (preset) {
-	case PanJoystickPreset:
-		return panSensId;
-	case DutchJoystickPreset:
-		return dutchSensId;
-	case TiltJoystickPreset:
-		return tiltSensId;
-	case ZoomJoystickPreset:
-	    return zoomSensId;
-	}
-	return 0;
+    switch (preset) {
+    case PanJoystickPreset:
+        return panSensId;
+    case DutchJoystickPreset:
+        return dutchSensId;
+    case TiltJoystickPreset:
+        return tiltSensId;
+    case ZoomJoystickPreset:
+        return zoomSensId;
+    }
+    return 0;
 }
 
 void Pult::setJoystickPresetId(PultJoystickPresets preset, UInt8 presetId) {
-	if (presetId< JOYSTICK_FUNCS_COUNT) {
-		switch (preset) {
-		case PanJoystickPreset:
-			if (presetId >= JOYSTICK_FUNCS_COUNT)   {panJoy.func = panFuncs[0];				panSensId=0;}
-			else									{panJoy.func = panFuncs[presetId];		panSensId=presetId;}
-			return;
-		case DutchJoystickPreset:
-			if (presetId >= JOYSTICK_FUNCS_COUNT)   {dutchJoy.func = dutchFuncs[0];			dutchSensId=0;}
-			else									{dutchJoy.func = dutchFuncs[presetId];	dutchSensId=presetId;}
-			return;
-		case TiltJoystickPreset:
-			if (presetId >= JOYSTICK_FUNCS_COUNT)   {tiltJoy.func = tiltFuncs[0];			tiltSensId=0;}
-			else									{tiltJoy.func = tiltFuncs[presetId];	tiltSensId=presetId;}
-			return;
-		case ZoomJoystickPreset:
-			if (presetId >= JOYSTICK_FUNCS_COUNT)   {zoomJoy.func = zoomFuncs[0];           zoomSensId=0;}
-			else									{zoomJoy.func = zoomFuncs[presetId];    zoomSensId=presetId;}
-			return;
-		}
-	}
+    if (presetId< JOYSTICK_FUNCS_COUNT) {
+        switch (preset) {
+        case PanJoystickPreset:
+            if (presetId >= JOYSTICK_FUNCS_COUNT)   {panJoy.func = panFuncs[0];             panSensId=0;}
+            else                                    {panJoy.func = panFuncs[presetId];      panSensId=presetId;}
+            return;
+        case DutchJoystickPreset:
+            if (presetId >= JOYSTICK_FUNCS_COUNT)   {dutchJoy.func = dutchFuncs[0];         dutchSensId=0;}
+            else                                    {dutchJoy.func = dutchFuncs[presetId];  dutchSensId=presetId;}
+            return;
+        case TiltJoystickPreset:
+            if (presetId >= JOYSTICK_FUNCS_COUNT)   {tiltJoy.func = tiltFuncs[0];           tiltSensId=0;}
+            else                                    {tiltJoy.func = tiltFuncs[presetId];    tiltSensId=presetId;}
+            return;
+        case ZoomJoystickPreset:
+            if (presetId >= JOYSTICK_FUNCS_COUNT)   {zoomJoy.func = zoomFuncs[0];           zoomSensId=0;}
+            else                                    {zoomJoy.func = zoomFuncs[presetId];    zoomSensId=presetId;}
+            return;
+        }
+    }
 }
 
 List<Point*>* Pult::getEqualaserPoints(PultEqualaserType type)
 {
-	switch(type)
-	{
-		case PanJoystickEqualaser:
-			return &(equRefPoints.panReferencePointList);
-		case DutchJoystickEqualaser:
-			return &(equRefPoints.dutchReferencePointList);
-		case TiltJoystickEqualaser:
-			return &(equRefPoints.tiltReferencePointList);
-		case ZoomJoystickEqualaser:
-			return &(equRefPoints.zoomReferencePointList);
-		default:return NULL;
-	}
+    switch(type)
+    {
+        case PanJoystickEqualaser:
+            return &(equRefPoints.panReferencePointList);
+        case DutchJoystickEqualaser:
+            return &(equRefPoints.dutchReferencePointList);
+        case TiltJoystickEqualaser:
+            return &(equRefPoints.tiltReferencePointList);
+        case ZoomJoystickEqualaser:
+            return &(equRefPoints.zoomReferencePointList);
+        default:return NULL;
+    }
 }
 void Pult::updateAproximator(PultEqualaserType type)
 {
-	switch(type)
-		{
-			case PanJoystickEqualaser:
-				 panLineralAproximator.updateReferencePoints();
-				return ;
+    switch(type)
+        {
+            case PanJoystickEqualaser:
+                 panLineralAproximator.updateReferencePoints();
+                return ;
 
-			case DutchJoystickEqualaser:
-				dutchLineralAproximator.updateReferencePoints();
-				return ;
+            case DutchJoystickEqualaser:
+                dutchLineralAproximator.updateReferencePoints();
+                return ;
 
-			case TiltJoystickEqualaser:
-				tiltLineralAproximator.updateReferencePoints();
-				return ;
+            case TiltJoystickEqualaser:
+                tiltLineralAproximator.updateReferencePoints();
+                return ;
 
-			case ZoomJoystickEqualaser:
-				zoomLineralAproximator.updateReferencePoints();
-				return ;
-			default:return ;
-		}
+            case ZoomJoystickEqualaser:
+                zoomLineralAproximator.updateReferencePoints();
+                return ;
+            default:return ;
+        }
 }
 float Pult::getEqualaserAproximatorValue(PultEqualaserType type, float x)
 {
-	switch(type)
-	{
-		case PanJoystickEqualaser:
-			if(!panLineralAproximator.isComputed_()){return 0;}
-			return -panLineralAproximator.calculate(x);
+    switch(type)
+    {
+        case PanJoystickEqualaser:
+            if(!panLineralAproximator.isComputed_()){return 0;}
+            return -panLineralAproximator.calculate(x);
 
-		case DutchJoystickEqualaser:
-			if(!dutchLineralAproximator.isComputed_()){return 0;}
-			return -dutchLineralAproximator.calculate(x);
+        case DutchJoystickEqualaser:
+            if(!dutchLineralAproximator.isComputed_()){return 0;}
+            return -dutchLineralAproximator.calculate(x);
 
-		case TiltJoystickEqualaser:
-			if(!tiltLineralAproximator.isComputed_()){return 0;}
-			return -tiltLineralAproximator.calculate(x);
-		case ZoomJoystickEqualaser:
-			if(!zoomLineralAproximator.isComputed_()){return 0;}
-			return -zoomLineralAproximator.calculate(x);
-		default:return 0;
-	}
+        case TiltJoystickEqualaser:
+            if(!tiltLineralAproximator.isComputed_()){return 0;}
+            return -tiltLineralAproximator.calculate(x);
+        case ZoomJoystickEqualaser:
+            if(!zoomLineralAproximator.isComputed_()){return 0;}
+            return -zoomLineralAproximator.calculate(x);
+        default:return 0;
+    }
 }
 
 float Pult::getJoysticSpeedValue(PultEqualaserType type)
 {
-	switch(type)
-		{
-			case PanJoystickEqualaser:
-				return panJoyChannel.getSpeed();
+    switch(type)
+        {
+            case PanJoystickEqualaser:
+                return panJoyChannel.getSpeed();
 
-			case DutchJoystickEqualaser:
-				return dutchJoyChannel.getSpeed();
+            case DutchJoystickEqualaser:
+                return dutchJoyChannel.getSpeed();
 
-			case TiltJoystickEqualaser:
-				return tiltJoyChannel.getSpeed();
+            case TiltJoystickEqualaser:
+                return tiltJoyChannel.getSpeed();
 
-			case ZoomJoystickEqualaser:
-				return zoomJoyChannel.getSpeed();
-			default:return 1;
-		}
+            case ZoomJoystickEqualaser:
+                return zoomJoyChannel.getSpeed();
+            default:return 1;
+        }
 }
 float Pult::getJoystickCurrentPozition(PultEqualaserType type)
 {
-	switch(type)
-		{
-			case PanJoystickEqualaser:
-				return panJoyChannel.getCurrentAdcValue();
-			case DutchJoystickEqualaser:
-				return dutchJoyChannel.getCurrentAdcValue();
-			case TiltJoystickEqualaser:
-				return tiltJoyChannel.getCurrentAdcValue();
-			case ZoomJoystickEqualaser:
-				return zoomJoyChannel.getCurrentAdcValue();
-			default:return 1;
-		}
+    switch(type)
+        {
+            case PanJoystickEqualaser:
+                return panJoyChannel.getCurrentAdcValue();
+            case DutchJoystickEqualaser:
+                return dutchJoyChannel.getCurrentAdcValue();
+            case TiltJoystickEqualaser:
+                return tiltJoyChannel.getCurrentAdcValue();
+            case ZoomJoystickEqualaser:
+                return zoomJoyChannel.getCurrentAdcValue();
+            default:return 1;
+        }
 }
 
 float Pult::getJoystickMaxValue(PultEqualaserType type)
 {
-	switch(type)
-		{
-			case PanJoystickEqualaser:
-				return panJoy.maxValue;
-			case DutchJoystickEqualaser:
-				return dutchJoy.maxValue;
-			case TiltJoystickEqualaser:
-				return tiltJoy.maxValue;
-			case ZoomJoystickEqualaser:
-				return zoomJoy.maxValue;
-			default:return 1;
-		}
+    switch(type)
+        {
+            case PanJoystickEqualaser:
+                return panJoy.maxValue;
+            case DutchJoystickEqualaser:
+                return dutchJoy.maxValue;
+            case TiltJoystickEqualaser:
+                return tiltJoy.maxValue;
+            case ZoomJoystickEqualaser:
+                return zoomJoy.maxValue;
+            default:return 1;
+        }
 }
 LedController* Pult::getLedController()
 {
-	return &ledControl;
+    return &ledControl;
 }
 
 void Pult::setJoysticConfiguration(PultJoysticConfigurations preset)
 {
 
-	if(joysticsConfig==COUNT_JOY_CONFIG&&preset!=JOYSTIC_REVERS_JOY_CONFIG)
-	{
+    if(joysticsConfig==COUNT_JOY_CONFIG&&preset!=JOYSTIC_REVERS_JOY_CONFIG)
+    {
 
-		panJoyChannel.relativeInvers();
-		dutchJoyChannel.relativeInvers();
-		tiltJoyChannel.relativeInvers();
-		zoomJoyChannel.relativeInvers();
+        panJoyChannel.relativeInvers();
+        dutchJoyChannel.relativeInvers();
+        tiltJoyChannel.relativeInvers();
+        zoomJoyChannel.relativeInvers();
 
-	}
+    }
 
-	joysticsConfig=preset;
+    joysticsConfig=preset;
 
 
-	switch(joysticsConfig)
-	{
-		case JOYSTIC_REVERS_JOY_CONFIG:
-			panJoyChannel.setOffset(dutchOffset);
-			dutchJoyChannel.setOffset(panOffset);
-			tiltJoyChannel.setOffset(zoomOffset);
-			zoomJoyChannel.setOffset(tiltOffset);
+    switch(joysticsConfig)
+    {
+        case JOYSTIC_REVERS_JOY_CONFIG:
+            panJoyChannel.setOffset(dutchOffset);
+            dutchJoyChannel.setOffset(panOffset);
+            tiltJoyChannel.setOffset(zoomOffset);
+            zoomJoyChannel.setOffset(tiltOffset);
 
-			panJoyChannel.relativeInvers();
-			dutchJoyChannel.relativeInvers();
-			tiltJoyChannel.relativeInvers();
-			zoomJoyChannel.relativeInvers();
-			break;
+            panJoyChannel.relativeInvers();
+            dutchJoyChannel.relativeInvers();
+            tiltJoyChannel.relativeInvers();
+            zoomJoyChannel.relativeInvers();
+            break;
 
-		case DEFAULT_JOY_CONFIG:
-		default:
-			panJoyChannel.setOffset(panOffset);
-			dutchJoyChannel.setOffset(dutchOffset);
-			tiltJoyChannel.setOffset(tiltOffset);
-			zoomJoyChannel.setOffset(zoomOffset);
+        case DEFAULT_JOY_CONFIG:
+        default:
+            panJoyChannel.setOffset(panOffset);
+            dutchJoyChannel.setOffset(dutchOffset);
+            tiltJoyChannel.setOffset(tiltOffset);
+            zoomJoyChannel.setOffset(zoomOffset);
 
-			panJoyChannel.relativeInvers();
-			dutchJoyChannel.relativeInvers();
-			tiltJoyChannel.relativeInvers();
-			zoomJoyChannel.relativeInvers();
-			break;
-	}
+            panJoyChannel.relativeInvers();
+            dutchJoyChannel.relativeInvers();
+            tiltJoyChannel.relativeInvers();
+            zoomJoyChannel.relativeInvers();
+            break;
+    }
 }
 
 //--------------------------------- ZIF API  ------------------------------------
 
 void Pult::setMotorType(UInt8 type, UInt8 motorNumber){
-	switch(motorNumber)
-	{
-		case LC_MOTOR1:control1.bit.motor1Type=type;break;
-		case LC_MOTOR2:control1.bit.motor2Type=type;break;
-		case LC_MOTOR3:control1.bit.motor3Type=type;break;
-	}
+    switch(motorNumber)
+    {
+        case LC_MOTOR1:control1.bit.motor1Type=type;break;
+        case LC_MOTOR2:control1.bit.motor2Type=type;break;
+        case LC_MOTOR3:control1.bit.motor3Type=type;break;
+    }
 }
 void Pult::setZoomMotor(UInt8 motorNumber)
 {
-	if(motorNumber>=LC_MOTORS_COUNT){return;}
-	control2.bit.zoomMotorNO=motorNumber;
+    if(motorNumber>=LC_MOTORS_COUNT){return;}
+    control2.bit.zoomMotorNO=motorNumber;
 
 }
 void Pult::setIrisMotor(UInt8 motorNumber)
 {
-	if(motorNumber>=LC_MOTORS_COUNT){return;}
-	control2.bit.irisMotorNO=motorNumber;
+    if(motorNumber>=LC_MOTORS_COUNT){return;}
+    control2.bit.irisMotorNO=motorNumber;
 }
 void Pult::setFocusMotor(UInt8 motorNumber)
 {
-	if(motorNumber>=LC_MOTORS_COUNT){return;}
-	control2.bit.focusMotorNO=motorNumber;
+    if(motorNumber>=LC_MOTORS_COUNT){return;}
+    control2.bit.focusMotorNO=motorNumber;
 }
 
 UInt8 Pult::getZoomMotor(){return control2.bit.zoomMotorNO;}
@@ -2243,166 +2245,166 @@ UInt8 Pult::getFocusMotor(){return control2.bit.focusMotorNO;}
 
 UInt8 Pult::getMotorType(UInt8 no)
 {
-	switch(no)
-	{
-		case LC_MOTOR1:return control1.bit.motor1Type;
-		case LC_MOTOR2:return control1.bit.motor2Type;
-		case LC_MOTOR3:return control1.bit.motor3Type;
-		default:return 0;
-	}
+    switch(no)
+    {
+        case LC_MOTOR1:return control1.bit.motor1Type;
+        case LC_MOTOR2:return control1.bit.motor2Type;
+        case LC_MOTOR3:return control1.bit.motor3Type;
+        default:return 0;
+    }
 }
 //-------------------------------------------------------------------------------
 float  Pult::getHeadVoltage()
 {
-	if(!connectedFlag){return 0;}
-	return headSupplyVoltage;
+    if(!connectedFlag){return 0;}
+    return headSupplyVoltage;
 }
 PanAxisDirection Pult::getPanAxisDirection()
 {
-	if(axisRef.panRef>0.2){return PAN_AXIS_UP;}
-	if(axisRef.panRef<-0.2){return PAN_AXIS_DOWN;}
-	return PAN_AXIS_STOP;
+    if(axisRef.panRef>0.2){return PAN_AXIS_UP;}
+    if(axisRef.panRef<-0.2){return PAN_AXIS_DOWN;}
+    return PAN_AXIS_STOP;
 }
 //-------------------------------------------------------------------------------
 void Pult::initWatchDog()
 {
-	watchDogTimer.init(true, 0x06FFFFFF);
+    watchDogTimer.init(true, 0x06FFFFFF);
 }
 //-------------------------------------------------------------------------------
 PultButton** Pult::getMotionControlButtons()
 {
-	return motionButtons;
+    return motionButtons;
 }
 MotionControl* Pult::getMotionSubsystem()
 {
-	return &motionControlAPI;
+    return &motionControlAPI;
 }
 
 bool Pult::joysticUsed()
 {
-	if(panJoy.getUsedFlag()||dutchJoy.getUsedFlag()||tiltJoy.getUsedFlag()||zoomJoy.getUsedFlag())
-	{
-		return true;
-	}
-	return false;
+    if(panJoy.getUsedFlag()||dutchJoy.getUsedFlag()||tiltJoy.getUsedFlag()||zoomJoy.getUsedFlag())
+    {
+        return true;
+    }
+    return false;
 }
 void Pult::resetCentralButtons()
 {
-	sharedButtons[pult_Button_Up]->clearFlags();
-	sharedButtons[pult_Button_Dn]->clearFlags();
-	sharedButtons[pult_Button_Left]->clearFlags();
-	sharedButtons[pult_Button_Right]->clearFlags();
-	sharedButtons[pult_Button_Select]->clearFlags();
+    sharedButtons[pult_Button_Up]->clearFlags();
+    sharedButtons[pult_Button_Dn]->clearFlags();
+    sharedButtons[pult_Button_Left]->clearFlags();
+    sharedButtons[pult_Button_Right]->clearFlags();
+    sharedButtons[pult_Button_Select]->clearFlags();
 }
 UInt8 Pult::getTransferDelay()
 {
-	return transferDelay;
+    return transferDelay;
 }
 
 //-------------------------------------------------------------------------------
 void Pult::setCameraStartOptions(CameraStartType option)
 {
-	switch(option)
-	{
-		case CAMERA_START_FRONT:
-			motorControlBits.bit.cameraStartType=1;
-			break;
-		case CAMERA_START_LEVEL:
-			motorControlBits.bit.cameraStartType=0;
-			break;
-		default:
-			motorControlBits.bit.cameraStartType=1;
-	}
+    switch(option)
+    {
+        case CAMERA_START_FRONT:
+            motorControlBits.bit.cameraStartType=1;
+            break;
+        case CAMERA_START_LEVEL:
+            motorControlBits.bit.cameraStartType=0;
+            break;
+        default:
+            motorControlBits.bit.cameraStartType=1;
+    }
 }
 //-------------------------------------------------------------------------------
 void Pult::setOverslangState(bool on)
 {
-	if(on)
-	{
-		controlBits.bit.overslangUnderslang=0;
-	}
-	else
-	{
-		controlBits.bit.overslangUnderslang=1;
-	}
+    if(on)
+    {
+        controlBits.bit.overslangUnderslang=0;
+    }
+    else
+    {
+        controlBits.bit.overslangUnderslang=1;
+    }
 }
 //-------------------------------------------------------------------------------
 void Pult::setEstimationBit()
 {
-	estimationFlag=true;
+    estimationFlag=true;
 }
 //-------------------------------------------------------------------------------
 List<CheckPoint*>* Pult::getCheckValues()
 {
-	return checkPoints.getList();
+    return checkPoints.getList();
 }
 void Pult::resetStaticErrorBits()
 {
-	stErrorBits=0;
+    stErrorBits=0;
 }
 void Pult::resetDisconnectCounter()
 {
-	disconnectedCounter=0;
-//	maxTransferDelay=0;
+    disconnectedCounter=0;
+//  maxTransferDelay=0;
 }
 UInt8 Pult::getDisconnectCounter()
 {
-	return disconnectedCounter;
+    return disconnectedCounter;
 }
 bool Pult::isErrorUpdated()
 {
-	bool tmp=erUpdated;
-	erUpdated=false;
-	return tmp;
+    bool tmp=erUpdated;
+    erUpdated=false;
+    return tmp;
 }
 void Pult::sendDebugValue()
 {
-	debugMenuCmdFlag=true;
+    debugMenuCmdFlag=true;
 }
 //-------------------------------------------------------------------------------
 UInt32 Pult::getMotionModeTransferDelay()
 {
-	return transferDelayMaximum;
+    return transferDelayMaximum;
 }
 void Pult::setMotionModeTransferDelay(UInt32 delay)
 {
-	transferDelayMaximum=delay;
+    transferDelayMaximum=delay;
 }
 bool Pult::motionTransferModeActivate()
 {
-	if(autonegComplete){return true;}
-	if((!connectedFlag)||transferDelay>MAX_TRANSFER_TIMEOUT)
-	{
-		autonegComplete=false;
-		return false;
-	}
-	if(transferDelay<20)
-	{
-		setMotionModeTransferDelay(20);
-		autonegComplete=true;
-		return true;
-	}
-	else
-	{
-		setMotionModeTransferDelay(transferDelay+5);
-		autonegComplete=true;
-		return true;
-	}
+    if(autonegComplete){return true;}
+    if((!connectedFlag)||transferDelay>MAX_TRANSFER_TIMEOUT)
+    {
+        autonegComplete=false;
+        return false;
+    }
+    if(transferDelay<20)
+    {
+        setMotionModeTransferDelay(20);
+        autonegComplete=true;
+        return true;
+    }
+    else
+    {
+        setMotionModeTransferDelay(transferDelay+5);
+        autonegComplete=true;
+        return true;
+    }
 }
 
 //-------------------------------------------------------------------------------
 void Pult::setPanWheelSpeed(float val)
 {
-	panChanelDeadResistor.setValue(val);
+    panChanelDeadResistor.setValue(val);
 
 }
 void Pult::setTiltWheelSpeed(float val)
 {
-	tiltChanelDeadResistor.setValue(val);
+    tiltChanelDeadResistor.setValue(val);
 }
 void Pult::setDutchWheelSpeed(float val)
 {
-	dutchChanelDeadResistor.setValue(val);
+    dutchChanelDeadResistor.setValue(val);
 }
 
 void Pult::enablePanAnalogWheel()     {  panExtern1Channel.enable();      }
@@ -2638,105 +2640,105 @@ void Pult::setBrightness (float brightness) {   backlight.setBrightness(brightne
 
 float Pult::getCalibrationOffset(CalibratedJoyChannel ch)
 {
-	if(joysticsConfig!=DEFAULT_JOY_CONFIG)
-	{
-		switch(ch)
-		{
-			case CALIB_OFFSET_MAIN_PAN:		return dutchJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_DUTCH:	return panJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_TILT:	return zoomJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_ZOOM:	return tiltJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_PAN:		return panExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_DUTCH:	return dutchExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_TILT:		return tiltExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT2_DUTCH:	return dutchExtern2Channel.getCalibrationOffsetValue();
-			default:return 1860;
-		}
-	}
-	else
-	{
-		switch(ch)
-		{
-			case CALIB_OFFSET_MAIN_PAN:		return panJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_DUTCH:	return dutchJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_TILT:	return tiltJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_MAIN_ZOOM:	return zoomJoyChannel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_PAN:		return panExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_DUTCH:	return dutchExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT_TILT:		return tiltExtern1Channel.getCalibrationOffsetValue();
-			case CALIB_OFFSET_EXT2_DUTCH:	return dutchExtern2Channel.getCalibrationOffsetValue();
-			default:return 1860;
-		}
-	}
+    if(joysticsConfig!=DEFAULT_JOY_CONFIG)
+    {
+        switch(ch)
+        {
+            case CALIB_OFFSET_MAIN_PAN:     return dutchJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_DUTCH:   return panJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_TILT:    return zoomJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_ZOOM:    return tiltJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_PAN:      return panExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_DUTCH:    return dutchExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_TILT:     return tiltExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT2_DUTCH:   return dutchExtern2Channel.getCalibrationOffsetValue();
+            default:return 1860;
+        }
+    }
+    else
+    {
+        switch(ch)
+        {
+            case CALIB_OFFSET_MAIN_PAN:     return panJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_DUTCH:   return dutchJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_TILT:    return tiltJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_MAIN_ZOOM:    return zoomJoyChannel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_PAN:      return panExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_DUTCH:    return dutchExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT_TILT:     return tiltExtern1Channel.getCalibrationOffsetValue();
+            case CALIB_OFFSET_EXT2_DUTCH:   return dutchExtern2Channel.getCalibrationOffsetValue();
+            default:return 1860;
+        }
+    }
 }
 
 void  Pult::setCalibrationOffset(CalibratedJoyChannel ch, UInt32 offset)
 {
-	if(joysticsConfig!=DEFAULT_JOY_CONFIG)
-	{
-		switch(ch)
-		{
-			case CALIB_OFFSET_MAIN_PAN:		dutchJoyChannel.setOffset(offset);		panOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_DUTCH:	panJoyChannel.setOffset(offset);		dutchOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_TILT:	zoomJoyChannel.setOffset(offset);		tiltOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_ZOOM:	tiltJoyChannel.setOffset(offset);		zoomOffset=offset;		break;
-			case CALIB_OFFSET_EXT_PAN:		panExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT_DUTCH:	dutchExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT_TILT:		tiltExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT2_DUTCH:	dutchExtern2Channel.setOffset(offset);	break;
-			default:return;
-		}
-	}
-	else
-	{
-		switch(ch)
-		{
-			case CALIB_OFFSET_MAIN_PAN:		panJoyChannel.setOffset(offset);		panOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_DUTCH:	dutchJoyChannel.setOffset(offset);		dutchOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_TILT:	tiltJoyChannel.setOffset(offset);		tiltOffset=offset;		break;
-			case CALIB_OFFSET_MAIN_ZOOM:	zoomJoyChannel.setOffset(offset);		zoomOffset=offset;		break;
-			case CALIB_OFFSET_EXT_PAN:		panExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT_DUTCH:	dutchExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT_TILT:		tiltExtern1Channel.setOffset(offset);	break;
-			case CALIB_OFFSET_EXT2_DUTCH:	dutchExtern2Channel.setOffset(offset);	break;
-			default:return;
-		}
-	}
+    if(joysticsConfig!=DEFAULT_JOY_CONFIG)
+    {
+        switch(ch)
+        {
+            case CALIB_OFFSET_MAIN_PAN:     dutchJoyChannel.setOffset(offset);      panOffset=offset;       break;
+            case CALIB_OFFSET_MAIN_DUTCH:   panJoyChannel.setOffset(offset);        dutchOffset=offset;     break;
+            case CALIB_OFFSET_MAIN_TILT:    zoomJoyChannel.setOffset(offset);       tiltOffset=offset;      break;
+            case CALIB_OFFSET_MAIN_ZOOM:    tiltJoyChannel.setOffset(offset);       zoomOffset=offset;      break;
+            case CALIB_OFFSET_EXT_PAN:      panExtern1Channel.setOffset(offset);    break;
+            case CALIB_OFFSET_EXT_DUTCH:    dutchExtern1Channel.setOffset(offset);  break;
+            case CALIB_OFFSET_EXT_TILT:     tiltExtern1Channel.setOffset(offset);   break;
+            case CALIB_OFFSET_EXT2_DUTCH:   dutchExtern2Channel.setOffset(offset);  break;
+            default:return;
+        }
+    }
+    else
+    {
+        switch(ch)
+        {
+            case CALIB_OFFSET_MAIN_PAN:     panJoyChannel.setOffset(offset);        panOffset=offset;       break;
+            case CALIB_OFFSET_MAIN_DUTCH:   dutchJoyChannel.setOffset(offset);      dutchOffset=offset;     break;
+            case CALIB_OFFSET_MAIN_TILT:    tiltJoyChannel.setOffset(offset);       tiltOffset=offset;      break;
+            case CALIB_OFFSET_MAIN_ZOOM:    zoomJoyChannel.setOffset(offset);       zoomOffset=offset;      break;
+            case CALIB_OFFSET_EXT_PAN:      panExtern1Channel.setOffset(offset);    break;
+            case CALIB_OFFSET_EXT_DUTCH:    dutchExtern1Channel.setOffset(offset);  break;
+            case CALIB_OFFSET_EXT_TILT:     tiltExtern1Channel.setOffset(offset);   break;
+            case CALIB_OFFSET_EXT2_DUTCH:   dutchExtern2Channel.setOffset(offset);  break;
+            default:return;
+        }
+    }
 }
 //-------------------------------------------------------------------------------
 void Pult::setSuspentionResonantFreq(float freq,SuspensionResonansChannel channel)
 {
-	switch(channel)
-	{
-		case SUSPENSION_RESONANCE_CHANNEL_TILT:
-			tiltSuspentionResonantFreq=freq;
-			break;
-		case SUSPENSION_RESONANCE_CHANNEL_PAN:
-			panSuspentionResonantFreq=freq;
-			break;
-	}
+    switch(channel)
+    {
+        case SUSPENSION_RESONANCE_CHANNEL_TILT:
+            tiltSuspentionResonantFreq=freq;
+            break;
+        case SUSPENSION_RESONANCE_CHANNEL_PAN:
+            panSuspentionResonantFreq=freq;
+            break;
+    }
 }
 
 void Pult::setSuspentionResonantMode(SuspensionResonansChannel channel,SuspensionResonansMode mode)
 {
-	switch(channel)
-	{
-		case SUSPENSION_RESONANCE_CHANNEL_TILT:
+    switch(channel)
+    {
+        case SUSPENSION_RESONANCE_CHANNEL_TILT:
 
-			break;
-		case SUSPENSION_RESONANCE_CHANNEL_PAN:
-			controlBits.bit.panSuspensionResonatorDisable=mode;
-			break;
-	}
+            break;
+        case SUSPENSION_RESONANCE_CHANNEL_PAN:
+            controlBits.bit.panSuspensionResonatorDisable=mode;
+            break;
+    }
 
 }
 //-------------------------------------------------------------------------------
 void Pult::setMaxTorque(UInt32 pan,UInt32 dutch,UInt32 tilt)
 {
-	maxTourqueValues.axis.pan=pan/5;
-	maxTourqueValues.axis.dutch=dutch/5;
-	maxTourqueValues.axis.tilt=tilt/5;
-	maxTourqueValues.axis.bit15=0;
+    maxTourqueValues.axis.pan=pan/5;
+    maxTourqueValues.axis.dutch=dutch/5;
+    maxTourqueValues.axis.tilt=tilt/5;
+    maxTourqueValues.axis.bit15=0;
 }
 
 void Pult::setEcoMode(bool eco) {
@@ -2745,42 +2747,42 @@ void Pult::setEcoMode(bool eco) {
 
 void Pult::setJoyDeadZone(UInt32 pan,UInt32 dutch,UInt32 tilt,UInt32 zoom)
 {
-	panJoyChannel.setDeadZone(pan);
-	dutchJoyChannel.setDeadZone(dutch);
-	tiltJoyChannel.setDeadZone(tilt);
-	zoomJoyChannel.setDeadZone(zoom);
+    panJoyChannel.setDeadZone(pan);
+    dutchJoyChannel.setDeadZone(dutch);
+    tiltJoyChannel.setDeadZone(tilt);
+    zoomJoyChannel.setDeadZone(zoom);
 
-	panExtern1Channel.setDeadZone(pan);
-	dutchExtern1Channel.setDeadZone(dutch);
-	tiltExtern1Channel.setDeadZone(tilt);
+    panExtern1Channel.setDeadZone(pan);
+    dutchExtern1Channel.setDeadZone(dutch);
+    tiltExtern1Channel.setDeadZone(tilt);
 
 
 }
 //-------------------------------------------------------------------------------
 void Pult::startLensCalibration()
 {
-	lensCalibrateFlag=true;
+    lensCalibrateFlag=true;
 }
 bool Pult::lensCalibrtionClicked()
 {
-	bool tmp=lensCalibrateFlag;
-	lensCalibrateFlag=false;
-	return tmp;
+    bool tmp=lensCalibrateFlag;
+    lensCalibrateFlag=false;
+    return tmp;
 }
 //-------------------------------------------------------------------------------
 void Pult::setStartFluid(UInt32 valuePan,UInt32 valueDutch,UInt32 valueTilt,UInt32 valueZoom)
 {
-	panJoy.setStartFluid(valuePan);
-	dutchJoy.setStartFluid(valueDutch);
-	tiltJoy.setStartFluid(valueTilt);
-	zoomJoy.setStartFluid(valueZoom);
+    panJoy.setStartFluid(valuePan);
+    dutchJoy.setStartFluid(valueDutch);
+    tiltJoy.setStartFluid(valueTilt);
+    zoomJoy.setStartFluid(valueZoom);
 }
 //-------------------------------------------------------------------------------
 void Pult::setZoomDrift(Int32 zoomDrift)
 {
-	zoomDriftValue=zoomDrift/500.0;
-	if(zoomDriftValue>0.2)  {zoomDriftValue=0.2;}
-	if(zoomDriftValue<-0.2) {zoomDriftValue=-0.2;}
+    zoomDriftValue=zoomDrift/500.0;
+    if(zoomDriftValue>0.2)  {zoomDriftValue=0.2;}
+    if(zoomDriftValue<-0.2) {zoomDriftValue=-0.2;}
 }
 //-------------------------------------------------------------------------------
 void Pult::setMasterPrerolValue(Int32 value)
@@ -2827,7 +2829,7 @@ UInt32 Pult::getSlave3PrerolValue()
 //-------------------------------------------------------------------------------
 UInt32 Pult::getTimeToStart()
 {
-	return timeToStart;
+    return timeToStart;
 }
 //-------------------------------------------------------------------------------
 float Pult::getPanDriftFactor()

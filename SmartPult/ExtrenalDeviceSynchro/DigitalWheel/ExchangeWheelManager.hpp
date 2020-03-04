@@ -50,13 +50,14 @@ union WheelExchengeError {
 
 class DigitalWheelManager {
 
-private:
 
+private:
     ProtocolWheel::WheelProtocol & protokol;
     Rs485Driver2 & driver;
     LensDb::LensPack& packRx;
     LensDb::LensPack& packTx;
     ProtocolWheel::SettingsDataIO settingsDataIO;
+
 
 public:
 
@@ -76,7 +77,7 @@ public:
 
 
     inline int8_t exchenge (ProtocolWheel::WheelsType wheedId,
-                            ProtocolWheel::CommandRead comandID,
+                            ProtocolWheel::Command comandID,
                             DataOut & dataOut) {
         WheelExchengeError errors;
         errors.all=0;
