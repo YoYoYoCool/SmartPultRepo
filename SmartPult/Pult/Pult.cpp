@@ -452,14 +452,17 @@ typedef union PultControlBitsLCD {
         volatile UInt16 levelCorrect:1;//
         volatile UInt16 fastLevelCorrect:1;//
         volatile UInt16 levelSetup:1;//
+
         volatile UInt16 gvCalibration:1;
         volatile UInt16 gvAcc:1;
         volatile UInt16 setUpTiltLimits:1;
         volatile UInt16 setDwTiltLimits:1;
+
         volatile UInt16 resetUpTiltLimits:1;
         volatile UInt16 resetDwTiltLimits:1;
         volatile UInt16 overslangUnderslang:1;
         volatile UInt16 goToAngels:1;
+
         volatile UInt16 joysticOn:1;
         volatile UInt16 panSuspensionResonatorDisable:1;
         volatile UInt16 driftStopperOn:1;
@@ -805,7 +808,7 @@ void Pult::driverTask()
         }
         signalsReader.setMultiplexer(muxPos);
 
-/*      signalsReader.prestonOn(state);
+      /*signalsReader.prestonOn(state);
         signalsReader.cameraStartFront(state);
         signalsReader.cameraStartLevel(state);*/
 //Обработка кнопок

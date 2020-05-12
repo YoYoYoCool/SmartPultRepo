@@ -14,20 +14,22 @@
 namespace KalmanFilter {
 
     class KalmanBase {
-    private:
 
     protected:
         float xOpt;
+        float & inputData;
+        float & outData;
 
     public:
 
-        virtual float calculate (float  inputData) {
+        KalmanBase(float & inputData,float & outData): inputData(inputData),outData(outData)
+        {
 
         }
 
-        virtual float calculate (float * inputData) {
+        virtual void calculate () {
 
-        }
+                }
 
         virtual void updateKoafficient(float kalmanKoaf) {
 
@@ -44,21 +46,21 @@ namespace KalmanFilter {
 
     public:
 
-        KalmanLine():KalmanBase()
+        KalmanLine(float & inputData,float & outData):KalmanBase(inputData,outData)
         {
             eOpt=sigmaEta[0];
             xOpt=0;
         }
 
 
-        virtual float calculate (float inputData) {
+        virtual void calculate () {
             float neweOptUp = (sigmaEta[0]*sigmaEta[0])*(eOpt+(sigmaPsi[0]*sigmaPsi[0]));
             float neweOptDn = (sigmaEta[0]*sigmaEta[0])+eOpt+(sigmaPsi[0]*sigmaPsi[0]);
             eOpt=neweOptUp/neweOptDn;
             kalmanKoaf=eOpt/(sigmaEta[0]*sigmaEta[0]);
             xOpt*=(1-kalmanKoaf);
             xOpt+=kalmanKoaf*inputData;
-            return xOpt;
+            outData=xOpt;
             }
         };
 
@@ -70,21 +72,17 @@ namespace KalmanFilter {
 
     public:
 
-        KalmanLineUpr(float  kalmanKoaf): kalmanKoaf(kalmanKoaf)
+        KalmanLineUpr(float  kalmanKoaf,float & inputData,float & outData): kalmanKoaf(kalmanKoaf*6.28/500),
+        KalmanBase(inputData,outData)
                 {
 
                 }
 
-        virtual float calculate (float inputData) {
+
+        virtual void calculate () {
             xOpt*=(1-kalmanKoaf);
             xOpt+=kalmanKoaf*inputData;
-            return xOpt;
-        }
-
-        virtual float calculate (float * inputData) {
-            xOpt*=(1-kalmanKoaf);
-            xOpt+=kalmanKoaf*inputData[0];
-            return xOpt;
+            outData=xOpt;
         }
 
         virtual void updateKoafficient(float kalmanKoaf) {
@@ -92,37 +90,37 @@ namespace KalmanFilter {
         }
     };
 
-
-    template <uint8_t channel> class KalmanMultiChannel {
+    class KalmanLineUprFriq: public KalmanBase {
 
     private:
-        KalmanBase* filter[channel];
+
+        float kalmanKoaf;
+        float & fCLK;
 
     public:
 
-        void setFilter(KalmanBase**filter) {
-            for (uint8_t i=0; i<channel; i++)     {
-                this->filter[i]= filter[i];     }
+        KalmanLineUprFriq(float  friq, float& fCLK,float & inputData,float & outData):
+        fCLK(fCLK),
+        kalmanKoaf((2*3.14*friq)/fCLK),
+        KalmanBase(inputData,outData)
+                {
+
+                }
+
+
+        virtual void calculate () {
+            xOpt*=(1-kalmanKoaf);
+            xOpt+=kalmanKoaf*inputData;
+            outData=xOpt;
         }
 
-        void set(float ** parametr1, float ** parametr2) {
-            for (uint8_t i =0; i<channel;i++) {
-                filter[i]->set(parametr1[i],parametr2[i])
-            }
+        virtual void updateKoafficient(float friq) {
+            kalmanKoaf=2*3.14*friq/fCLK;
         }
+    };
 
-        void calculateAll (float* inputData) {
-            for (uint8_t i=0; i<channel; i++) {
-                filter[i]->calculate(inputData);    }
-        }
 
-        void calculate (float* inputData, int8_t filterId) {   filter[filterId]->calculate(inputData);    }
 
-        float getData (int8_t filterId) {   return filter[filterId]->getData();   }
-
-        void setData(float data,uint8_t filterId) { filter[filterId]->setData(data);     }
-
-        };
     }
 
 

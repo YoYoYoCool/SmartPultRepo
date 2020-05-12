@@ -7,15 +7,21 @@
 
 #ifndef EXTRENALDEVICESYNCHRO_PANBAR_CARTONIPANBAR_HPP_
 #define EXTRENALDEVICESYNCHRO_PANBAR_CARTONIPANBAR_HPP_
+#define __IEEE_BIG_ENDIAN
+
 #include <Pult/PultClasses.h>
 #include <ti/sysbios/BIOS.h>
+#include <Board.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include "../../GyConCommon/dataTypes.h"
 #include "../PultGlobalDefinitions.h"
-#include "Libs/StandartElement/kalmanFilterStage.hpp"
-#include "KalmanFilterFromPanBar.hpp"
 #include "Libs/StandartElement/KalmanFilter.hpp"
-
+#include "Libs/StandartElement/AttAmpStaticChannel.hpp"
+#include "Libs/AdaptiveSystem/AdaptiveFilter.hpp"
+//#include "Libs/AdaptiveSystem/Regulatori/PID/channelBase.hpp"
+#include "Libs/AdaptiveSystem/ProizvodnajaCalc.hpp"
+#include "Libs/AdaptiveSystem/estimatingSistem.hpp"
+#include "Libs/math/mymath.hpp"
 
 
 namespace ExtrenalDevices
@@ -117,8 +123,13 @@ namespace ExtrenalDevices
     struct CartoniAxis
     {
         volatile bool isActive;
-        volatile float value;
+        float inputValue;
+        float dataOldStep;
+        float aproximatingValue;
+        float timeOut;
     };
+
+    static float clk = 0.002;
 
     class CartoniDataConverter
     {
@@ -137,8 +148,11 @@ namespace ExtrenalDevices
             void convert(UInt8* buffer, UInt8 bufferLen)
             {
 
-                if(!crcCalculation(buffer, bufferLen)) {   return; }
-
+                if(!crcCalculation(buffer, bufferLen)) {
+                    infoDrivet.cameraStop();
+                    return;
+                }
+                infoDrivet.cameraStart();
                 CartoniData* data=(CartoniData*)buffer;
                 UInt8 axisCount=data->header.data.axisCount;
 
@@ -153,28 +167,36 @@ namespace ExtrenalDevices
                         switch(data->axis[i].data.axisID)
                         {
                             case AXIS_PAN:
-                                pan.value=axisRendererSpeed(&(data->axis[i]));
+                                pan.dataOldStep=pan.inputValue;
+                                pan.inputValue=axisRendererSpeed(&(data->axis[i]));
                                 pan.isActive=true;
+                                timeOut=metronom;
+                                metronom=0;
+                                Module::TastinConvert converterPan(pan.inputValue,pan.dataOldStep,pan.aproximatingValue,timeOut,clk);
+                                converterPan.calculate();
                                 break;
                             case AXIS_TILT:
-                                tilt.value=axisRendererSpeed(&(data->axis[i]));
-                                tilt.value*=-1;
+                                tilt.dataOldStep=tilt.inputValue;
+                                tilt.inputValue=axisRendererSpeed(&(data->axis[i]));
+                                tilt.inputValue*=-1.0;
                                 tilt.isActive=true;
+                                Module::TastinConvert converterTilt(tilt.inputValue,tilt.dataOldStep,tilt.aproximatingValue,timeOut,clk);
+                                converterTilt.calculate();
                                 break;
                             case AXIS_ROLL:
-                                dutch.value=axisRendererSpeed(&(data->axis[i]));
+                                dutch.inputValue=axisRendererSpeed(&(data->axis[i]));
                                 dutch.isActive=true;
                                 break;
                             case AXIS_ZOOM:
-                                zoom.value=axisRendererZoomSpeed(&(data->axis[i]));
+                                zoom.inputValue=axisRendererZoomSpeed(&(data->axis[i]));
                                 zoom.isActive=true;
                                 break;
                             case AXIS_FOCUS:
-                                focus.value=axisRendererAbsolutposition(&(data->axis[i]));
+                                focus.inputValue=axisRendererAbsolutposition(&(data->axis[i]));
                                 focus.isActive=true;
                                 break;
                             case AXIS_IRIS:
-                                iris.value=axisRendererAbsolutposition(&(data->axis[i]));
+                                iris.inputValue=axisRendererAbsolutposition(&(data->axis[i]));
                                 iris.isActive=true;
                                 break;
                             case AXIS_BUTTONS:
@@ -185,37 +207,33 @@ namespace ExtrenalDevices
                                 break;
                         }
                     }
+                    buffer[0]=0;
                     Semaphore_post(*sem);
                 }
              }
 
             inline CartoniAxis getAxis(CartoniChannelAxisList ax)
-            {
+                {
                 CartoniAxis dummyAxis=  {   false, 0   };
                 CartoniAxis ret;
                 if(Semaphore_pend( *sem,7))    {
                     switch(ax)  {
                         case CH_PAN:    {
+                            ret=pan;
                             if (buttons.button0==true)     {
-                                ret.value=0.0;
-                                ret.isActive=true;
+                                ret.isActive=false;
                                 }
-                            else    {
-                                ret=pan;    }
+                            metronom+=0.002;
                             break;  }
                         case CH_DUTCH:  {
+                            ret=dutch;
                             if (buttons.button0==true)  {
-                                ret.value=0.0;
-                                ret.isActive=true;  }
-                            else    {
-                                ret=dutch;    }
+                                ret.isActive=false;  }
                             break;}
                         case CH_TILT:  {
+                            ret=this->tilt;
                             if (buttons.button0==true)  {
-                                ret.value=0.0;
-                                ret.isActive=true;  }
-                            else    {
-                                ret=tilt;   }
+                                ret.isActive=false;  }
                             break;}
                         case CH_ZOOM:   {
                             ret=zoom;
@@ -244,27 +262,24 @@ namespace ExtrenalDevices
             CartoniAxis zoom;
             CartoniAxis iris;
             CartoniAxis focus;
+            float metronom;
+            float timeOut;
             volatile UInt32 transactionCounter;
+            CameraStartLevelDriver infoDrivet;
             Semaphore_Handle* sem;
 
 
             volatile bool invalidAxisID;
 
             inline void resetAllData()          {
-                buttons.all=0;
+      /*          buttons.all=0;
                 pan.isActive=false;
-                pan.value=0;
                 dutch.isActive=false;
-                dutch.value=0;
                 tilt.isActive=false;
-                tilt.value=0;
                 zoom.isActive=false;
-                zoom.value=0;
                 iris.isActive=false;
-                iris.value=0;
                 focus.isActive=false;
-                focus.value=0;
-                invalidAxisID=false;
+                invalidAxisID=false;*/
                 transactionCounter=0;        }
 
             inline float axisRendererSpeed(CartoniAxisData* d)
@@ -347,7 +362,7 @@ namespace ExtrenalDevices
             }
             virtual void calculate(float adcValue)
             {
-                value =(float)(axis.value);
+                value =(float)(axis.inputValue);
                 value *=K;
                 if (value>maxValue)
                     value=maxValue;
@@ -374,14 +389,57 @@ namespace ExtrenalDevices
 //            const float K;
     };
 
-static ExtrenalDevices::FilterPanBar::PanBarFilterSetting settins = {
-                                                                     .koafMinBase=0.001,
-                                                                     .maxSpidQuad=59600,
-                                                                     .koafMinBase=5.0
-    };
+static Schematic::AttAmpSettings settingsAmplifaer = {
+    .amplifierSettings.Vcc=230.0,
+    .amplifierSettings.Vee=-230.0,
+    .amplifierSettings.stableRatio=1.0,
+    .amplifierSettings.resistenceMax=3722,
+    .amplifierSettings.adjustableRatio=19,
+    .attenuatorSettings.Vcc=230.0,
+    .attenuatorSettings.Vee=-230.0,
+    .attenuatorSettings.deadZone=0.02,
+    .attenuatorSettings.attenuationK=0.2
+};
+
+static float friqError = 40.0;
+
+static float fCLK = 500.0;
+
+static float koafBaseReturn = 5.0; // Hg
+static float koafSeturation = 9.0; //  Hg
+static float seturationAcceleration = 15; //grad/sec^2
 
     class CatoniPanBarChannel:public JoyChanel
     {
+
+    private:
+        CartoniChannelAxisList channelAxis;
+        CartoniDataConverter& dataConverter;
+        CartoniAxis axis;
+        const float maxValue;
+        #ifdef Garanin
+        int32_t * speed;
+        #else
+        float speedInput;
+        float speedFilter;
+//        float controlAction;
+        float errorSpeed;
+        float speedEstimate;
+        float speedOut;
+        float acceleration;
+
+        KalmanFilter::KalmanLineUpr filterInpute;
+        KalmanFilter::KalmanLineUprFriq filterErrorModule;
+        AdaptiveSistem::AdaptiveFilterKalman::AdaptiveFilterPanBarFromAcceleration filterInputAdaptive;
+        MyMath::Sqrt function;
+        Module::ComplexSystems::EstimateSignal estimateSpeed;
+        Module::CalculateError errorModuleEstimate;
+        Module::Integrator integratorEstimate;
+        Module::Proizvodnaja accelerationModule;
+        Module::Aproximation aproximationModule;
+
+    #endif
+
         public:
             CatoniPanBarChannel(CartoniDataConverter& dc,
                                 CartoniChannelAxisList ax,
@@ -389,63 +447,69 @@ static ExtrenalDevices::FilterPanBar::PanBarFilterSetting settins = {
                                 Resistor* speedControl,
                                 float deadZone,
                                 float T,
-                                float maxValue_):
+                                float maxValue_
+                                ):
                 JoyChanel(K, offset,speedControl,deadZone, T),
                 channelAxis(ax),
                 dataConverter(dc),
 #ifndef Garanin
-                filterPanBar(filterUse,settins),
-                filterUse(settins.koafMinBase),
+
+                aproximationModule(axis.inputValue,speedInput,axis.dataOldStep,axis.aproximatingValue),
+                filterErrorModule(friqError,fCLK,errorSpeed,errorSpeed),
+                errorModuleEstimate(filterErrorModule,speedInput,speedEstimate,errorSpeed),
+                integratorEstimate(errorSpeed,speedEstimate),
+                estimateSpeed(errorModuleEstimate,integratorEstimate),
+                filterInpute(koafBaseReturn,speedEstimate,speedOut),
+                function(0.005),
+                filterInputAdaptive(filterInpute,function,acceleration,koafBaseReturn,koafSeturation,seturationAcceleration),
+                accelerationModule(speedOut,acceleration,clk),
+
 #endif
-                maxValue(maxValue_)
-
-                {
-
-                }
+                maxValue(maxValue_)     {                }
 
              virtual float getCurrentAdcValue()
                  {
-                 rez=adcValue;
 
                 if (channelAxis==CH_ZOOM) {
-                    rez=rez*K;
-                    if (rez>0)
-                        rez+=0.1;
-                    if (rez<0)
-                        rez-=0.1;
+                    speedOut=adcValue;
+                    speedOut*=K;
                     }
                 else {
                 #ifndef Garanin
-                    rez*=5.0;
-                    rez=filterPanBar.calculate(rez);
+//              speedOut=adcValue;
+//                calculateSpeedAxis();
+              speedOut=axis.inputValue;
                 #endif
                 }
-                if (rez>maxValue) {
-                    rez=maxValue;}
-                if (rez<-maxValue){
-                    rez=-maxValue;}
-                if(!this->isEnable) {rez=0.0;}// ne zabit' razkomentirovat'
-                if(!axis.isActive)  {rez=0.0;}
-                return rez;
+/*                float speedK = speedControl->adcValue/1024;
+                speedOut*=speedK;*/
+                if (speedOut>maxValue) {
+                    speedOut=maxValue;}
+                if (speedOut<-maxValue){
+                    speedOut=-maxValue;}
+                if(!this->isEnable) {speedOut=0.0;}// ne zabit' razkomentirovat'
+                if(!axis.isActive)  {speedOut=0.0;}
+                return speedOut;
                 }
-//#define Garanin
+
+
             void setData()
                 {
                 #ifdef Garanin
                 axis=dataConverter.getAxis(channelAxis);
                 if (axis.isActive) {
-                    speed[0]=(int32_t)(axis.value*1000);
+                    speed[0]=(int32_t)(axis.inputValue*1000);
                     }
                 else
                     speed[0]=0;
                 #else
                 axis=dataConverter.getAxis(channelAxis);
-                adcValue=axis.value;
+                aproximationModule.calculate();
                 #endif
                 }
 
             inline volatile float &  getAxisVal () {
-                return axis.value;
+                return axis.inputValue;
                 }
             #ifdef Garanin
             inline void setSpeed (int32_t * speed) {
@@ -453,22 +517,19 @@ static ExtrenalDevices::FilterPanBar::PanBarFilterSetting settins = {
                 }
             #endif
 
+
+#ifndef Garanin
+
         private:
-            CartoniChannelAxisList channelAxis;
-            CartoniDataConverter& dataConverter;
-            CartoniAxis axis;
-            float rez;
-            const float maxValue;
-            #ifdef Garanin
-            int32_t * speed;
-            #else
-            ExtrenalDevices::FilterPanBar::PanBarFilter filterPanBar;
-            KalmanFilter::KalmanLineUpr filterUse;
-            #endif
 
-
+            inline void calculateSpeedAxis() {
+                estimateSpeed.calculate();
+                speedEstimate-=(acceleration*0.002)*2;
+                filterInputAdaptive.calculate();
+                accelerationModule.calculate();
+            }
+#endif
     };
-
 }
 
 

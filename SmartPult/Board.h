@@ -187,19 +187,9 @@ public:
 };
 
 //------------------------------------------------------------------------------
-/*
-class CameraStartBase {
-
-public:
-
-    virtual void cameraStart () = 0;
 
 
-    virtual void cameraStop () = 0;
-
-};
-
-class CameraStartLevelDriver:public CameraStartBase {
+class CameraStartLevelDriver {
 
 public:
 
@@ -213,7 +203,7 @@ public:
 
 };
 
-class CameraStartFrontBoard: public CameraStartBase {
+class CameraStartFrontBoard {
 
 public:
  //   GPIO_write(Board_CAMERA_START_FRONT,cameraStopLevel);
@@ -226,7 +216,7 @@ public:
 
         }
 
-};*/
+};
 
 //-----------------------------------------------------------------------------
 

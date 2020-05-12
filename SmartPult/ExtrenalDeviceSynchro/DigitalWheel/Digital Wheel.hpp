@@ -25,7 +25,7 @@ enum {
     delitelSpeed=100
 };
 
-enum {transmissionMax=6};
+enum {transmissionMax=5};
 
 
 
@@ -85,7 +85,7 @@ Schematic::AttAmpSettings settingsFast = {
     .amplifierSettings.Vee=-230.0,
     .amplifierSettings.stableRatio=0.0,
     .amplifierSettings.resistenceMax=3722,
-    .amplifierSettings.adjustableRatio=1.0,
+    .amplifierSettings.adjustableRatio=1.2,
     .attenuatorSettings.Vcc=0.0,
     .attenuatorSettings.Vee=0.0,
     .attenuatorSettings.deadZone=0.0,
@@ -109,8 +109,8 @@ Schematic::AttAmpSettings * settings[transmissionMax] = {  &settingsDummi,
                                                            &settingsFirst,
                                                            &settingsSecond,
                                                            &settingsThird,
-                                                            &settingsFast,
-                                                            &settingsExtended};
+                                                            &settingsFast/*,
+                                                            &settingsExtended*/};
 
 class WheelChannel:public JoyChanel {
 private:
