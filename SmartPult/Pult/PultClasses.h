@@ -145,6 +145,7 @@ private:
 	Int16 holdCounter;
 };
 
+
 class Resistor {
 public:
 float offset;

@@ -21,6 +21,8 @@ public:
 
     virtual void setResistorValue(float value) = 0;
 
+    virtual Filter::IPolosovoyFilter _filter () = 0;
+
 };
 
 class ShakerChannel:public JoyChanel, public IShaker {
