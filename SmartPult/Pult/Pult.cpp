@@ -313,11 +313,11 @@ float fCLK2 = 74.07;
 
 Generation::Generator rndGenerator(0x0825,0.01,10.0,fCLK);
 
-ShakerChannel panInternalShakerChannel (5.0,PANSHAKERCHANNEL);
+ShakerChannel panInternalShakerChannel (10.0,PANSHAKERCHANNEL);
 
-ShakerChannel tiltInternalShakerChannel (5.0,TILTSHAKERCHANNEL);
+ShakerChannel tiltInternalShakerChannel (10.0,TILTSHAKERCHANNEL);
 
-ShakerChannel rollInternalShakerChannel (5.0,ROLLSHAKERCHANNEL);
+ShakerChannel rollInternalShakerChannel (10.0,ROLLSHAKERCHANNEL);
 
 ShakerChannel zoomInternalShakerChannel (14.0,ZOOMSHAKERCHANNEL);
 
@@ -1735,10 +1735,6 @@ static void controlLogic() {
             tiltInternalShakerChannel.disable();
             rollInternalShakerChannel.disable();
             zoomInternalShakerChannel.disable();
-            panInternalSinShakerChannel.disable();
-            tiltInternalSinShakerChannel.disable();
-            rollInternalSinShakerChannel.disable();
-            zoomInternalSinShakerChannel.disable();
             shakerEnable=false;
        }
         else{
@@ -1746,10 +1742,6 @@ static void controlLogic() {
             tiltInternalShakerChannel.enable();
             rollInternalShakerChannel.enable();
             zoomInternalShakerChannel.enable();
-            panInternalSinShakerChannel.enable();
-            tiltInternalSinShakerChannel.enable();
-            rollInternalSinShakerChannel.enable();
-            zoomInternalSinShakerChannel.enable();
             shakerEnable=true;
        }
     }

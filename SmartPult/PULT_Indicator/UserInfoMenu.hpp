@@ -58,22 +58,22 @@ char  textStaticUserInfoMenu[20][50] = { //  "Pult info ",
 
 #ifdef joyPult
 #ifdef USAEdition
-                                           "Version: v1.03.05USA",
+                                           "Version: v1.03.06USA",
 #else
 #ifdef joyPultRussian
-                                           "Pult Version: v1.03.05BB",
+                                           "Pult Version: v1.03.06BB",
 #else
-                                           "Pult Version: v1.03.05EU",
+                                           "Pult Version: v1.03.06EU",
 #endif
 #endif
 
 #ifdef Garanin
-                                           "Version: v1.03.05PBW",
+                                           "Version: v1.03.06PBW",
 #endif
 #endif
 
 #ifdef WhellSmartPult
-                                           "Version: v1.03.05WP",
+                                           "Version: v1.03.06WP",
 #endif
 //                                           "Prod. date:",
 //                                           "Factory № ",
