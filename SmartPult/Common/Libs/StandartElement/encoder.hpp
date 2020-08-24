@@ -13,6 +13,7 @@ namespace StandartElement {
 class Encoder {
 
 private:
+
     int16_t maxRisk;
     int16_t count;
 

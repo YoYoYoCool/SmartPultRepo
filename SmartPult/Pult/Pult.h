@@ -13,6 +13,8 @@
 #include "../MotionControl/MotionControl.hpp"
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
+#include "InternalDevice/shakerInternalChannel.hpp"
+#include "InternalDevice/shakerSinInternalChannel.hpp"
 
 
 #ifndef PULT_PULT_H_
@@ -446,6 +448,18 @@ public:
     //------------------------------------------------------------
 
     void setBrightness (float persent);
+
+    //------------------------------------------------------------
+    IShaker* _panAxisShaker();
+    IShaker* _tiltAxisShaker();
+    IShaker* _rollAxisShaker();
+    IShaker* _zoomAxisShaker();
+
+
+    IShakerSin* _panAxisShakerSin();
+    IShakerSin* _tiltAxisShakerSin();
+    IShakerSin* _rollAxisShakerSin();
+    IShakerSin* _zoomAxisShakerSin();
 
 
 };

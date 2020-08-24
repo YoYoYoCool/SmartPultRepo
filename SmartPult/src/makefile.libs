@@ -1,6 +1,6 @@
 #
 # This file was generated based on the configuration script:
-#     D:\pult\SmartPultRepo\SmartPult\uartlogging.cfg
+#     D:\SmartPultRepo-v.1.03.06\SmartPultRepo\SmartPult\uartlogging.cfg
 #
 # This makefile may be included in other makefiles that need to build
 # the libraries containing the compiled source files generated as
@@ -14,7 +14,7 @@
 #
 # The absolute path to the generated source directory (at the time the
 # sources were generated) is:
-#    D:\pult\SmartPultRepo\SmartPult\src
+#    D:\SmartPultRepo-v.1.03.06\SmartPultRepo\SmartPult\src
 #
 GEN_SRC_DIR ?= ../src
 

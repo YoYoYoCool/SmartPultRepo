@@ -130,103 +130,103 @@
     const EepromDefault CRCDefaultOld           =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //99
     const EepromDefault ZIFRevers               =  {       0,               0x7,                0x7};     //100
     const EepromDefault externalLensControlOnOff=  {       0,               0,                  1};        //101
-    const EepromDefault empty[97]               =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //102
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //103
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //104
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //105
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //106
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //107
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //108
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //109
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //110
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //111
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //112
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //113
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //114
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //115
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //116
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //117
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //118
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //119
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //120
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //121
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //122
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //123
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //124
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //125
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //126
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //127
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //128
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //129
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //130
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //131
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //132
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //133
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //134
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //135
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //136
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //137
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //138
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //139
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //140
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //141
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //142
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //143
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //144
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //145
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //146
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //147
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //148
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //149
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //150
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //151
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //152
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //153
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //154
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //155
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //156
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //157
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //158
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //159
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //160
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //161
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //162
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //163
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //164
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //165
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //166
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //167
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //168
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //169
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //170
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //171
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //172
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //173
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //174
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //175
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //176
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //177
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //178
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //179
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //180
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //181
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //182
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //183
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //184
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //185
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //186
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //187
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //188
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //189
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //190
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //191
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //192
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //193
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //194
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //195
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //196
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //197
-                                                           0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //198
+    const EepromDefault shakerBlocking          =  {       0,               0x00007FFF,         0x00007FFF};     //102
+    const EepromDefault internalRNDShakerPanSpeed =  {       0,             0,                  0x40400000};     //103
+    const EepromDefault internalRNDShakerTiltSpeed =  {       0,             0,                  0x40400000};     //104
+    const EepromDefault internalRNDShakerRollSpeed =  {       0,             0,                  0x40400000};     //105
+    const EepromDefault internalRNDShakerZoomSpeed =  {       0,             0,                  0x40400000};     //106
+    const EepromDefault internalRNDShakerPanLPF    =  {       0,             0x41200000,         0x42200000};     //107
+    const EepromDefault internalRNDShakerTiltLPF    =  {      0,             0x41200000,         0x42200000};     //108
+    const EepromDefault internalRNDShakerRollLPF    =  {      0,             0x41200000,         0x42200000};     //109
+    const EepromDefault internalRNDShakerZoomLPF    =  {      0,             0x41200000,         0x42200000};     //110
+    const EepromDefault internalRNDShakerPanHPF     =  {      0,            0x41F00000,         0x42700000};     //111
+    const EepromDefault internalRNDShakerTiltHPF    =  {      0,            0x41F00000,         0x42700000};     //112
+    const EepromDefault internalRNDShakerRollHPF    =  {      0,            0x41F00000,         0x42700000};     //113
+    const EepromDefault internalRNDShakerZoomHPF    =  {      0,            0x41F00000,         0x42700000};     //114
+    const EepromDefault internalSinShakerPanSpeed   =  {      0,             0,                  0x40A00000};     //115
+    const EepromDefault internalSinShakerTiltSpeed   =  {     0,             0,                  0x40A00000};     //116
+    const EepromDefault internalSinShakerRollSpeed   =  {     0,             0,                  0x40A00000};     //117
+    const EepromDefault internalSinShakerZoomSpeed   =  {     0,             0,                  0x40A00000};     //118
+    const EepromDefault internalSinShakerPanFriq     =  {       0,             0x3F800000,       0x41C80000};     //119
+    const EepromDefault internalSinShakerTiltFriq    =  {       0,             0x3F800000,       0x41C80000};     //120
+    const EepromDefault internalSinShakerRollFriq     =  {       0,             0x3F800000,      0x41C80000};     //121
+    const EepromDefault internalSinShakerZoomFriq     =  {       0,             0x3F800000,      0x41C80000};     //122
+    const EepromDefault internalSinShakerPanPhase     =  {       0,             0,                  0x43B40000};     //123
+    const EepromDefault internalSinShakerTiltPhase     =  {       0,             0,                  0x43B40000};     //124
+    const EepromDefault internalSinShakerRollPhase     =  {       0,             0,                  0x43B40000};     //125
+    const EepromDefault internalSinShakerZoomPhase     =  {       0,             0,                  0x43B40000};     //126
+    const EepromDefault externalSinShakerPanSpeed   =   {   0,               0,                  0x40A00000};     //127
+    const EepromDefault externalSinShakerTiltSpeed   =  {  0,               0,                  0x40A00000};     //128
+    const EepromDefault externalSinShakerRollSpeed   =  {  0,               0,                  0x40A00000};     //129
+    const EepromDefault empty[69]               =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //130
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //131
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //132
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //133
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //134
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //135
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //136
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //137
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //138
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //139
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //140
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //141
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //142
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //143
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //144
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //145
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //146
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //147
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //148
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //149
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //150
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //151
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //152
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //153
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //154
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //155
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //156
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //157
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //158
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //159
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //160
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //161
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //162
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //163
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //164
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //165
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //166
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //167
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //168
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //169
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //170
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //171
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //172
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //173
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //174
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //175
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //176
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //177
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //178
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //179
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //180
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //181
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //182
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //183
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //184
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //185
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //186
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //187
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //188
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //189
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //190
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //191
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //192
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //193
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //194
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //195
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //196
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF,     //197
+                                                               0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //198
 
     const EepromDefault CRCDefault              =  {       0,      0,         0};                               //199
 
@@ -355,6 +355,34 @@
          &CRCDefaultOld,
          &ZIFRevers,
          &externalLensControlOnOff,
+         &shakerBlocking,
+         &internalRNDShakerPanSpeed,
+         &internalRNDShakerTiltSpeed,
+         &internalRNDShakerRollSpeed,
+         &internalRNDShakerZoomSpeed,
+         &internalRNDShakerPanLPF,
+         &internalRNDShakerTiltLPF,
+         &internalRNDShakerRollLPF,
+         &internalRNDShakerZoomLPF,
+         &internalRNDShakerPanHPF,
+         &internalRNDShakerTiltHPF,
+         &internalRNDShakerRollHPF,
+         &internalRNDShakerZoomHPF,
+         &internalSinShakerPanSpeed,
+         &internalSinShakerTiltSpeed,
+         &internalSinShakerRollSpeed,
+         &internalSinShakerZoomSpeed,
+         &internalSinShakerPanFriq,
+         &internalSinShakerTiltFriq,
+         &internalSinShakerRollFriq,
+         &internalSinShakerZoomFriq,
+         &internalSinShakerPanPhase,
+         &internalSinShakerTiltPhase,
+         &internalSinShakerRollPhase,
+         &internalSinShakerZoomPhase,
+         &externalSinShakerPanSpeed,
+         &externalSinShakerTiltSpeed,
+         &externalSinShakerRollSpeed,
          &empty[0],
          &empty[1],
          &empty[2],
@@ -424,34 +452,6 @@
          &empty[66],
          &empty[67],
          &empty[68],
-         &empty[69],
-         &empty[70],
-         &empty[71],
-         &empty[72],
-         &empty[73],
-         &empty[74],
-         &empty[75],
-         &empty[76],
-         &empty[77],
-         &empty[78],
-         &empty[79],
-         &empty[80],
-         &empty[81],
-         &empty[82],
-         &empty[83],
-         &empty[84],
-         &empty[85],
-         &empty[86],
-         &empty[87],
-         &empty[88],
-         &empty[89],
-         &empty[90],
-         &empty[91],
-         &empty[92],
-         &empty[93],
-         &empty[94],
-         &empty[95],
-         &empty[96],
          &CRCDefault
     };
 

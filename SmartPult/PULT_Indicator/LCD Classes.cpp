@@ -18,13 +18,12 @@
 #include "LimitsMenu.hpp"
 //#include "tColor.h"
 //#include "LCD Lens.hpp"
-/*
-#include "../LensParam/LensParam.hpp"*/
+
 
 #include "TurnsViewMenu.hpp"
 #include "WheelMenu.hpp"
 #include "ZIFRevers.hpp"
-
+#include "ShakerForm.hpp"
 
 
 #define VERTICAL_LEN 200
@@ -136,6 +135,12 @@ enum {SetUpperLimitMenuTiltLimitSistem=0,
 #endif
 
 
+    tMenu_Link shakerMenuText[2]={
+                {"RND SHAKER", NULL},
+                {"SIN SHAKER", NULL},
+         //       {"SHAKER BOX", NULL}
+            };
+
 
 tMenu_Link secretMenuText[3]={
         {"Set",NULL},
@@ -209,14 +214,15 @@ enum {SetSecretMenuSistem=0,
 
 #ifdef joyPult
 
-    tMenu_Link tuningMenuText[7]={
+    tMenu_Link tuningMenuText[8]={
             {"SUSPENTION RESONANCE",NULL},
             {"MAX TORQUE",NULL},
             {"JOYSTICK DEADZONE",NULL},
             {"USER INFO MENU",NULL},
             {"PREROL",NULL},
             {"SYNCHRO SOURCE",NULL},
-            {"DRIFT STOPPER",NULL}
+            {"DRIFT STOPPER",NULL},
+            {"SHAKER",NULL}
     };
     enum {SuspensionResonansTuningMenu=1,
         MaxTorqueTuningMenu,
@@ -224,7 +230,8 @@ enum {SetSecretMenuSistem=0,
         TotalRuntimeTuningMenu,
         PrerolTuningMenu,
         SynchroSourceTuningMenu,
-        DriftStopperTuningMenu};
+        DriftStopperTuningMenu,
+        InternalSakerTuningMenu};
 
     enum {SuspensionResonansTuningMenuSistem=0,
         MaxTorqueTuningMenuSistem,
@@ -232,17 +239,19 @@ enum {SetSecretMenuSistem=0,
         TotalRuntimeTuningMenuSistem,
         PrerolTuningMenuSistem,
         SynchroSourceTuningMenuSistem,
-        DriftStopperTuningMenuSistem};
+        DriftStopperTuningMenuSistem,
+        InternalSakerTuningMenuSistem};
 
 #else
 
-    tMenu_Link tuningMenuText[6]={
+    tMenu_Link tuningMenuText[7]={
             {"SUSPENTION RESONANCE",NULL},
             {"MAX TORQUE",NULL},
             {"USER INFO MENU",NULL},
             {"PREROL",NULL},
             {"SYNCHRO SOURCE",NULL},
-            {"DRIFT STOPPER",NULL}
+            {"DRIFT STOPPER",NULL},
+            {"SHAKER",NULL}
     };
     enum {SuspensionResonansTuningMenu=1,
         MaxTorqueTuningMenu,
@@ -555,7 +564,7 @@ SetJoyDeadZone* setJoyDeadZoneMenuPointer;
 SetMotionPrerol* setMotionPrerolPointer;
 FolowingModeMenu* folowingModePointer;
 LCD::TurnsViewMenu* axisTurnsViewMenuPointer;
-
+LCD::Form::ShakerRNDMenu* shakerRNDMenuPointer;
 
 //EE_Working EE_Work;
 
@@ -680,29 +689,33 @@ void pultIndikator_Task(Pult* point_pult)
     syncroSorcePointer=&syncroSouce;
     syncroSorcePointer->updateFromEEPROM();
 
+    LCD::Form::ShakerRNDMenu shakerRNDMenu;
+    shakerRNDMenuPointer = &shakerRNDMenu;
+
 
 #ifdef joyPult
-    LCD_Menu tuningMenu("TUNING",  tuningMenuText, 7, 0, 7  );
+    LCD_Menu tuningMenu("TUNING",  tuningMenuText, 8, 0, 8);
     tuningMenuPointer=&tuningMenu;
     tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
     tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
     tuningMenuText[2].pPointSub=&setJoyDeadZoneMenu;
-//  tuningMenuText[3].pPointSub=&hourMeterMenu;
     tuningMenuText[3].pPointSub=&userIfoMenu;
     tuningMenuText[4].pPointSub=&motionPrerolMenu;
     tuningMenuText[5].pPointSub=&syncroSouce;
     tuningMenuText[6].pPointSub=&axisTurnsViewMenu;
+    tuningMenuText[7].pPointSub=&shakerRNDMenu;
 #else
-    LCD_Menu tuningMenu("TUNING",  tuningMenuText, 6, 0, 6  );
+    LCD_Menu tuningMenu("TUNING",  tuningMenuText, 7, 0, 7  );
     tuningMenuPointer=&tuningMenu;
     tuningMenuText[0].pPointSub=&suspResonanceSelectMenu;
     tuningMenuText[1].pPointSub=&setMaxTorqueMenu;
-//  tuningMenuText[2].pPointSub=&hourMeterMenu;
     tuningMenuText[2].pPointSub=&userIfoMenu;
     tuningMenuText[3].pPointSub=&motionPrerolMenu;
     tuningMenuText[4].pPointSub=&syncroSouce;
     tuningMenuText[5].pPointSub=&axisTurnsViewMenu;
+    tuningMenuText[6].pPointSub=&shakerRNDMenu;
 #endif
+
     FolowingModeMenu folowingModeMenu("FOLLOWING MODE");
     folowingModePointer=&folowingModeMenu;
     folowingModeMenu.updateFromEeprom();
@@ -830,6 +843,8 @@ void pultIndikator_Task(Pult* point_pult)
 
     UInt32 vax=0;
 
+    watchDogTimer.useKey(WD_KEY3);
+
     for(UInt16 x=0;x!=320;x++)
         for(UInt16 y=0;y!=240;y++)  {
             vax=0;
@@ -839,11 +854,13 @@ void pultIndikator_Task(Pult* point_pult)
             vax=vax<<8;
             vax|=buLogo[3*(y*320+x)+0];
             DpyPixelDraw(&g_sKentec320x240x16_SSD2119, x, y, vax) ;
-            watchDogTimer.useKey(WD_KEY3);      }
+            watchDogTimer.useKey(WD_KEY3);
+            }
 
     for(UInt32 i=0;i!=200;i++)  {
+        Task_sleep(10);
         watchDogTimer.useKey(WD_KEY3);
-        Task_sleep(10); }
+    }
 
     LCD_Main Main_Screen((char*)"Main_Screen");
 /*  pDispl = &userIfoMenu;
@@ -867,21 +884,6 @@ void pultIndikator_Task(Pult* point_pult)
         motionLogicController.clocking();
         userIfoMenu.calcelateRuntime();
 
-/*      newTTS=p_pult->getTimeToStart();
-        if(newTTS>=(lastTimeToStart+10))
-            {
-            rawValue=EE_Working::ReadCalibrationData(EE_CAL_HOURS);
-            if(rawValue==0xFFFFFFFF)
-                {
-                rawValue=0;
-                EE_Working::WriteCalibrationData(EE_CAL_HOURS, rawValue);
-                }
-            rawValue+=(newTTS-lastTimeToStart);
-            if(rawValue>=0xFFFFFFFA){rawValue=0xFFFFFFFA;}
-            EE_Working::WriteCalibrationData(EE_CAL_HOURS, rawValue);
-            lastTimeToStart=newTTS;
-            HourMeter_rawValue=rawValue;
-            }*/
         }
     }
 
@@ -2745,6 +2747,8 @@ void LCD_Menu::Listener()
             }
         }
 #endif
+
+
 
     if (getButtonState(pult_Button_Dn) == PRESSED)  Plus();
     if (getButtonState(pult_Button_Up) == PRESSED)  Minus();
@@ -4883,7 +4887,7 @@ void loadEepromValueFromPult()
     tiltSpiderSelectMenuPointer->action();
     setupOverslangActivatePointer->action();
     lensControlCameraStartPointer->action();
-
+    shakerRNDMenuPointer->readEEPROM();
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -6385,5 +6389,4 @@ tColor FullColorTable[140] =
         {"ClrYellow",               0x00FFFF00},
         {"ClrYellowGreen",          0x009ACD32},
         };
-
 

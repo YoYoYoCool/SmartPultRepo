@@ -145,6 +145,10 @@ private:
 	Int16 holdCounter;
 };
 
+class IResistor {
+public:
+    virtual void setValue (float value) = 0;
+};
 
 class Resistor {
 public:
@@ -186,7 +190,7 @@ volatile float value;
     }
 };
 
-class VirtualMenuResistor:public Resistor
+class VirtualMenuResistor:public Resistor,public IResistor
 {
 public:
 	 VirtualMenuResistor(): Resistor()
@@ -465,6 +469,28 @@ class JoyChannelIF
         virtual void disable()      =0;
 };
 
+class JoyChannelBase:public JoyChannelIF
+{
+protected:
+
+    bool isEnable,bloking,hardBlocking;
+    float outValue;
+
+public:
+
+    JoyChannelBase(): isEnable(false),
+    bloking(true),hardBlocking(true)
+    {
+
+    }
+
+    virtual bool isEnable_(){return this->isEnable;}
+
+    virtual void enable()   {     isEnable=true;   }
+
+    virtual void disable()  {     isEnable=false;   }
+};
+
 class JoyChanel:public JoyChannelIF
 {
 protected:
@@ -729,7 +755,7 @@ private:
 class JoyChannels
 {
 public:
-	StaticList<JoyChannelIF*,5> channels;
+	StaticList<JoyChannelIF*,10> channels;
 	JoyChannels(JoyChannelIF** array, UInt32 count);
 };
 

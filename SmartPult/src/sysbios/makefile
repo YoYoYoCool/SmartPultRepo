@@ -18,9 +18,9 @@ TARGET_INC = -I"C:/ti/tirtos_tivac_2_10_01_38/products/bios_6_41_00_26/packages/
 
 INCS = $(BIOS_INC) $(TARGET_INC)  
 
-CC = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include
-ASM = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include
-AR = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armar rq
+CC = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_16.9.1.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_16.9.1.LTS/include
+ASM = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_16.9.1.LTS/bin/armcl -c $(CCOPTS) -I C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_16.9.1.LTS/include
+AR = C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_16.9.1.LTS/bin/armar rq
 
 DEL = cmd.exe /q /c del /f
 CP = cmd.exe /q /c copy /Y

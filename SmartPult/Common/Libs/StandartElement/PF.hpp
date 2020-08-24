@@ -23,7 +23,7 @@ namespace Filter
 
     public :
 
-         void setInputValue(float inputValue) { this->inputValue=inputValue;}
+         virtual void setInputValue(float inputValue) { this->inputValue=inputValue;}
 
          float getOutValue () {    return outValue;       }
 
@@ -47,31 +47,38 @@ namespace Filter
     {
 
     private:
-        KalmanFilter::KalmanLineUprFriq LPFLeft;
-        KalmanFilter::KalmanLineUprFriq LPFRight;
-        float outLeftFilter;
-        float fvchValue;
+        KalmanFilter::KalmanLineUprFriq LPFLeft1;
+        KalmanFilter::KalmanLineUprFriq LPFRight1;
+        float outLeftFilter1,outRightFilter1;
 
 
     public:
         PolosovoyFilter(float  friqLeft,float friqRight, float& fCLK):
-            LPFLeft(friqLeft,inputValue,outLeftFilter),
-        LPFRight(friqRight,fCLK,fvchValue,outValue) {
+        LPFLeft1(friqLeft,fCLK,inputValue,outLeftFilter1),
+        LPFRight1(friqRight,fCLK,outValue,outRightFilter1)
+
+        {
 
         }
 
         void calculateFilter() {
-            LPFLeft.calculate();
-            fvchValue=this->inputValue-this->outLeftFilter;
-            LPFRight.calculate();
+
+            LPFLeft1.calculate();
+            outValue=this->inputValue;
+            outValue-=outLeftFilter1;
+            LPFRight1.calculate();
+            outValue=outRightFilter1;
+
         }
 
+        virtual void setInputValue(float inputValue) { this->inputValue=inputValue;}
+
         virtual void setFriquensyLeftFilter (float value) {
-            LPFLeft.updateKoafficient(value);
+            LPFLeft1.updateKoafficient(value);
         }
 
         virtual void setFriquensyRightFilter (float value) {
-            LPFRight.updateKoafficient(value);
+            LPFRight1.updateKoafficient(value);
         }
 
     };

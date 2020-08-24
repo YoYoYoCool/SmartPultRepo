@@ -306,6 +306,30 @@ ExtrenalDevices::CatoniPanBarResistor cartoniIrisAxisChannel
         1.0
 );
 
+float fCLK = 500.0;
+float fCLK1 = 1000.0;
+float fCLK2 = 74.07;
+
+
+Generation::Generator rndGenerator(0x0825,0.01,10.0,fCLK);
+
+ShakerChannel panInternalShakerChannel (5.0,PANSHAKERCHANNEL);
+
+ShakerChannel tiltInternalShakerChannel (5.0,TILTSHAKERCHANNEL);
+
+ShakerChannel rollInternalShakerChannel (5.0,ROLLSHAKERCHANNEL);
+
+ShakerChannel zoomInternalShakerChannel (14.0,ZOOMSHAKERCHANNEL);
+
+ShakerSinChannel panInternalSinShakerChannel;
+
+ShakerSinChannel tiltInternalSinShakerChannel;
+
+ShakerSinChannel rollInternalSinShakerChannel;
+
+ShakerSinChannel zoomInternalSinShakerChannel;
+
+volatile uint32_t counterMain,counterExchang, deltaCounter;
 
 #ifdef Garanin
 
@@ -330,9 +354,7 @@ ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &dig
 #endif
 
 
-//--------------------------------------------------------------------
-
-
+static uint64_t panGenCounter=0x116249;
 
 //---------------------------------------------------------------------
 HallEffectJoyChannel dutchExtern2Channel(0.14,2110,&dutchJoySpeedResistor,100, 250,0.015);
@@ -350,7 +372,7 @@ JoyChannels zoomChannals    (zoomChannelsArray,1);
 #else
 
     #ifdef joyPult
-    JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
+/*    JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
     JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll};
     JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt};
     JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel, &cartoniZoomAxisChannel};
@@ -358,7 +380,24 @@ JoyChannels zoomChannals    (zoomChannelsArray,1);
     JoyChannels panChannals     (panChannelsArray,4);
     JoyChannels dutchChannals   (dutchChannelsArray,5);
     JoyChannels tiltChannals    (tiltChannelsArray,4);
-    JoyChannels zoomChannals    (zoomChannelsArray,2);
+    JoyChannels zoomChannals    (zoomChannelsArray,2);*/
+
+JoyChannelIF* panChannelsArray[6]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,
+                                         &digitalWheelPan,&panInternalShakerChannel,&panInternalSinShakerChannel,
+                                         };
+JoyChannelIF* dutchChannelsArray[7]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,
+                                         &cartoniDutchAxisChannel,&digitalWheelRoll,&rollInternalShakerChannel,&rollInternalSinShakerChannel,
+                                         };
+JoyChannelIF* tiltChannelsArray[6]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,
+                                         &digitalWheelTilt,&tiltInternalShakerChannel,&tiltInternalSinShakerChannel,
+                                         };
+JoyChannelIF* zoomChannelsArray[4]=     {&zoomJoyChannel, &cartoniZoomAxisChannel,&zoomInternalShakerChannel,&zoomInternalSinShakerChannel,
+                                         };
+
+JoyChannels panChannals     (panChannelsArray,6);
+JoyChannels dutchChannals   (dutchChannelsArray,7);
+JoyChannels tiltChannals    (tiltChannelsArray,6);
+JoyChannels zoomChannals    (zoomChannelsArray,4);
 
     #else
     JoyChannelIF* panChannelsArray[3]=      {&panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan};
@@ -772,6 +811,12 @@ void Pult::driverTask()
                 break;
             }
 #endif
+ //       counterMain++;
+        rndGenerator.calcFilter();
+        panInternalShakerChannel.setInputeValue(rndGenerator.getOutValue());
+        tiltInternalShakerChannel.setInputeValue(rndGenerator.getOutValue());
+        rollInternalShakerChannel.setInputeValue(rndGenerator.getOutValue());
+        zoomInternalShakerChannel.setInputeValue(rndGenerator.getOutValue());
         panExtern1Channel.setRef(result[SIGNAL_PAN_WHEEL]);
         tiltExtern1Channel.setRef(result[SIGNAL_TILT_WHEEL]);
         cartoniPanAxisChannel.setData();
@@ -993,12 +1038,6 @@ extern "C"
         ExtrenalDevieExchDriver_fastClockInt();
 //-------- HOUR METER ------------------
         minuteCounter++;
-        /*if(minuteCounter>=60000)
-        {
-            minuteCounter=0;
-            timeToStart++;
-            if(timeToStart>=0xFFFFFFF0){timeToStart=0xFFFFFFF0;}
-        }*/
         if (minuteCounter>1000) {
             timeToStart++;
             minuteCounter=0;
@@ -1220,11 +1259,10 @@ void Pult::exchangeTask()
     protocol.writeCmdId = 0;
     protocol.askCmdId = 1;
     GPIO_write(Board_PULT_RS485RW, Board_RS485_WRITE_MODE);
-
     while (true) {
+
         watchDogTimer.useKey(WD_KEY1);
-
-
+        rndGenerator.generate();
 //Поготовка комманды записи
         if (transmitAxisSettingsCommand) {
             if (!noBasicWriteCmdCounter) {
@@ -1656,6 +1694,8 @@ static void joyStickSensLogic() {
    }
 }
 
+static bool shakerEnable=false;
+
 static void controlLogic() {
     static UInt8 setUpTiltLimitsCounter = 0;
     static UInt8 setDwTiltLimitsCounter = 0;
@@ -1687,8 +1727,32 @@ static void controlLogic() {
     controlBits.bit.levelCorrect = levelCorrectButton.isPressed();
     controlBits.bit.levelSetup = dutchLevelSetupButton.isPressed();
     controlBits.bit.gvCalibration = gvCalibrationButton.isPressed();
-    controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
+ //   controlBits.bit.fastLevelCorrect = fastLevelCorrectButton.isPressed();
 
+    if (fastLevelCorrectButton.isClicked()){
+        if (shakerEnable){
+            panInternalShakerChannel.disable();
+            tiltInternalShakerChannel.disable();
+            rollInternalShakerChannel.disable();
+            zoomInternalShakerChannel.disable();
+            panInternalSinShakerChannel.disable();
+            tiltInternalSinShakerChannel.disable();
+            rollInternalSinShakerChannel.disable();
+            zoomInternalSinShakerChannel.disable();
+            shakerEnable=false;
+       }
+        else{
+            panInternalShakerChannel.enable();
+            tiltInternalShakerChannel.enable();
+            rollInternalShakerChannel.enable();
+            zoomInternalShakerChannel.enable();
+            panInternalSinShakerChannel.enable();
+            tiltInternalSinShakerChannel.enable();
+            rollInternalSinShakerChannel.enable();
+            zoomInternalSinShakerChannel.enable();
+            shakerEnable=true;
+       }
+    }
 
     if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 3; setUpTiltLimitsFlag = false;};
     if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 3; setDwTiltLimitsFlag = false;};
@@ -2907,3 +2971,20 @@ void   Pult::setSynchroSource(UInt32 value)
             break;
     }
 }
+
+//-------------------------------------------------------------------------------
+
+IShaker* Pult::_panAxisShaker() {   return &panInternalShakerChannel;    }
+IShaker* Pult::_tiltAxisShaker(){   return &tiltInternalShakerChannel;    }
+IShaker* Pult::_rollAxisShaker(){   return &rollInternalShakerChannel;    }
+IShaker* Pult::_zoomAxisShaker(){   return &zoomInternalShakerChannel;    }
+
+IShakerSin* Pult::_panAxisShakerSin() {   return &panInternalSinShakerChannel;    }
+IShakerSin* Pult::_tiltAxisShakerSin(){   return &tiltInternalSinShakerChannel;    }
+IShakerSin* Pult::_rollAxisShakerSin(){   return &rollInternalSinShakerChannel;    }
+IShakerSin* Pult::_zoomAxisShakerSin(){   return &zoomInternalSinShakerChannel;    }
+
+
+
+
+

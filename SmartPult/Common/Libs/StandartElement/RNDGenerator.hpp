@@ -8,7 +8,7 @@
 #ifndef COMMON_LIBS_STANDARTELEMENT_RNDGENERATOR_HPP_
 #define COMMON_LIBS_STANDARTELEMENT_RNDGENERATOR_HPP_
 
-
+#include "PF.hpp"
 
 
 
@@ -17,60 +17,48 @@ namespace Generation {
 class Generator {
 
 private:
-    int16_t inputValue;
-    int16_t oldStepValue;
-    float outValue;
-    uint8_t IQValue;
+     uint32_t counter;
+     int16_t polinom;
+     int16_t genVal;
+     float outValue;
+     float outVal;
+    Filter::PolosovoyFilter filter;
 
-    uint16_t calcCRC(uint8_t* pack, size_t longData)
-    {
-        uint16_t TMP;
-        uint16_t crcl;
-        uint16_t crch;
-        uint16_t crc = 0xffff;
-
-        crcl = crc;
-        crch = (crc >> 8);
-        for (uint16_t i = 0; i < longData; i++)
-        {
-            uint16_t dataTmp = pack[i];
-            dataTmp = (dataTmp ^ crcl);
-            TMP = (dataTmp << 4);
-            dataTmp = (TMP ^ dataTmp);
-            TMP = (dataTmp >> 5);
-            TMP &= 0x07;
-            crcl = crch;
-            crch = (dataTmp ^ TMP);
-            TMP = (dataTmp << 3);
-            crcl = (crcl ^ TMP);
-            TMP = (dataTmp >> 4);
-            TMP &= 0x0F;
-            crcl = (crcl ^ TMP);
-        }
-
-        crc = (crch << 8) + (crcl & 0x00FF);
-        return crc;
-    }
 
 public:
 
-    Generator(uint8_t IQValue,int16_t oldStepValue):IQValue(IQValue), oldStepValue(oldStepValue) {
+    Generator(int16_t polinom, float friqLeft, float friqRight, float& fCLK):polinom(polinom),
+    filter(friqLeft,friqRight,fCLK)
+{    }
 
+    float getOutValue() {
+        return this->outValue;}
+
+    inline void generate () {
+        counter++;
+        int16_t CRC=0xffff;
+        for (int32_t i=0; i<4;i++) {
+            uint32_t cel = counter;
+            cel>>=8*i;
+            CRC^=cel;
+            for (uint32_t i1=0;i1<8;i1++) {
+                if ((CRC&0x8000)==0x8000) {
+                CRC^=polinom;
+                CRC<<=1;}
+                else {
+                    CRC<<=1;
+                }
+            }
+        }
+        genVal= CRC;
     }
 
-    void setInputValue (uint16_t inputValue) {
-        this->inputValue=inputValue;
+    inline void calcFilter() {
+        filter.setInputValue(genVal);
+        filter.calculateFilter();
+        outValue=filter.getOutValue();
     }
 
-    float getOutValue() {return this->outValue;}
-
-    void generate () {
-        int16_t crcValue=calcCRC((uint8_t)&inputValue,sizeof(inputValue));
-        int16_t outValue = crcValue+oldStepValue;
-        oldStepValue=crcValue;
-        this->outValue=(float)calcCRC((uint8_t)&outValue,sizeof(outValue));
-        this->outValue/=this->IQValue;
-    }
 
 };
 

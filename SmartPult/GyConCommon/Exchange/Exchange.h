@@ -153,6 +153,7 @@ public:
 				connected = false;
 			} else {
 				disconnectedCounter--;
+		        Task_sleep(3); //здесь но не уверен
 			}
 		}
 		return false;

@@ -149,10 +149,10 @@ namespace ExtrenalDevices
             {
 
                 if(!crcCalculation(buffer, bufferLen)) {
-                    infoDrivet.cameraStop();
+
                     return;
                 }
-                infoDrivet.cameraStart();
+
                 CartoniData* data=(CartoniData*)buffer;
                 UInt8 axisCount=data->header.data.axisCount;
 
@@ -265,7 +265,7 @@ namespace ExtrenalDevices
             float metronom;
             float timeOut;
             volatile UInt32 transactionCounter;
-            CameraStartLevelDriver infoDrivet;
+
             Semaphore_Handle* sem;
 
 
@@ -478,10 +478,10 @@ static float seturationAcceleration = 15; //grad/sec^2
                 #ifndef Garanin
 //              speedOut=adcValue;
 //                calculateSpeedAxis();
-              speedOut=axis.inputValue;
+                speedOut=axis.inputValue;
                 #endif
                 }
-/*                float speedK = speedControl->adcValue/1024;
+/*              float speedK = speedControl->adcValue/1024;
                 speedOut*=speedK;*/
                 if (speedOut>maxValue) {
                     speedOut=maxValue;}

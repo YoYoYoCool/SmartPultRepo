@@ -118,9 +118,21 @@ tMenu_Link;
 
 extern LCD_Listener* pDispl;
 
+class ILCD_Cell {
+public:
 
+    virtual void Set_Coord(t_Pos_Size_XY & pos) =0;
 
-class LCD_Cell: public LCD_Listener {
+    virtual void SetText(char* ptext) =0;
+
+    virtual void setCellColor (uint32_t color) =0;
+
+    virtual void ReDraw()=0;
+
+    virtual void ReHide()=0;
+};
+
+class LCD_Cell: public LCD_Listener, public ILCD_Cell {
 private:
     tCell_Style Tek_Style;
     tRectangle pRect;
@@ -171,13 +183,21 @@ public:
         Tek_Style.Border=visible;
         }
 
-    inline void setSizeText (const tFont* fontSize) { Tek_Style.pFont=fontSize;}
-    inline void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
-    void SetText(char* ptext) {p_text = ptext;} //сохран€ет текст дл€ себ€
+    virtual void setSizeText (const tFont* fontSize) { Tek_Style.pFont=fontSize;}
+
+    virtual void Set_Coord (t_Pos_Size_XY& pos) {p_Pos_Size_XY=pos;}
+
+    virtual void SetText(char* ptext) {p_text = ptext;} //сохран€ет текст дл€ себ€
+
+    virtual void setCellColor (uint32_t color) {
+        Active_Style.Cell_Color= color;
+        UnActive_Style.Cell_Color = color;
+    }
+
     void Draw(); //рисует €чейку в стиле Active_Style
     void Hide(); //рисует €чейку в стиле UnActive_Style
-    void ReDraw(){Drawed = false; Draw();} //рисует €чейку в стиле Active_Style
-    void ReHide(){  Hided = false; Hide();} //рисует €чейку в стиле UnActive_Style
+    virtual void ReDraw(){Drawed = false; Draw();} //рисует €чейку в стиле Active_Style
+    virtual void ReHide(){  Hided = false; Hide();} //рисует €чейку в стиле UnActive_Style
     void Clean(){PreDraw();} //очищает €чейку (рисует пустую)
     virtual void Listener(); //будет наследоватьс€ всеми экранными формами дл€ анализа изменени€ кнопок и данных
     void DrawTecStile();
@@ -327,6 +347,7 @@ public:
     void Plus();void Minus();void Right();void Left(); //навигаци€
     void Select(); //выбор
     virtual void Draw(byte Active); //расчет позиции и рисование
+
     virtual void DrawVert(); //рисование вертикального меню
     void DrawHoriz(); //рисование горизонтального меню
     void DrawHeader() {

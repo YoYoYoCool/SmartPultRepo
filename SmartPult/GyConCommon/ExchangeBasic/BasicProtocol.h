@@ -168,7 +168,7 @@ public:
 			UInt8 askCmdId = header.askCommand;
 			if (readData(writeCmdId)) {
 				if (writeData(askCmdId)) {
-					Task_sleep(2);
+//					Task_sleep(2);
 					header.address = theirAddr;
 					exchange.transmit(&pack);
 				}
