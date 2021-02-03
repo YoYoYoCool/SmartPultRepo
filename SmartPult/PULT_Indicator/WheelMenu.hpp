@@ -29,8 +29,8 @@ union WheelAnalog {
         volatile uint8_t analogWheelPanActive :1;
         volatile uint8_t analogWheelTiltActive :1;
         volatile uint8_t analogWheelRollActive :1;
-        volatile uint8_t analogPedalActive :1;
-        volatile uint8_t NU :7;
+        volatile uint8_t analogPedalActive :2;
+        volatile uint8_t NU :6;
         }data;
     };
 
@@ -119,9 +119,13 @@ const char * cellWheelRollOn = "WHEEL DUTCH: ON";
 const char * cellWheelRollOff = "WHEEL DUTCH: OFF";
 #endif
 
-const char * cellPedalOn = "PEDAL : ON";
+#ifdef USAEdition
+const char * cellPedalOnRoll = "PEDAL : ON ROLL";
+#else
+const char * cellPedalOnRoll = "PEDAL : ON DUTCH";
+#endif
+const char * cellPedalOnZoom = "PEDAL : ON ZOOM";
 const char * cellPedalOff = "PEDAL : OFF";
-
 t_Pos_Size_XY positionHeaderAnalog = {    .X=0,  .Y=0, .Xsize=285, .Ysize=30  };
 
 t_Pos_Size_XY positionPointerAnalog = {    .X=287,  .Y=0, .Xsize=30, .Ysize=30  };
@@ -129,7 +133,9 @@ t_Pos_Size_XY positionPointerAnalog = {    .X=287,  .Y=0, .Xsize=30, .Ysize=30  
 class  LCDAnalogWheel:public LCDWheelBase {
 public:
     LCDAnalogWheel(WheelAnalog & speedData):analogData(speedData),
-        LCDWheelBase(6,(char *)headerAnalogWheel,positionHeaderAnalog,(char *)pointerAnalog,positionPointerAnalog)
+        LCDWheelBase(6,(char *)headerAnalogWheel,positionHeaderAnalog,
+        (char *)pointerAnalog,positionPointerAnalog),
+        encoderPedal(2,0)
         {
         analogData.all=0;
         select=false;
@@ -191,38 +197,55 @@ private:
     char  textTiltSpeed[stringBuferLongAnalogWheel];
     char  textRollSpeed[stringBuferLongAnalogWheel];
     WheelAnalog & analogData;
+    StandartElement::Encoder encoderPedal;
 
 
 public:
-    virtual void update () {
+    virtual void update ()
+    {
         speedPan=analogData.data.wheelSpeedPan;
         speedPan*=0.01;
         speedTilt=analogData.data.wheelSpeedTilt;
         speedTilt*=0.01;
         speedRoll=analogData.data.wheelSpeedRoll;
         speedRoll*=0.01;
-        printData ();
-        if (analogData.data.analogWheelPanActive) {
+        printData();
+        if (analogData.data.analogWheelPanActive)
+            {
             wheelPanEnable.p_text=(char*)cellWheelPanOn;
             wheelPanEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             wheelPanEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-            p_pult->enablePanAnalogWheel();}
-        if (analogData.data.analogWheelTiltActive){
+            p_pult->enablePanAnalogWheel();
+            }
+        if (analogData.data.analogWheelTiltActive)
+            {
             wheelTiltEnable.p_text=(char*)cellWheelTiltOn;
             wheelTiltEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             wheelTiltEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-            p_pult->enableTiltAnalogWheel();}
-        if (analogData.data.analogWheelRollActive){
+            p_pult->enableTiltAnalogWheel();
+            }
+        if (analogData.data.analogWheelRollActive)
+            {
             wheelRollEnable.p_text=(char*)cellWheelRollOn;
             wheelRollEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             wheelRollEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-            p_pult->enableRollAnalogWheel();}
-        if (analogData.data.analogPedalActive){
-            pedalEnable.p_text=(char*)cellPedalOn;
+            p_pult->enableRollAnalogWheel();
+            }
+        if (analogData.data.analogPedalActive==1)
+            {
+            pedalEnable.p_text=(char*)cellPedalOnRoll;
             pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-            p_pult->enablePadal();}
+            p_pult->enableDutchPadal();
             }
+        if (analogData.data.analogPedalActive==2)
+            {
+            pedalEnable.p_text=(char*)cellPedalOnZoom;
+            pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
+            pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+            p_pult->enableZoomPadal();
+            }
+        }
 
 
     virtual void save() {
@@ -339,11 +362,29 @@ private:
             wheelRollEnable.ReDraw();
             }
         if (cell[encoder.getActualPosition()]==&pedalEnable) {
-            analogData.data.analogPedalActive=false;
-            p_pult->disablePadal();
-            pedalEnable.Active_Style.Cell_Color=ClrLinen;
-            pedalEnable.UnActive_Style.Cell_Color=ClrLinen;
-            pedalEnable.p_text=(char*)cellPedalOff;
+            encoderPedal.decrement();
+            analogData.data.analogPedalActive=encoderPedal.getActualPosition();
+            switch (encoderPedal.getActualPosition())
+            {
+            case 0:
+                p_pult->disablePadal();
+                pedalEnable.Active_Style.Cell_Color=ClrLinen;
+                pedalEnable.UnActive_Style.Cell_Color=ClrLinen;
+                pedalEnable.p_text=(char*)cellPedalOff;
+                break;
+            case 1:
+                p_pult->enableDutchPadal();
+                pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.p_text=(char*)cellPedalOnRoll;
+                break;
+            case 2:
+                p_pult->enableZoomPadal();
+                pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.p_text=(char*)cellPedalOnZoom;
+                break;
+            }
             pedalEnable.ReDraw();
             }
         }
@@ -399,7 +440,8 @@ private:
             analogData.data.analogWheelRollActive=true;
             analogData.data.analogPedalActive=false;
             p_pult->enableRollAnalogWheel();
-            p_pult->disablePadal();
+            encoderPedal.setActualPosition(0);
+            analogData.data.analogPedalActive=encoderPedal.getActualPosition();
             wheelRollEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
             wheelRollEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
             pedalEnable.Active_Style.Cell_Color=ClrLinen;
@@ -410,16 +452,33 @@ private:
             wheelRollEnable.ReDraw();
             }
         if (cell[encoder.getActualPosition()]==&pedalEnable) {
-            analogData.data.analogPedalActive=true;
             analogData.data.analogWheelRollActive=false;
-            p_pult->enablePadal();
             p_pult->disableRollAnalogWheel();
             wheelRollEnable.Active_Style.Cell_Color=ClrLinen;
             wheelRollEnable.UnActive_Style.Cell_Color=ClrLinen;
-            pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
-            pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
-            pedalEnable.p_text=(char*)cellPedalOn;
-            wheelRollEnable.p_text=(char*)cellWheelRollOff;
+            encoderPedal.increment();
+            analogData.data.analogPedalActive=encoderPedal.getActualPosition();
+            switch (encoderPedal.getActualPosition())
+            {
+            case 0:
+                p_pult->disablePadal();
+                pedalEnable.Active_Style.Cell_Color=ClrLinen;
+                pedalEnable.UnActive_Style.Cell_Color=ClrLinen;
+                pedalEnable.p_text=(char*)cellPedalOff;
+                break;
+            case 1:
+                p_pult->enableDutchPadal();
+                pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.p_text=(char*)cellPedalOnRoll;
+                break;
+            case 2:
+                p_pult->enableZoomPadal();
+                pedalEnable.Active_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+                pedalEnable.p_text=(char*)cellPedalOnZoom;
+                break;
+            }
             wheelRollEnable.ReHide();
             pedalEnable.ReDraw();
             }

@@ -55,29 +55,26 @@ namespace Filter
     public:
         PolosovoyFilter(float  friqLeft,float friqRight, float& fCLK):
         LPFLeft1(friqLeft,fCLK,inputValue,outLeftFilter1),
-        LPFRight1(friqRight,fCLK,outValue,outRightFilter1)
+        LPFRight1(friqRight,fCLK,outRightFilter1,outValue)
 
         {
 
         }
 
         void calculateFilter() {
-
             LPFLeft1.calculate();
-            outValue=this->inputValue;
-            outValue-=outLeftFilter1;
+            outRightFilter1=this->inputValue;
+            outRightFilter1-=outLeftFilter1;
             LPFRight1.calculate();
-            outValue=outRightFilter1;
-
         }
 
         virtual void setInputValue(float inputValue) { this->inputValue=inputValue;}
 
-        virtual void setFriquensyLeftFilter (float value) {
+        inline void setFriquensyLeftFilter (float value) {
             LPFLeft1.updateKoafficient(value);
         }
 
-        virtual void setFriquensyRightFilter (float value) {
+        inline void setFriquensyRightFilter (float value) {
             LPFRight1.updateKoafficient(value);
         }
 

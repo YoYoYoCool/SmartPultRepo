@@ -166,9 +166,29 @@ public:
         return &speedWheelRaw;
         }
 
-    inline void setConnect(bool connect) {
-        this->connect=connect;
+    inline void updateConnect (uint32_t flagConnect)
+    {
+        if (flagConnect==1)
+        {
+            counter++;
+            if (counter>10)
+            {
+                counter=10;
+                connect=true;
+            }
         }
+        else
+        {
+            counter--;
+            if (counter<1)
+            {
+                counter=1;
+                connect=false;
+            }
+        }
+    }
+
+    inline bool isConnect() {return connect;}
     };
 
 

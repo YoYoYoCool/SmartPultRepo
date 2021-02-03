@@ -14,7 +14,14 @@
 
 namespace Generation {
 
-class Generator {
+class IGenerator
+{
+public:
+
+    virtual void setHPF(float value) =0;
+};
+
+class Generator:public IGenerator {
 
 private:
      uint32_t counter;
@@ -22,7 +29,7 @@ private:
      int16_t genVal;
      float outValue;
      float outVal;
-    Filter::PolosovoyFilter filter;
+     Filter::PolosovoyFilter filter;
 
 
 public:
@@ -34,10 +41,16 @@ public:
     float getOutValue() {
         return this->outValue;}
 
+    inline void setHPF(float value)
+    {
+        filter.setFriquensyLeftFilter(value);
+    }
+
     inline void generate () {
         counter++;
         int16_t CRC=0xffff;
-        for (int32_t i=0; i<4;i++) {
+        for (int32_t i=0; i<4;i++)
+        {
             uint32_t cel = counter;
             cel>>=8*i;
             CRC^=cel;
@@ -50,14 +63,15 @@ public:
                 }
             }
         }
-        genVal= CRC;
+        outValue= CRC;
     }
 
-    inline void calcFilter() {
+/*    inline void calcFilter()
+    {
         filter.setInputValue(genVal);
         filter.calculateFilter();
         outValue=filter.getOutValue();
-    }
+    }*/
 
 
 };

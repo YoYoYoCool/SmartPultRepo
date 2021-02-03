@@ -15,6 +15,7 @@
 #include <ti/sysbios/knl/Semaphore.h>
 #include "InternalDevice/shakerInternalChannel.hpp"
 #include "InternalDevice/shakerSinInternalChannel.hpp"
+#include "../ExtrenalDeviceSynchro/DopReal/DopRealData.hpp"
 
 
 #ifndef PULT_PULT_H_
@@ -51,6 +52,15 @@ typedef enum PultCalibrateCoeffs { //0..1
 	PultCalibrateCoeffsCount
 
 } PultCalibrateCoeffs;
+
+union GerconStatusBits {
+    uint32_t all;
+    struct {
+        uint8_t panMotorStatus : 1;
+        uint8_t dutchMotorStatus :1;
+        uint8_t tiltMotorStatus :1;
+    }gerconStatus;
+};
 
 typedef enum PultDebugValues { //0.001 - 1000
 	PultDebugValue0 = 0,
@@ -351,7 +361,8 @@ public:
     void enablePanAnalogWheel();
     void enableTiltAnalogWheel();
     void enableRollAnalogWheel();
-    void enablePadal();
+    void enableDutchPadal();
+    void enableZoomPadal();
     void disablePanAnalogWheel();
     void disableTiltAnalogWheel();
     void disableRollAnalogWheel();
@@ -461,6 +472,8 @@ public:
     IShakerSin* _rollAxisShakerSin();
     IShakerSin* _zoomAxisShakerSin();
 
+    //-------------------------------------------------------------
+    void setCamIDDopReal(uint8_t CamId);
 
 };
 

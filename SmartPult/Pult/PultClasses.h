@@ -11,6 +11,7 @@
 #include <../GyConCommon/Utils/Collections.h>
 #include <../GyConCommon/ControlSystem/TransferFunctions.h>
 #include "Board.h"
+#include "StartStopFluid.hpp"
 
 
 #define PULT_BUTTON_DETECT_LEVEL 3
@@ -574,11 +575,16 @@ public:
 	}
 	virtual float getCurrentAdcValue()
 	{
-		//float rez=adcValue-offset;
 		float rez=filter.calculate(adcValue-offset);
 		rez=deadZone(rez, deadZoneValue);
 		rez=rez*K*getSpeed();
 		if(!this->isEnable){rez=0.0;}
+		if (rez>0.01)
+		{
+		    volatile uint8_t a=0;
+		    a++;
+		    a*=rez;
+		}
 		return rez;
 	}
 
@@ -595,7 +601,9 @@ const float desconnectedValue;
 public:
 	 HallEffectJoyChannel(float K, float offset,Resistor* speedControl,float deadZone, float discValue, float T):
 		 JoyChanel(K,offset,speedControl,deadZone,T),
-		 desconnectedValue(discValue){}
+		 desconnectedValue(discValue){
+	     isEnable=false;
+	 }
 	virtual float getCurrentAdcValue()
 	{
 		if(adcValue<desconnectedValue)
@@ -661,6 +669,7 @@ public:
 	volatile float revers;
 	volatile bool joyUsed;
 	volatile UInt32 startFluid;//Percents
+	StartStopFluid fluidNew;
 
 	MultiJoystic(float maxValue, JoyStickFunction* func, Resistor* driftControl,Resistor* fluidControl,List<JoyChannelIF*>* channels):
 		func(func),
@@ -670,12 +679,8 @@ public:
 		fluidLpf(JoyStick_controlPeriod, minFluid),
 		maxValue(maxValue),
 		channels(channels),
-		driftLpf(0.01, 0.333)
+		driftLpf(0.01, 0.333),fluidNew()
 	{
-//		driftControl->offset = 1861;
-//		driftControl->K = 0.0005;
-//		fluidControl->offset = 0;
-//		fluidControl->K = 0.001;
 		enabled = false;
 		revers=1.0;
 		joyUsed=false;
@@ -700,11 +705,13 @@ public:
 			}
 		}
 
-        res = calcFluid(res);
+//        res = calcFluid(res);
+		fluidNew.updateKoaf(fluidControl->adcValue);
+		res = fluidNew.calulate(res);
         res*=revers;
         if (!enabled) res = 0.0;
 
-        if(res>0.2||res<-0.2)
+        if(res>0.02||res<-0.02)
         {
         	joyUsed=true;
         }
@@ -712,6 +719,7 @@ public:
         {
         	joyUsed=false;
         }
+
         value = func->calculate(res/maxValue)*maxValue;
         driftValueFiltred=this->calcDrift(driftControl->value);
 	}
@@ -722,7 +730,6 @@ public:
 	void disable() {enabled = false;}
 	float getValue(float var)
 	{
-
 		var=var-driftValueFiltred;
         if (var>maxValue){ var = maxValue;}
         if (var<-maxValue){ var = -maxValue;}
@@ -738,11 +745,13 @@ public:
 	float getRawValue(){return value;}
 
 private:
+
 	FirstOrderLpf driftLpf;
 	volatile float driftValueFiltred;
 	volatile float value;
 	float calcFluid(float input)
 	{
+
 		float fluid = minFluid + fluidControl->value;
 		fluidLpf.setTimeConstant(fluid);
 		return fluidLpf.calculate(input);

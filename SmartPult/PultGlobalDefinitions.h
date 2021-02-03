@@ -14,6 +14,8 @@
 //#define Garanin
 #define USAEdition
 #define joyPult
+//#define crane
+//#define myPanBar
 //#define PanBarDebug
 //#define joyPultRussian
 

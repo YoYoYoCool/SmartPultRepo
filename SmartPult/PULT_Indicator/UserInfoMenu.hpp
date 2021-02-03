@@ -63,13 +63,15 @@ char  textStaticUserInfoMenu[20][50] = { //  "Pult info ",
 #ifdef joyPultRussian
                                            "Pult Version: v1.03.06BB",
 #else
+#ifdef Garanin
+                                           "Version: v1.03.06PBW",
+#else
                                            "Pult Version: v1.03.06EU",
 #endif
 #endif
-
-#ifdef Garanin
-                                           "Version: v1.03.06PBW",
 #endif
+
+
 #endif
 
 #ifdef WhellSmartPult

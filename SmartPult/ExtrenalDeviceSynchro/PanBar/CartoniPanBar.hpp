@@ -416,6 +416,7 @@ static float seturationAcceleration = 15; //grad/sec^2
         CartoniChannelAxisList channelAxis;
         CartoniDataConverter& dataConverter;
         CartoniAxis axis;
+        float speedOut;
         const float maxValue;
         #ifdef Garanin
         int32_t * speed;
@@ -425,7 +426,7 @@ static float seturationAcceleration = 15; //grad/sec^2
 //        float controlAction;
         float errorSpeed;
         float speedEstimate;
-        float speedOut;
+
         float acceleration;
 
         KalmanFilter::KalmanLineUpr filterInpute;
@@ -471,8 +472,10 @@ static float seturationAcceleration = 15; //grad/sec^2
                  {
 
                 if (channelAxis==CH_ZOOM) {
+#ifndef Garanin
                     speedOut=adcValue;
                     speedOut*=K;
+#endif
                     }
                 else {
                 #ifndef Garanin

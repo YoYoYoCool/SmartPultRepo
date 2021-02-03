@@ -79,28 +79,24 @@ public:
     inline int8_t exchenge (ProtocolWheel::WheelsType wheedId,
                             ProtocolWheel::Command comandID,
                             DataOut & dataOut) {
-        WheelExchengeError errors;
-        errors.all=0;
-        clearPack(packRx,30);
-        clearPack(packTx,30);
+
+        clearPack(packRx,100);
+        clearPack(packTx,100);
         settingsDataIO.wheelNumber=wheedId;
         settingsDataIO.comand=comandID;
         settingsDataIO.dataInput=dataOut.dataInput;
-        settingsDataIO.longDataInput=&dataOut.longData;
+
         int8_t exchengeData = protokol.creatPaketOut(settingsDataIO);
         if (exchengeData!=ProtocolWheel::createData) {
-            resetData(dataOut);
             return invalidCreatPaket;}
+
         if (driver.write(settingsDataIO.bufferTX,settingsDataIO.longDataTX)<settingsDataIO.longDataTX) {
-            resetData(dataOut);
             return invalidDriverTx;}
-        Task_sleep(1);
+//        Task_sleep(1);
         if(driver.read(settingsDataIO.bufferRX,settingsDataIO.longDataRX)<settingsDataIO.longDataRX) {
-            resetData(dataOut);
             return invalidDriverRx;}
         exchengeData = protokol.createDataInput(settingsDataIO);
         if (exchengeData!=ProtocolWheel::createData)  {
-            resetData(dataOut);
             return invalidCreatPaket;   }
         dataOut.validatData=true;
         return exchengeOk;
@@ -115,11 +111,7 @@ private:
         }
 
 
-    inline void  resetData (DataOut & dataOut) {
-        dataOut.dataInput[0]=0;
-        dataOut.longData=0;
-        dataOut.validatData=false;
-    }
+
 
     inline void clearPack (LensDb::LensPack & pack, size_t size) {
         for (uint8_t i =0; i<size; i++) {

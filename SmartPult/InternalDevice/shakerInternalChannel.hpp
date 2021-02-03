@@ -32,6 +32,8 @@ public:
 
     virtual IResistor& _resistor() =0;
 
+    virtual Filter::IPolosovoyFilter& getFilter() =0;
+
 };
 
 enum ChannalName {
@@ -48,19 +50,25 @@ private:
     bool bloking, isEnable;
     ChannalName name;
     float IQValue;
+    Filter::PolosovoyFilter filter;
 
 public:
 
     ShakerChannel(uint8_t IQValue,
-                  ChannalName name):
+                  ChannalName name,float friqLeft, float friqRight, float& fCLK):
                   isEnable(false),
-                  bloking(true), name(name),IQValue(1<<IQValue)
+                  bloking(true), name(name),IQValue(1<<IQValue),filter(friqLeft,friqRight,fCLK)
                    {
 
     }
 
     virtual IResistor& _resistor(){
         return speedResistor;
+    }
+
+    Filter::IPolosovoyFilter& getFilter()
+    {
+        return filter;
     }
 
 
@@ -74,7 +82,9 @@ public:
     }
 
     inline virtual float getCurrentAdcValue() {
-        outValue=inputValue;
+        filter.setInputValue(inputValue);
+        filter.calculateFilter();
+        outValue=filter.getOutValue();
         outValue*=speedResistor.value;
         outValue/=IQValue;
         if (outValue>230.0)

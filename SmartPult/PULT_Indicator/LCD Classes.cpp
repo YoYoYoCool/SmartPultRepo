@@ -215,7 +215,7 @@ enum {SetSecretMenuSistem=0,
 #ifdef joyPult
 
     tMenu_Link tuningMenuText[8]={
-            {"SUSPENTION RESONANCE",NULL},
+            {"SUSPENSION RESONANCE",NULL},
             {"MAX TORQUE",NULL},
             {"JOYSTICK DEADZONE",NULL},
             {"USER INFO MENU",NULL},
@@ -498,9 +498,12 @@ enum {DefaultPanSpiderSelectSistem=0,
     EditPanSpiderSelectSistem,
     DisablePanSpiderSelectSistem};
 
-tMenu_Link syncroSourceText[2]={
+char textDopReal[20] = "DOP REAL CAMID:";
+
+tMenu_Link syncroSourceText[3]={
         {"SYNCHRO", NULL},
-        {"PANBAR", NULL}
+        {"PANBAR", NULL},
+        {&textDopReal[0], NULL}
 };
 enum {SynchroSyncroSource=1,
     PanbarSyncroSource};
@@ -685,7 +688,7 @@ void pultIndikator_Task(Pult* point_pult)
     setMotionPrerolPointer=&motionPrerolMenu;
     motionPrerolMenu.updateFromEeprom();
 
-    SelectMenuSynchronization syncroSouce("SYNCHRO SOURCE", syncroSourceText, 2, 2,EE_LC_MOTION_SYNCRO_SOURCE);
+    SelectMenuSynchronization syncroSouce("SYNCHRO SOURCE", syncroSourceText, 3, 3,EE_LC_MOTION_SYNCRO_SOURCE);
     syncroSorcePointer=&syncroSouce;
     syncroSorcePointer->updateFromEEPROM();
 
@@ -4097,7 +4100,45 @@ SelectMenuSynchronization::SelectMenuSynchronization (char* pNam, tMenu_Link* Li
 void SelectMenuSynchronization::action()
 {
     p_pult->setSynchroSource( Tek_Count-1 );
+    if (Tek_Count==3)
+    {
+        if ((getButtonState(pult_Button_Left)==PRESSED)||(getButtonState(pult_Button_Left)==HOLD))
+        {
+            camId++;
+            EE_Working::Write(EE_LC_CAMERA_ID_DOPREAL, (uint32_t)camId);
+ //           textDopReal
+        }
+        if ((getButtonState(pult_Button_Right)==PRESSED)||(getButtonState(pult_Button_Right)==HOLD))
+        {
+            camId--;
+            EE_Working::Write(EE_LC_CAMERA_ID_DOPREAL, (uint32_t)camId);
+        }
+        sprintf(&textDopReal[15], "%3d", camId);
+    }
 }
+
+void SelectMenuSynchronization::updateFromEEPROM()
+{
+    UInt32 tmp=EE_Working::Read(currentEepromAddress)+1;
+        Tek_Count=tmp;
+        if(tmp<1||tmp>Counter_Cell)
+        {
+            Tek_Count=1;
+            saveInEEPROM();
+        }
+        Table_Cell[Tek_Count-1]->Active_Style.Cell_Color=ClrDarkSlateBlue;
+        Table_Cell[Tek_Count-1]->UnActive_Style.Cell_Color=ClrDarkSlateBlue;
+        uint32_t val = EE_Working::Read(EE_LC_CAMERA_ID_DOPREAL);
+        if (val>0xff)
+        {
+            val = 0;
+            EE_Working::Write(EE_LC_CAMERA_ID_DOPREAL, val);
+            camId = 0;
+        }
+        camId=val;
+        action();
+}
+
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------

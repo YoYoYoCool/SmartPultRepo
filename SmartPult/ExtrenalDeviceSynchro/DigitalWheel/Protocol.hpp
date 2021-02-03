@@ -22,7 +22,8 @@ namespace ProtocolWheel {
         wheelPan =  0,
         wheelRoll =     1,
         wheelTilt =     2,
-        wheelMax
+        shakerBox = 3,
+        panBar = 31
     };
 
     enum Command
@@ -63,7 +64,7 @@ namespace ProtocolWheel {
     {
         volatile uint16_t       bodyCrc;
         volatile uint8_t        readCommand;
-        volatile uint32_t       speed;
+        volatile int32_t       speed[10];
     };
 
     struct __attribute__((packed)) WheelSimplePackTXSpeed
@@ -79,19 +80,17 @@ namespace ProtocolWheel {
     };
 
     struct SettingsDataIO {
-        uint32_t wheelNumber;
+        int32_t wheelNumber;
         Command comand;
         uint8_t * bufferTX;
         uint8_t * bufferRX;
         uint8_t longDataTX;
         uint8_t longDataRX;
         int32_t * dataInput;
-        uint8_t * longDataInput;
+        uint8_t longDataInput;
         };
 
-
     enum {
-
         invalidQuestion=-3,
         invalidHeaderCRC,
         invalidWheelNumber,
@@ -102,19 +101,15 @@ namespace ProtocolWheel {
 class WheelProtacolBase {
 public:
 
-        inline virtual int8_t creatPaketOut(SettingsDataIO & dataSettings) {
+        inline virtual int8_t creatPaketOut(SettingsDataIO & dataSettings) =0;
 
-        }
 
-        inline virtual int8_t createDataInput(SettingsDataIO & dataSettings) {
-
-        }
+        inline virtual int8_t createDataInput(SettingsDataIO & dataSettings) =0;
 
 protected:
 
         inline uint16_t findCrc(uint8_t* pack, size_t crcPos)
         {
-            if(crcPos>16)   {       crcPos=16;  }
             uint16_t TMP;
             uint16_t crcl;
             uint16_t crch;
@@ -122,7 +117,7 @@ protected:
 
             crcl = crc;
             crch = (crc >> 8);
-            for (uint16_t i = 0; i < crcPos; i++)
+            for (uint16_t i = 0; i != crcPos; i++)
             {
                 uint16_t dataTmp = pack[i];
                 dataTmp = (dataTmp ^ crcl);
@@ -151,12 +146,22 @@ class WheelProtocol: public WheelProtacolBase {
 public:
 
         inline virtual int8_t creatPaketOut(SettingsDataIO & dataSettings) {
-            if ((dataSettings.wheelNumber>=wheelMax)||(dataSettings.wheelNumber<0))
+            if (dataSettings.wheelNumber<0)
                 return invalidWheelNumber;
 
             if (dataSettings.comand==wheelSpeedRequest) {
                 dataSettings.longDataTX=sizeof(WheelSimplePackTXSpeed);
                 dataSettings.longDataRX=sizeof(WheelSimplePackRXSpeed);
+                if (dataSettings.wheelNumber<shakerBox)
+                {
+                    dataSettings.longDataRX-=((10-1)*4);
+                    dataSettings.longDataInput = 1;
+                }
+                if ((dataSettings.wheelNumber==panBar))
+                {
+                    dataSettings.longDataRX-=((10-7)*4);
+                    dataSettings.longDataInput = 7;
+                }
                 WheelSimplePackTXSpeed paket ={
                                                .header.marker=HEADER_MARKER,
                                                .header.wheelType=(WheelsType)dataSettings.wheelNumber,
@@ -177,145 +182,36 @@ public:
 
 
         inline virtual int8_t createDataInput (SettingsDataIO & dataSettings) {
-            if (dataSettings.comand==wheelSpeedRequest) {
-                WheelSimplePackRXSpeed paketInSpeed;
-                ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser;
-                parser.parsePack(paketInSpeed,dataSettings.bufferRX);
 
-                uint16_t headCRC = findCrc((uint8_t*)(&(paketInSpeed.header.marker)), HEADER_LEN-2);
-                if (headCRC!=paketInSpeed.header.crc)
+                WheelSimplePackRXSpeed paketIn;
+                ExtrenalDevices::DigitalWheelParser<WheelSimplePackRXSpeed> parser;
+
+                memcpy((uint8_t*)&paketIn,dataSettings.bufferRX,sizeof(WheelSimplePackRXSpeed));
+ //               parser.parsePack(paketIn,dataSettings.bufferRX);
+
+                uint16_t headCRC = findCrc((uint8_t*)&paketIn.header.marker, HEADER_LEN-2);
+                if (headCRC!=paketIn.header.crc)
                     return invalidHeaderCRC;
 
-                if (paketInSpeed.header.wheelType!=dataSettings.wheelNumber)
+                if (paketIn.header.wheelType!=dataSettings.wheelNumber)
                     return invalidWheelNumber;
 
-                uint16_t bodyCRC = findCrc((uint8_t*)(&(paketInSpeed.body.readCommand)), paketInSpeed.header.packetLen-HEADER_LEN-2);
-                if (bodyCRC!=paketInSpeed.body.bodyCrc)
+                uint16_t bodyCRC = findCrc((uint8_t*)&paketIn.body.readCommand, (paketIn.header.packetLen-HEADER_LEN)-2);
+                if (bodyCRC!=paketIn.body.bodyCrc)
                     return invalidBodyCRC;
-
-                dataSettings.dataInput[0]=paketInSpeed.body.speed;
-                dataSettings.longDataInput[0]=1; // Размерность данных
-                return createData;
+                for (uint8_t i =0; i<dataSettings.longDataInput;i++)
+                {
+                    dataSettings.dataInput[i]=paketIn.body.speed[i];
                 }
+                return createData;
+
             return invalidQuestion;
             }
         };
 
-struct __attribute__((packed)) WheelPackHeader
-    {
-        volatile uint16_t       marker;
-        volatile uint32_t       wheelName;
-        volatile uint16_t       packetLen;
-        volatile uint16_t       crc;
-    };
 
-struct __attribute__((packed)) WheelPackRead
-    {
-    volatile uint16_t       bodyCrc;
-    volatile uint8_t        readCommand;
-    };
 
-struct __attribute__((packed)) WheelPackWrite
-    {
-    volatile uint16_t       bodyCrc;
-    volatile uint8_t        WriteCommand;
-    };
 
-struct __attribute__ ((packed)) WheelReadPac {
-    WheelPackHeader         header;
-    WheelPackRead           body;
-    };
-
-struct __attribute__ ((packed)) WheelWritePac {
-    WheelPackHeader         header;
-    WheelPackWrite          body;
-    };
-
-struct __attribute__ ((packed)) WheelSpeedPac {
-    volatile uint16_t       bodyCrc;
-    volatile uint8_t        readCommand;
-    volatile int32_t        speed;
-    };
-
-struct __attribute__ ((packed)) WheelIdentificatorPac {
-    volatile uint16_t       bodyCrc;
-    volatile uint8_t        readCommand;
-    volatile int32_t        identificator;
-    };
-
-struct __attribute__ ((packed)) WheelFriquencyPac {
-    volatile uint16_t       bodyCrc;
-    volatile uint8_t        readCommand;
-    volatile int8_t         succered;
-    };
-
-enum SucceredWrite {
-    error=0,
-    appli
-    };
-
-class WhellProtocolNew: public WheelProtacolBase {
-
-public:
-    inline virtual int8_t createDataInput (SettingsDataIO & dataSettings) {
-
-        }
-
-    inline virtual int8_t creatPaketOut(SettingsDataIO & dataSettings) {
-        if (dataSettings.comand==wheelSpeedRequest) {
-            creatPacSpeedRequesten(dataSettings);
-            return createData;}
-        if(dataSettings.comand==wheelWriteFrequency) {
-            creatPacWriteFreq(dataSettings);
-            return createData;}
-        if(dataSettings.comand==wheelGetIdentification) {
-            creatPacGetIdentificator(dataSettings);
-            return createData;}
-        return invalidQuestion;
-        }
-
-private:
-
-    inline void creatPacWriteFreq(SettingsDataIO & dataSettings) {
-
-        }
-
-    inline void creatPacSpeedRequesten(SettingsDataIO & dataSettings) {
-        dataSettings.longDataTX=sizeof(WheelReadPac);
-        dataSettings.longDataRX=sizeof(WheelPackHeader);
-        dataSettings.longDataRX+=sizeof(WheelSpeedPac);
-        WheelReadPac paket ={
-                                       .header.marker=HEADER_MARKER,
-                                       .header.wheelName=dataSettings.wheelNumber,
-                                       .header.packetLen=sizeof(WheelReadPac),
-                                       .body.readCommand=dataSettings.comand
-                                        };
-        paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
-
-        paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
-
-        ExtrenalDevices::DigitalWheelBuilder<WheelReadPac> builder;
-        builder.buildPack(paket,dataSettings.bufferTX);
-        }
-
-    inline void creatPacGetIdentificator(SettingsDataIO & dataSettings) {
-        dataSettings.longDataTX=sizeof(WheelReadPac);
-        dataSettings.longDataRX=sizeof(WheelPackHeader);
-        dataSettings.longDataRX+=sizeof(WheelIdentificatorPac);
-        WheelReadPac paket ={
-                              .header.marker=HEADER_MARKER,
-                              .header.wheelName=dataSettings.wheelNumber,
-                              .header.packetLen=sizeof(WheelReadPac),
-                              .body.readCommand=dataSettings.comand
-        };
-        paket.header.crc = findCrc((uint8_t*)(&(paket.header.marker)), HEADER_LEN-2);
-
-        paket.body.bodyCrc = findCrc((uint8_t*)(&(paket.body.readCommand)), paket.header.packetLen-HEADER_LEN-2);
-
-        ExtrenalDevices::DigitalWheelBuilder<WheelReadPac> builder;
-        builder.buildPack(paket,dataSettings.bufferTX);
-        }
-    };
 
 }
 #endif /* PROTOCOL_HPP_ */

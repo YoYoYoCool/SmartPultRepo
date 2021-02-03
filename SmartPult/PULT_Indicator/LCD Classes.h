@@ -599,9 +599,14 @@ public:
 
 class SelectMenuSynchronization:public SelectMenu
 {
+private:
+    uint8_t camId;
+
 public:
     SelectMenuSynchronization (char* pNam, tMenu_Link* Link, byte Count, byte Menu_Per_Scr, UInt32 eepromAddress);
     virtual void action();
+    virtual void updateFromEEPROM();
+
 };
 
 class ProfileSelectMenu: public LCD_Menu
