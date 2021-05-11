@@ -34,7 +34,7 @@
 
 #define MAX_TRANSFER_TIMEOUT 350
 //#define MAX_TRANSFER_TIMEOUT 100
-#define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 15
+#define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 50
 //#define PULT_DEVELOPING_BOARD
 
 
@@ -103,6 +103,7 @@ static volatile float versionFIZBox     = 0;
 static volatile float panAngel;
 static volatile float tiltAngel;
 static volatile float dutchAngel;
+static volatile float zoomAngel;
 static volatile float panAngelGV;
 static volatile float tiltAngelGV;
 static volatile float dutchAngelGV;
@@ -383,6 +384,8 @@ ExtrenalDevices::WheelChannel digitalWheelRoll (230.0,1.0,&dutchJoySpeedResistor
 
 ExtrenalDevices::WheelChannel digitalWheelTilt (230.0,1.0,&tiltJoySpeedResistor);
 
+//ExtrenalDevices::WheelChannel digitalPedal (1.0,1.0,&dutchJoySpeedResistor);
+
 ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &digitalWheelRoll, &digitalWheelTilt };
 
 #endif
@@ -399,12 +402,12 @@ HallEffectJoyChannel zoomPedalChannel(0.0006,2110,&zoomSpeedResistor,50, 250,0.0
 JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &digitalWheelPanPasha,&panInternalShakerChannel};
 JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,&digitalWheelRollPasha,&rollInternalShakerChannel};
 JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel,&digitalWheelTiltPasha,&tiltInternalShakerChannel};
-JoyChannelIF* zoomChannelsArray[2]=     {&zoomJoyChannel,&zoomInternalShakerChannel};
+JoyChannelIF* zoomChannelsArray[3]=     {&zoomJoyChannel,&zoomInternalShakerChannel,&zoomPedalChannel};
 
 JoyChannels panChannals     (panChannelsArray,4);
 JoyChannels dutchChannals   (dutchChannelsArray,5);
 JoyChannels tiltChannals    (tiltChannelsArray,4);
-JoyChannels zoomChannals    (zoomChannelsArray,2);
+JoyChannels zoomChannals    (zoomChannelsArray,3);
 
 #else
 
@@ -518,7 +521,7 @@ typedef union PultControlBitsLCD {
     struct {
         volatile UInt16 onOffMotors:1;
         volatile UInt16 levelCorrect:1;//
-        volatile UInt16 fastLevelCorrect:1;//
+        volatile UInt16 softRegim:1;//
         volatile UInt16 levelSetup:1;//
 
         volatile UInt16 gvCalibration:1;
@@ -1235,7 +1238,7 @@ inline void dataRenderLogic()
 
                  speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
                  contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.softRegim=contBitsTempMotion.bit.softRegim;
                  contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
                  contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
                  controlBitsExchange=contBitsTemp.all;
@@ -1250,7 +1253,7 @@ inline void dataRenderLogic()
 
                  speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
                  contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.softRegim=contBitsTempMotion.bit.softRegim;
                  contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
                  contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
                  controlBitsExchange=contBitsTemp.all;
@@ -1269,7 +1272,7 @@ inline void dataRenderLogic()
 
                  speedLevelCorrectionExchange=motionControlAPI.getCurrentPoint()->levelCorrectionSpeed;
                  contBitsTempMotion.all=(motionControlAPI.getCurrentPoint()->controlBits&0x0000FFFF);
-                 contBitsTemp.bit.fastLevelCorrect=contBitsTempMotion.bit.fastLevelCorrect;
+                 contBitsTemp.bit.softRegim=contBitsTempMotion.bit.softRegim;
                  contBitsTemp.bit.levelCorrect=contBitsTempMotion.bit.levelCorrect;
                  contBitsTemp.bit.levelSetup=contBitsTempMotion.bit.levelSetup;
                  controlBitsExchange=contBitsTemp.all;
@@ -1318,6 +1321,7 @@ void Pult::exchangeAlternativeTask()
     ExtrenalDevices::DataOut panData;
     ExtrenalDevices::DataOut tiltData;
     ExtrenalDevices::DataOut rollData;
+//    ExtrenalDevices::DataOut pedalData;
     ExtrenalDevices::DataOut panBarData;
     LensDb::LensPackStatic<256> packRx;
     LensDb::LensPackStatic<256> packTx;
@@ -1331,7 +1335,9 @@ void Pult::exchangeAlternativeTask()
     cnannel[2]=&digitalWheelRoll;
     cnannel[3]=&panBar;
     int32_t panBarDataBuf[7];
+    int32_t pedalDat;
     panBarData.dataInput=&panBarDataBuf[0];
+ //   pedalData.dataInput = &pedalDat;
     Rs485Driver2 driverWhell(params.uartId, 115200, params.recieveTimeout, params.txEnablePin);
     ExtrenalDevices::DigitalWheelManager digitalWheelManager(driverWhell,protokol,packRx,packTx);
     while(true)
@@ -1364,6 +1370,9 @@ void Pult::exchangeAlternativeTask()
             digitalWheelRoll.getSpeedWheelRaw()[0]=rollWheelData;
             exchange = true;
         }
+
+        //if(digitalPedal.isEnable_())
+//        digitalWheelManager.exchenge(ProtocolWheel::pedal, ProtocolWheel::wheelSpeedRequest, pedalData);
 
         if (panBar.isEnable_())
         {
@@ -1411,9 +1420,6 @@ void Pult::exchangeTask()
 
         watchDogTimer.useKey(WD_KEY1);
         rndPanGenerator.generate();
- /*       rndTiltGenerator.generate();
-        rndRollGenerator.generate();
-        rndZoomGenerator.generate();*/
 //Поготовка комманды записи
         if (transmitAxisSettingsCommand) {
             if (!noBasicWriteCmdCounter) {
@@ -1527,7 +1533,6 @@ void Pult::exchangeTask()
             {
                 panAngel = getAngle(panReadAngleH,panReadAngleL);
                 tiltAngel = getAngle(tiltReadAngleH,tiltReadAngleL);
-                tiltAngel*=360.0;
                 dutchAngel = getAngle(dutchReadAngleH,dutchReadAngleL);
                 panAngelGV = getAngle(panReadAngleGvH,panReadAngleGvL);
                 tiltAngelGV = getAngle(tiltReadAngleGvH,tiltReadAngleGvL);
@@ -1548,8 +1553,11 @@ void Pult::exchangeTask()
             if(protocol.askCmdId == 5)
             {
                 motionControlAPI.getAnglesData()->zoomRef=  getAngle(zoomReadAngleH,zoomReadAngleL);
+                float zoomAngelAbs = getAngle(zoomReadAngleH,zoomReadAngleL);
+                zoomAngelAbs+=1.0;
+                zoomAngelAbs*=0.5;
+                zoomAngel=zoomAngelAbs;
                 ExtrSyncroization::ExtrenalDevieExchDriver::dataDopReal.setZoomAngel(getAngle(zoomReadAngleH,zoomReadAngleL));
-//                ExtrSyncroization::ExtrenalDevieExchDriver::dataDopReal.setZoomAngel(getAngle(irisReadAngleH,irisReadAngleL));
                 ExtrSyncroization::ExtrenalDevieExchDriver::dataDopReal.setFocusAngel(getAngle(focusReadAngleH,focusReadAngleL));
                 ExtrSyncroization::ExtrenalDevieExchDriver::dataDopReal.setIrisAngel(getAngle(irisReadAngleH,irisReadAngleL));
                 *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_READY;
@@ -1575,9 +1583,18 @@ void Pult::exchangeTask()
             {
             faultCounter++;
             }
-        protocol.askCmdId = commandAskCikl[0];
+        protocol.askCmdId = commandAskCikl[askID];
         askID++;
-        if (askID>1)
+        uint8_t commandCounter;
+#ifdef joyPult
+        if (preston.getEnable())
+            commandCounter=1;
+        else
+            commandCounter=2;
+#else
+        commandCounter=1;
+#endif
+        if (askID>commandCounter)
             askID=0;
 
         if(!motionControlAPI.isActive())
@@ -1922,27 +1939,27 @@ static void controlLogic() {
        }
     }
 
-    if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 5; setUpTiltLimitsFlag = false;};
-    if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 5; setDwTiltLimitsFlag = false;};
-    if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 3; resetUpTiltLimitsFlag = false;};
-    if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 3; resetDwTiltLimitsFlag = false;};
+    if (setUpTiltLimitsFlag == true) {setUpTiltLimitsCounter = 10; setUpTiltLimitsFlag = false;};
+    if (setDwTiltLimitsFlag == true) {setDwTiltLimitsCounter = 10; setDwTiltLimitsFlag = false;};
+    if (resetUpTiltLimitsFlag == true) {resetUpTiltLimitsCounter = 10; resetUpTiltLimitsFlag = false;};
+    if (resetDwTiltLimitsFlag == true) {resetDwTiltLimitsCounter = 10; resetDwTiltLimitsFlag = false;};
 
-    if (setRightPanLimitsFlag == true) {setRightPanLimitsCounter = 3; setRightPanLimitsFlag = false;};
-    if (setLeftPanLimitsFlag == true) {setLeftPanLimitsCounter = 3; setLeftPanLimitsFlag = false;};
-    if (resetRightPanLimitsFlag == true) {resetRightPanLimitsCounter = 3; resetRightPanLimitsFlag = false;};
-    if (resetLeftPanLimitsFlag == true) {resetLeftPanLimitsCounter = 3; resetLeftPanLimitsFlag = false;};
+    if (setRightPanLimitsFlag == true) {setRightPanLimitsCounter = 10; setRightPanLimitsFlag = false;};
+    if (setLeftPanLimitsFlag == true) {setLeftPanLimitsCounter = 10; setLeftPanLimitsFlag = false;};
+    if (resetRightPanLimitsFlag == true) {resetRightPanLimitsCounter = 10; resetRightPanLimitsFlag = false;};
+    if (resetLeftPanLimitsFlag == true) {resetLeftPanLimitsCounter = 10; resetLeftPanLimitsFlag = false;};
 
-    if (setRightRollLimitsFlag == true) {setRightRollLimitsCounter = 3; setRightRollLimitsFlag = false;};
-    if (setLeftRollLimitsFlag == true) {setLeftRollLimitsCounter = 3; setLeftRollLimitsFlag = false;};
-    if (resetRightRollLimitsFlag == true) {resetRightRollLimitsCounter = 3; resetRightRollLimitsFlag = false;};
-    if (resetLefttRollLimitsFlag == true) {resetLeftRollLimitsCounter = 3; resetLefttRollLimitsFlag = false;};
+    if (setRightRollLimitsFlag == true) {setRightRollLimitsCounter = 10; setRightRollLimitsFlag = false;};
+    if (setLeftRollLimitsFlag == true) {setLeftRollLimitsCounter = 10; setLeftRollLimitsFlag = false;};
+    if (resetRightRollLimitsFlag == true) {resetRightRollLimitsCounter = 10; resetRightRollLimitsFlag = false;};
+    if (resetLefttRollLimitsFlag == true) {resetLeftRollLimitsCounter = 10; resetLefttRollLimitsFlag = false;};
 
     #ifdef USAEdition || WhellSmartPult
-    if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+    if (pult.lensCalibrtionClicked()){lensCalibrationCounter = 10;}
 #else
-    if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 3;}
+    if (lensCalibrationButton.isClicked()||pult.lensCalibrtionClicked()){lensCalibrationCounter = 10;}
 #endif
-    if (estimationFlag==true){estimationBitCounter=3;estimationFlag=false;}
+    if (estimationFlag==true){estimationBitCounter=10;estimationFlag=false;}
 
     if (estimationBitCounter){
         estimationBitCounter--;
@@ -2180,6 +2197,17 @@ char* Pult::getGvAcc() {
     }
 }
 
+bool Pult::getGVEnable()    {   return controlBits.bit.levelCorrect; }
+
+float Pult::getPanAngel()   {   return panAngelGV;           }
+
+float Pult::getTiltAngel()   {   return tiltAngelGV;           }
+
+float Pult::getRollAngel()   {   return dutchAngelGV;           }
+
+float Pult::getZoomAngel()   {   return zoomAngel;           }
+
+
 void Pult::setXY(char* pName, UInt8 num, float x, float y) {
 }
 
@@ -2216,7 +2244,7 @@ Warning tDusFail("Tilt ARS Fail",                       WT_WARNING);
 Warning gvFail("GV Fail",                               WT_WARNING);
 Warning encoderFail("Encoder Fail",                     WT_WARNING);
 Warning pultFail("Pult Fail",                           WT_WARNING);
-Warning pultGVCalibrat ("Gyro vertical calibration", WT_WARNING);
+Warning pultGVCalibrat ("Vertical gyro calibration", WT_WARNING);
 Warning panWheelDisconnect ("Pan wheel disconnect", WT_WARNING);
 Warning tiltWheelDisconnect ("Tilt wheel disconnect", WT_WARNING);
 #ifdef USAEdition
@@ -2226,6 +2254,7 @@ Warning rollWheelDisconnect ("Dutch wheel disconnect", WT_WARNING);
 #endif
 #ifdef myPanBar
 Warning panBarDisconnect ("Pan bar disconnect", WT_WARNING);
+Warning panBarError ("Pan bar has error", WT_WARNING);
 #endif
 
 void Pult::updateWarningsList()
@@ -2246,11 +2275,14 @@ void Pult::updateWarningsList()
     if(gyConFaultBits.faultBits.pultFault!=0){  warnings.getRunStrWarnings()->add(&pultFail);}
     //здесь дописываем индикацию калибровки ГВ
     if (controlBits.bit.gvCalibration) {warnings.getRunStrWarnings()->add(&pultGVCalibrat);}
+#ifndef Garanin
     if ((digitalWheelPan.isEnable_())&&(!digitalWheelPan.isConnect()))   {warnings.getRunStrWarnings()->add(&panWheelDisconnect);}
     if ((digitalWheelTilt.isEnable_())&&(!digitalWheelTilt.isConnect()))   {warnings.getRunStrWarnings()->add(&tiltWheelDisconnect);}
     if ((digitalWheelRoll.isEnable_())&&(!digitalWheelRoll.isConnect()))   {warnings.getRunStrWarnings()->add(&rollWheelDisconnect);}
+#endif
 #ifdef myPanBar
     if ((panBar.isEnable_())&&(!panBar.isConnect()))   {warnings.getRunStrWarnings()->add(&panBarDisconnect);}
+    if ((panBar.isEnable_())&&(panBar.isConnect())&&(panBar.isError())) {   warnings.getRunStrWarnings()->add(&panBarError);}
 #endif
 }
 
@@ -2893,6 +2925,23 @@ bool Pult::getEnablePreston() {     return preston.getEnable();    }
 //-----------------------------------------------------------------------------
 
 void Pult::setBrightness (float brightness) {   backlight.setBrightness(brightness);    }
+
+
+//---------------------------------------------------------------------------------
+
+bool Pult::getPanGerconStatus()
+{
+    return (bool)statusBits3.gerconStatus.panMotorStatus;
+}
+bool Pult::getTiltGerconStatus()
+{
+    return (bool)statusBits3.gerconStatus.tiltMotorStatus;
+}
+bool Pult::getRollGerconStatus()
+{
+    return (bool)statusBits3.gerconStatus.dutchMotorStatus;
+}
+
 //-------------------------------------------------------------------------------
 
 float Pult::getCalibrationOffset(CalibratedJoyChannel ch)
@@ -3000,6 +3049,10 @@ void Pult::setMaxTorque(UInt32 pan,UInt32 dutch,UInt32 tilt)
 
 void Pult::setEcoMode(bool eco) {
     controlBits.bit.ecoMode=(UInt16)eco;
+}
+
+void Pult::setSoftRegim(bool regim) {
+    controlBits.bit.softRegim=(UInt16)regim;
 }
 
 void Pult::setJoyDeadZone(UInt32 pan,UInt32 dutch,UInt32 tilt,UInt32 zoom)

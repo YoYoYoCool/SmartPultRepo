@@ -1,0 +1,15 @@
+/*
+ * dopRealExchange.hpp
+ *
+ *  Created on: 19 окт. 2020 г.
+ *      Author: Кирилл Чеверев
+ */
+
+#ifndef EXTRENALDEVICESYNCHRO_DOPREAL_DOPREALEXCHANGE_HPP_
+#define EXTRENALDEVICESYNCHRO_DOPREAL_DOPREALEXCHANGE_HPP_
+
+
+
+
+
+#endif /* EXTRENALDEVICESYNCHRO_DOPREAL_DOPREALEXCHANGE_HPP_ */

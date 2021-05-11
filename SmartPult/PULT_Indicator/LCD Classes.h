@@ -259,6 +259,10 @@ class LCD_Main: public LCD_Listener{
 private:
     char profileString[10];
     char voltageString[10];
+    char panAngelText[10];
+    char tiltAngelText[10];
+    char rollAngelText[10];
+    char zoomAngelText[10];
     char counterTimeString[20];
     char motionPlayModeString[8];
     char motionMixModeString[10];
@@ -297,6 +301,7 @@ public:
     UInt16 lastVoltage;
 
     LCD_Cell Cell_P_Name, Cell_P_Inf, Cell_D_Name, Cell_D_Inf, Cell_T_Name, Cell_T_Inf;
+    LCD_Cell Cell_PanDAngel, Cell_TiltDAngel, Cell_RollDAngel,Cell_ZoomDAngel;
 #ifdef joyPult
     LCD_Cell Cell_Z_Name, Cell_Z_Inf;
 #endif
@@ -311,6 +316,8 @@ public:
     LCD_Cell headVoltage;
     LCD_Cell currentProfile;
 
+    bool GVEnable;
+
     LCD_Main(char* pName);
     void Draw(); //рисование
     void ReDraw(); //перерисовка
@@ -324,6 +331,8 @@ public:
     void updateTiltLimiterCell();
     void updatecurrentProfileCell();
     void updateVoltageString(bool);
+    void updateAngel();
+    void updateBlockingMotors();
     void upToMotionMode();
     void switchMotionMode();
 };
@@ -364,6 +373,7 @@ public:
 
 enum {
     ecoModSistem=0,
+    softModeSistem,
     panTorqueSistem,
     dutchTorqueSistem,
     tiltTorqueSistem,
@@ -372,6 +382,7 @@ enum {
 
 enum {
     ecoMod=1,
+    softMode,
     panTorque,
     dutchTorque,
     tiltTorque,
@@ -380,23 +391,46 @@ enum {
 
 class SetMaxTorque: public LCD_Menu{
 private:
-    void drawEco() {
+    void drawEco()
+    {
         if (eco)
-            sprintf(bufferNames[ecoModSistem],"ECO MOD ON");
+            sprintf(bufferNames[ecoModSistem],"ECO MODE ON");
         else
-            sprintf(bufferNames[ecoModSistem],"ECO MOD OFF");
+            sprintf(bufferNames[ecoModSistem],"ECO MODE OFF");
     }
-    void setEco() {
+
+    void drawSoftMode()
+        {
+            if (soft)
+                sprintf(bufferNames[softModeSistem],"SOFT MODE");
+            else
+                sprintf(bufferNames[softModeSistem],"BASE MODE");
+        }
+
+    void setEco()
+    {
         if (eco) eco=false;
         else eco=true;
         values[ecoModSistem]=(UInt32)eco;
         drawEco();
         p_pult->setEcoMode(eco);
         }
+
+    void setSoft()
+    {
+     if (soft)
+         soft=false;
+     else
+         soft=true;
+     values[softModeSistem]=(UInt32)soft;
+     drawSoftMode();
+     p_pult->setSoftRegim(soft);
+    }
 protected:
     char bufferNames[5][15];
-    volatile UInt32 values[4];
+    volatile UInt32 values[5];
     bool eco;
+    bool soft;
 
     virtual inline void saveInEprom();
 

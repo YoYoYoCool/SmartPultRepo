@@ -219,7 +219,7 @@ enum {SetSecretMenuSistem=0,
             {"MAX TORQUE",NULL},
             {"JOYSTICK DEADZONE",NULL},
             {"USER INFO MENU",NULL},
-            {"PREROL",NULL},
+            {"PRE-ROLL",NULL},
             {"SYNCHRO SOURCE",NULL},
             {"DRIFT STOPPER",NULL},
             {"SHAKER",NULL}
@@ -921,6 +921,10 @@ Cell_T_Inf((char*) "", 1,1,10,10),
 Cell_Z_Name((char*) "", 1,1,10,10),
 Cell_Z_Inf((char*) "", 1,1,10,10),
 #endif
+Cell_PanDAngel((char*) "", 1,1,10,10),
+Cell_TiltDAngel((char*) "", 1,1,10,10),
+Cell_RollDAngel((char*) "", 1,1,10,10),
+Cell_ZoomDAngel((char*) "", 1,1,10,10),
 Cell_Joyst_State((char*) "", 1,1,10,10),
 Cell_Motor_State((char*) "", 1,1,10,10),
 Cell_GV_Acc((char*) "", 1,1,10,10),
@@ -957,6 +961,15 @@ motionMixMode((char*) "", 1,1,10,10)
     motionPlayModeString[1]=0;
     motionMixModeString[1]=0;
     lastVoltage=0xFFFF;
+    for(uint8_t i =0; i<10;i++)
+    {
+        profileString[i]=0;
+        voltageString[i]=0;
+        panAngelText[i]=0;
+        tiltAngelText[i]=0;
+        rollAngelText[i]=0;
+        zoomAngelText[i]=0;
+    }
     //Draw();
 }
 void LCD_Main::renderDateString(char* buffer, UInt8 bufLen,UInt32 seconds)
@@ -1191,6 +1204,7 @@ void LCD_Main::sendSetupValuesByPult()
     p_pult->setJoystickPresetId(ZoomJoystickPreset, EE_Working::Read(EE_LC_ZOOM_SENSE   ));
 
 
+
     switch(EE_Working::Read(EE_LC_CAMERA_START))
     {
         case 0:
@@ -1230,6 +1244,11 @@ void LCD_Main::Draw() //рисование
 
     sendSetupValuesByPult();
     ClearDisp(); //закрасим старое
+#ifdef joyPult
+    UInt16 PosX = 2, Length1 = 22, Length2 = 57, Otkat = 2;
+#else
+    UInt16 PosX = 1, Length1 = 22, Length2 = 84, Otkat = 2;
+#endif
     if(!inMotionMode)
     {
 
@@ -1239,7 +1258,7 @@ void LCD_Main::Draw() //рисование
         Cell_Main_Counter.Active_Style.Cell_Color = ClrDarkSlateBlue;
         Cell_Main_Counter.Active_Style.pFont = g_psFontCmsc48;
         Cell_Main_Counter.Rounded = true;
-        Cell_Main_Counter.FastDraw(126,90,70,90, (char*)"0.0", Cell_Active);
+        Cell_Main_Counter.FastDraw(126,105,70,90, (char*)"0.0", Cell_Active);
         //позиция индикатор справа (>)
         Cell_Main_Counter_Right.Active_Style.Cell_Color = ClrDarkSlateBlue;
         Cell_Main_Counter_Right.Active_Style.Cell_Color = Color_Menu_Fon_InActive;
@@ -1247,11 +1266,11 @@ void LCD_Main::Draw() //рисование
         Cell_Main_Counter_Right.Active_Style.Border = false;
         Cell_Main_Counter_Right.UnActive_Style.Font_Color = Cell_Main_Counter_Right.UnActive_Style.Cell_Color;
         Cell_Main_Counter_Right.UnActive_Style.Border = false;
-        Cell_Main_Counter_Right.FastDraw(205,105,50,50, (char*)">", Cell_UnActive);
+        Cell_Main_Counter_Right.FastDraw(205,120,50,50, (char*)">", Cell_UnActive);
         //позиция индикатор слева (<)
         Cell_Main_Counter_Left.Active_Style = Cell_Main_Counter_Right.Active_Style;
         Cell_Main_Counter_Left.UnActive_Style = Cell_Main_Counter_Right.UnActive_Style;
-        Cell_Main_Counter_Left.FastDraw(65,105,50,50, (char*)"<", Cell_UnActive);
+        Cell_Main_Counter_Left.FastDraw(65,120,50,50, (char*)"<", Cell_UnActive);
 
         Cell_Joyst_State.Active_Style = Cell_Main_Counter_Left.Active_Style;
         Cell_Joyst_State.UnActive_Style = Cell_Main_Counter_Left.UnActive_Style;
@@ -1259,19 +1278,22 @@ void LCD_Main::Draw() //рисование
 //      Cell_Joyst_State.Active_Style.Cell_Color = ClrGoldenrod;
         Cell_Joyst_State.Active_Style.Cell_Color = Style_MenuActive.Cell_Color;
         Cell_Joyst_State.UnActive_Style.pFont = g_psFontCmsc22;
+        Cell_Joyst_State.Active_Style.Text_Centered=false;
 #ifdef joyPult
-        Cell_Joyst_State.FastDraw(60,30,200,30, (char*)"Joysticks OFF", Cell_UnActive);
+        Cell_Joyst_State.FastDraw(220,60,100,30, (char*)"Joy OFF", Cell_UnActive);
 #else
-        Cell_Joyst_State.FastDraw(60,30,200,30, (char*)"All Wheels OFF", Cell_UnActive);
+        Cell_Joyst_State.FastDraw(180,60,100,30, (char*)"Wheels OFF", Cell_UnActive);
 #endif
 
         Cell_Motor_State.Active_Style = Cell_Joyst_State.Active_Style;
         Cell_Motor_State.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-        Cell_Motor_State.FastDraw(60,60,200,30, (char*)"Motors OFF", Cell_UnActive);
+        Cell_Motor_State.Active_Style.Text_Centered=false;
+        Cell_Motor_State.FastDraw(5,60,150,30, (char*)"Motors OFF", Cell_UnActive);
 
         Cell_GV_Acc.Active_Style = Cell_Joyst_State.Active_Style;
         Cell_GV_Acc.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-        Cell_GV_Acc.FastDraw(250,105,60,30, (char*)"ACC", Cell_Active);
+        Cell_GV_Acc.Active_Style.Text_Centered=false;
+        Cell_GV_Acc.FastDraw(5,150,60,30, (char*)"ACC", Cell_Active);
 
         ErrorLine.Active_Style=Cell_Joyst_State.Active_Style;
         ErrorLine.Active_Style.Cell_Color= ClrLinen;
@@ -1282,17 +1304,17 @@ void LCD_Main::Draw() //рисование
         panLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
         panLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
         panLimiterState.Active_Style.Text_Centered=false;
-        panLimiterState.FastDraw(5,55,60,30, (char*)"", Cell_Active);
+        panLimiterState.FastDraw(180,55,60,30, (char*)"", Cell_Active);
 
         tiltLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
         tiltLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
         tiltLimiterState.Active_Style.Text_Centered=false;
-        tiltLimiterState.FastDraw(5,85,60,30, (char*)"", Cell_Active);
+        tiltLimiterState.FastDraw(230,180,60,30, (char*)"", Cell_Active);
 
         rollLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
         rollLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
         rollLimiterState.Active_Style.Text_Centered=false;
-        rollLimiterState.FastDraw(5,155,60,30, (char*)"", Cell_Active);
+        rollLimiterState.FastDraw(180,155,60,30, (char*)"", Cell_Active);
 
         headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
         headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
@@ -1301,14 +1323,59 @@ void LCD_Main::Draw() //рисование
 
         updateTiltLimiterCell();
 
-
-
         currentProfile.Active_Style = Cell_Joyst_State.Active_Style;
         currentProfile.UnActive_Style = Cell_Joyst_State.UnActive_Style;
         updatecurrentProfileCell();
-        currentProfile.FastDraw(255,30,60,30, profileString, Cell_Active);
+        currentProfile.Active_Style.Text_Centered=false;
+        currentProfile.FastDraw(5,120,60,30, profileString, Cell_Active);
 
+        Cell_P_Name.Active_Style = Style_MenuHeader;
+        Cell_P_Name.FastDraw(PosX,1,Length1,60, (char*)"P", Cell_Active);
 
+        Cell_PanDAngel.Active_Style = Style_MenuHeader;
+        Cell_PanDAngel.Active_Style.pFont = g_psFontCmsc18;
+        Cell_PanDAngel.FastDraw(PosX + (Length1-Otkat)+2,31,Length2,30, panAngelText, Cell_Active);
+
+#ifdef USAEdition
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 1*(Length1-Otkat)+2 + Length2,1,Length1,60, (char*)"T", Cell_Active);
+
+    Cell_TiltDAngel.Active_Style = Style_MenuHeader;
+    Cell_TiltDAngel.Active_Style.pFont = g_psFontCmsc18;
+    Cell_TiltDAngel.FastDraw(PosX + 2*(Length1-Otkat) +4+ Length2,31,Length2,30, tiltAngelText, Cell_Active);
+
+    Cell_D_Name.Active_Style = Style_MenuHeader;
+    Cell_D_Name.FastDraw(PosX + 2*(Length1-Otkat)+4 + 2*Length2,1,Length1,60, (char*)"R", Cell_Active);
+
+    Cell_RollDAngel.Active_Style = Style_MenuHeader;
+    Cell_RollDAngel.Active_Style.pFont = g_psFontCmsc18;
+    Cell_RollDAngel.FastDraw(PosX + 3*(Length1-Otkat)+6 + 2*Length2,31,Length2,30, rollAngelText, Cell_Active);
+
+    #else
+    Cell_D_Name.Active_Style = Style_MenuHeader;
+    Cell_D_Name.FastDraw(PosX + (Length1-Otkat)+2 + Length2,1,Length1,60, (char*)"D", Cell_Active);
+
+    Cell_RollDAngel.Active_Style = Style_MenuHeader;
+    Cell_RollDAngel.Active_Style.pFont = g_psFontCmsc18;
+    Cell_RollDAngel.FastDraw(PosX + 2*(Length1-Otkat) +4+ Length2,31,Length2,30, rollAngelText, Cell_Active);
+
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat)+4 + 2*Length2,1,Length1,60, (char*)"T", Cell_Active);
+
+    Cell_TiltDAngel.Active_Style = Style_MenuHeader;
+    Cell_TiltDAngel.Active_Style.pFont = g_psFontCmsc18;
+    Cell_TiltDAngel.FastDraw(PosX + 3*(Length1-Otkat) +6+ 2*Length2,31,Length2,30, tiltAngelText, Cell_Active);
+
+    #endif
+
+#ifdef joyPult
+    Cell_Z_Name.Active_Style = Style_MenuHeader;
+    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat)+6 + 3*Length2,1,Length1,60, (char*)"Z", Cell_Active);
+
+    Cell_ZoomDAngel.Active_Style = Style_MenuHeader;
+    Cell_ZoomDAngel.Active_Style.pFont = g_psFontCmsc18;
+    Cell_ZoomDAngel.FastDraw(PosX + 4*(Length1-Otkat) + 8 + 3*Length2,31,Length2,30, zoomAngelText, Cell_Active);
+#endif
 
         // ======== END Центр ==============
     }
@@ -1368,12 +1435,10 @@ void LCD_Main::Draw() //рисование
 
         tiltLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
         tiltLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-//      tiltLimiterState.Active_Style.Text_Centered=false;
         tiltLimiterState.FastDraw(5,110,60,30, (char*)"", Cell_Active);
 
         rollLimiterState.Active_Style = Cell_Joyst_State.Active_Style;
         rollLimiterState.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-//      rollLimiterState.Active_Style.Text_Centered=false;
         rollLimiterState.FastDraw(5,135,60,30, (char*)"", Cell_Active);
 
         Cell_GV_Acc.Active_Style = Cell_Joyst_State.Active_Style;
@@ -1382,7 +1447,6 @@ void LCD_Main::Draw() //рисование
 
         headVoltage.Active_Style = Cell_Joyst_State.Active_Style;
         headVoltage.UnActive_Style = Cell_Joyst_State.UnActive_Style;
-//      headVoltage.Active_Style.Text_Centered=false;
         headVoltage.FastDraw(5,185,60,20, voltageString, Cell_Active);
 
         updateTiltLimiterCell();
@@ -1433,63 +1497,63 @@ void LCD_Main::Draw() //рисование
         motionPlayMode.FastDraw     (245,80,70,30,motionPlayModeString, Cell_Active);
         motionMixMode.FastDraw      (245,110,70,30,motionMixModeString, Cell_Active);
 
+        Cell_P_Name.Active_Style = Style_MenuHeader;
+        Cell_P_Name.FastDraw(PosX,1,Length1,30, (char*)"P", Cell_Active);
+#ifdef USAEdition
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 1*(Length1-Otkat)+2 + Length2,1,Length1,30, (char*)"T", Cell_Active);
+
+    Cell_D_Name.Active_Style = Style_MenuHeader;
+    Cell_D_Name.FastDraw(PosX + 2*(Length1-Otkat)+4 + 2*Length2,1,Length1,30, (char*)"R", Cell_Active);
+#else
+    Cell_D_Name.Active_Style = Style_MenuHeader;
+    Cell_D_Name.FastDraw(PosX + (Length1-Otkat)+2 + Length2,1,Length1,30, (char*)"D", Cell_Active);
+
+    Cell_T_Name.Active_Style = Style_MenuHeader;
+    Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat)+4 + 2*Length2,1,Length1,30, (char*)"T", Cell_Active);
+#endif
+#ifdef joyPult
+    Cell_Z_Name.Active_Style = Style_MenuHeader;
+    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat)+6 + 3*Length2,1,Length1,30, (char*)"Z", Cell_Active);
+
+#endif
         // ======== END Центр ==============
     }
 
     // ======== Сверху ==============void FastDraw(UInt32 X,UInt32 Y,UInt32 Xsize,UInt32 Ysize, char* ptext, byte Active);
-//todo русуем зум сенс
-#ifdef joyPult
-    UInt16 PosX = 2, Length1 = 22, Length2 = 59, Otkat = 2;
-#else
-    UInt16 PosX = 1, Length1 = 22, Length2 = 86, Otkat = 2;
-#endif
-    Cell_P_Name.Active_Style = Style_MenuHeader;
-    Cell_P_Name.FastDraw(PosX,1,Length1,30, (char*)"P", Cell_Active);
+
+
 
     Cell_P_Inf.Active_Style = Style_MenuHeader;
     Cell_P_Inf.UnActive_Style = Style_Error;
-    Cell_P_Inf.FastDraw(PosX + (Length1-Otkat),1,Length2,30, (char*)"PS1", Cell_Active);
-
+    Cell_P_Inf.FastDraw(PosX + (Length1-Otkat)+2,1,Length2,30, (char*)"PS1", Cell_Active);
 
 #ifdef USAEdition
-    Cell_T_Name.Active_Style = Style_MenuHeader;
-    Cell_T_Name.FastDraw(PosX + 1*(Length1-Otkat) + Length2,1,Length1,30, (char*)"T", Cell_Active);
 
     Cell_T_Inf.Active_Style = Style_MenuHeader;
     Cell_T_Inf.UnActive_Style = Style_Error;
-    Cell_T_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"TS1", Cell_Active);
-
-    Cell_D_Name.Active_Style = Style_MenuHeader;
-    Cell_D_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"R", Cell_Active);
+    Cell_T_Inf.FastDraw(PosX + 2*(Length1-Otkat)+4 + Length2,1,Length2,30, (char*)"TS1", Cell_Active);
 
     Cell_D_Inf.Active_Style = Style_MenuHeader;
     Cell_D_Inf.UnActive_Style = Style_Error;
-    Cell_D_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"DS1", Cell_Active);
+    Cell_D_Inf.FastDraw(PosX + 3*(Length1-Otkat)+6 + 2*Length2,1,Length2,30, (char*)"DS1", Cell_Active);
 
     #else
-    Cell_D_Name.Active_Style = Style_MenuHeader;
-    Cell_D_Name.FastDraw(PosX + (Length1-Otkat) + Length2,1,Length1,30, (char*)"D", Cell_Active);
 
     Cell_D_Inf.Active_Style = Style_MenuHeader;
     Cell_D_Inf.UnActive_Style = Style_Error;
-    Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat) + Length2,1,Length2,30, (char*)"DS1", Cell_Active);
-
-    Cell_T_Name.Active_Style = Style_MenuHeader;
-    Cell_T_Name.FastDraw(PosX + 2*(Length1-Otkat) + 2*Length2,1,Length1,30, (char*)"T", Cell_Active);
+    Cell_D_Inf.FastDraw(PosX + 2*(Length1-Otkat)+4 + Length2,1,Length2,30, (char*)"DS1", Cell_Active);
 
     Cell_T_Inf.Active_Style = Style_MenuHeader;
     Cell_T_Inf.UnActive_Style = Style_Error;
-    Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) + 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
+    Cell_T_Inf.FastDraw(PosX + 3*(Length1-Otkat) +6+ 2*Length2,1,Length2,30, (char*)"TS1", Cell_Active);
     #endif
 
-
 #ifdef joyPult
-    Cell_Z_Name.Active_Style = Style_MenuHeader;
-    Cell_Z_Name.FastDraw(PosX + 3*(Length1-Otkat) + 3*Length2,1,Length1,30, (char*)"Z", Cell_Active);
 
     Cell_Z_Inf.Active_Style = Style_MenuHeader;
     Cell_Z_Inf.UnActive_Style = Style_Error;
-    Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) + 3*Length2,1,Length2,30, (char*)"ZS1", Cell_Active);
+    Cell_Z_Inf.FastDraw(PosX + 4*(Length1-Otkat) +8 + 3*Length2,1,Length2,30, (char*)"ZS1", Cell_Active);
 #endif
     // ======== END Сверху ==============
 
@@ -1568,6 +1632,41 @@ void LCD_Main::updatecurrentProfileCell()
     sprintf(profileString,"P%d",EE_Working::getProfileID()+1);
     profileString[9]=0;
 }
+
+void LCD_Main::updateAngel()
+{
+    sprintf(panAngelText,"%4.1f",p_pult->getPanAngel());
+    sprintf(tiltAngelText,"%4.1f",p_pult->getTiltAngel());
+    sprintf(rollAngelText,"%4.1f",p_pult->getRollAngel());
+    sprintf(zoomAngelText,"%4.1f",p_pult->getZoomAngel()*100.0);
+    Cell_PanDAngel.ReDraw();
+    Cell_TiltDAngel.ReDraw();
+    Cell_RollDAngel.ReDraw();
+#ifdef joyPult
+    Cell_ZoomDAngel.ReDraw();
+#endif
+}
+
+void LCD_Main::updateBlockingMotors()
+{
+    if (p_pult->getPanGerconStatus())
+           Cell_P_Name.Active_Style.Cell_Color = ClrDarkGoldenrod;
+       else
+           Cell_P_Name.Active_Style.Cell_Color = ClrLinen;
+       if (p_pult->getTiltGerconStatus())
+           Cell_T_Name.Active_Style.Cell_Color = ClrDarkGoldenrod;
+       else
+           Cell_T_Name.Active_Style.Cell_Color = ClrLinen;
+       if (p_pult->getRollGerconStatus())
+           Cell_D_Name.Active_Style.Cell_Color = ClrDarkGoldenrod;
+       else
+           Cell_D_Name.Active_Style.Cell_Color = ClrLinen;
+       Cell_P_Name.ReDraw();
+       Cell_D_Name.ReDraw();
+       Cell_T_Name.ReDraw();
+
+}
+
 void LCD_Main::updateVoltageString(bool manual)
 {
 #ifdef panWheelDebug
@@ -1605,25 +1704,7 @@ void LCD_Main::updateVoltageString(bool manual)
 
 void LCD_Main::updateTiltLimiterCell()
 {
-    switch(panLimiterStateFlag)
-    {
-        case TL_UP:
-            panLimiterState.p_text="P LF";
-            panLimiterState.ReDraw();
-            break;
-        case TL_DOWN:
-            panLimiterState.p_text="P RT";
-            panLimiterState.ReDraw();
-            break;
-        case TL_UP_DOWN:
-            panLimiterState.p_text="P ALL";
-            panLimiterState.ReDraw();
-            break;
-        case TL_RESET:
-        default:
-            panLimiterState.Hide();
-            break;
-    }
+
     switch(tiltLimiterStateFlag)
     {
         case TL_UP:
@@ -1631,7 +1712,7 @@ void LCD_Main::updateTiltLimiterCell()
             tiltLimiterState.ReDraw();
             break;
         case TL_DOWN:
-            tiltLimiterState.p_text="T DOWN";
+            tiltLimiterState.p_text="T DN";
             tiltLimiterState.ReDraw();
             break;
         case TL_UP_DOWN:
@@ -1643,48 +1724,6 @@ void LCD_Main::updateTiltLimiterCell()
             tiltLimiterState.Hide();
             break;
     }
-#ifdef USAEdition
-    switch(rollLimiterStateFlag)
-    {
-        case TL_UP:
-            rollLimiterState.p_text="R LF";
-            rollLimiterState.ReDraw();
-            break;
-        case TL_DOWN:
-            rollLimiterState.p_text="R RT";
-            rollLimiterState.ReDraw();
-            break;
-        case TL_UP_DOWN:
-            rollLimiterState.p_text="R ALL";
-            rollLimiterState.ReDraw();
-            break;
-        case TL_RESET:
-        default:
-            rollLimiterState.Hide();
-            break;
-    }
-#else
-    switch(rollLimiterStateFlag)
-        {
-            case TL_UP:
-                rollLimiterState.p_text="D LT";
-                rollLimiterState.ReDraw();
-                break;
-            case TL_DOWN:
-                rollLimiterState.p_text="D RT";
-                rollLimiterState.ReDraw();
-                break;
-            case TL_UP_DOWN:
-                rollLimiterState.p_text="D ALL";
-                rollLimiterState.ReDraw();
-                break;
-            case TL_RESET:
-            default:
-                rollLimiterState.Hide();
-                break;
-        }
-#endif
-
 }
 
 void LCD_Main::upToMotionMode()
@@ -1767,7 +1806,17 @@ void LCD_Main::Listener()
         Cell_GV_Acc.ReDraw();
     }
 
-     updateVoltageString(false);
+    if (GVEnable != p_pult->getGVEnable())
+    {
+        GVEnable = p_pult->getGVEnable();
+        if (GVEnable)
+            Cell_GV_Acc.Active_Style.Font_Color = ClrWhite;
+        else
+            Cell_GV_Acc.Active_Style.Font_Color = ClrBlack;
+        Cell_GV_Acc.ReDraw();
+    }
+    updateVoltageString(false);
+    updateBlockingMotors();
 //todo motion modes deactivate
     if(inMotionMode)
     {
@@ -1790,7 +1839,7 @@ void LCD_Main::Listener()
     }
     else
     {
-
+        updateAngel();
         if(explore_Koeff_Butt()) return;
     }
 
@@ -2485,58 +2534,10 @@ void LCD_Menu::Select() //выбор
 
 bool Menu_Listener(LCD_Listener* HoIs)
 {
-
-#define newLimitMenu
-
-#ifdef newLimitMenu
-        if (HoIs ==limitsMenuPointer){
+    if (HoIs ==limitsMenuPointer){
         pDispl= (  (LCD_Menu*)HoIs )->Menu_Link[(((LCD_Menu*)HoIs )->Tek_Count)-1]. pPointSub;
                         pDispl->Parent = HoIs;
                         pDispl->Focused = true;}
-
-#else
-        if(HoIs == pTiltLimit_Menu) //обработчик ограничения тангажа
-        {
-        ((LCD_Menu*)HoIs )->Table_Cell[((LCD_Menu*)HoIs )->Tek_Count-1]->Hide();
-        Task_sleep(300);
-        ((LCD_Menu*)HoIs )->Table_Cell[((LCD_Menu*)HoIs )->Tek_Count-1]->Draw();
-        if(  (  (LCD_Menu*)HoIs )->Tek_Count == 1)
-            {
-            p_pult->setTiltUpLimit();
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_UP_DOWN; }
-            else{mainScreenPointer->tiltLimiterStateFlag=TL_UP; }
-            return true;
-            }
-        if(  (  (LCD_Menu*)HoIs )->Tek_Count == 2)
-            {
-            p_pult->setTiltDnLimit();
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_UP){mainScreenPointer->tiltLimiterStateFlag=TL_UP_DOWN; }
-            else{mainScreenPointer->tiltLimiterStateFlag=TL_DOWN; }
-            return true;
-            }
-        if(  (  (LCD_Menu*)HoIs )->Tek_Count == 3)
-            {
-            p_pult->resetTiltUpLimit();
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_UP_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_DOWN; return true;}
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_UP){mainScreenPointer->tiltLimiterStateFlag=TL_RESET; return true;}
-            return true;
-            }
-        if(  (  (LCD_Menu*)HoIs )->Tek_Count == 4)
-            {
-            p_pult->resetTiltDnLimit();
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_UP_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_UP; return true;}
-            if(mainScreenPointer->tiltLimiterStateFlag==TL_DOWN){mainScreenPointer->tiltLimiterStateFlag=TL_RESET; return true;}
-            return true;
-            }
-        if(  (  (LCD_Menu*)HoIs )->Tek_Count == 5)
-            {
-            p_pult->resetTiltUpLimit();
-            p_pult->resetTiltDnLimit();
-            mainScreenPointer->tiltLimiterStateFlag=TL_RESET;
-            return true;
-            }
-        }
-#endif
 
     #ifdef objDef
     if (HoIs==lensControlObjectiveMenuPointer) {
@@ -2952,15 +2953,17 @@ void SetJoyDeadZone::Listener()
 SetMaxTorque::SetMaxTorque(char* pNam):
      LCD_Menu()
 {
-    Counter_Cell = 4;
+    Counter_Cell = 5;
     Tek_Count = 1;
     Start = 1;
     Orientation = 0;
-    Menu_On_Screen = 4;
+    Menu_On_Screen = 5;
     pName = pNam;
     eco=true;
+    soft = false;
 
     values[ecoModSistem]=1;
+    values[softModeSistem]=1;
     values[panTorqueSistem]=maxTorque;
     values[dutchTorqueSistem]=maxTorque;
     values[tiltTorqueSistem]=maxTorque;
@@ -2984,6 +2987,7 @@ void SetMaxTorque::DrawVert() //рисование вертикального меню
     StepY = p_Pos_Size_XY.Ysize + 5;
 
     drawEco();
+    drawSoftMode();
     sprintf(bufferNames[panTorqueSistem],"PAN: %d", values[panTorqueSistem]);
 #ifdef USAEdition
     sprintf(bufferNames[dutchTorqueSistem],"ROOL: %d", values[dutchTorqueSistem]);
@@ -3003,14 +3007,14 @@ void SetMaxTorque::DrawVert() //рисование вертикального меню
 
 void SetMaxTorque::upValue(UInt8 id)
 {
-    if(id>=4){return;}
+    if(id>=5){return;}
     values[id]+=5;
     if(values[id]>95)
         values[id]=100;
 }
 void SetMaxTorque::downValue(UInt8 id)
 {
-    if(id>=4){return;}
+    if(id>=5){return;}
     values[id]-=5;
     if(values[id]<30)
         values[id]=30;
@@ -3020,40 +3024,62 @@ void SetMaxTorque::downValue(UInt8 id)
 void SetMaxTorque::action()
 {
     p_pult->setMaxTorque(values[panTorqueSistem],values[dutchTorqueSistem],values[tiltTorqueSistem]);
+    p_pult->setSoftRegim(soft);
     p_pult->setEcoMode(eco);
 }
 
 void SetMaxTorque::saveInEprom()
 {
-    EE_Working::Write(EE_LC_ECO_MOD_ON,values[ecoModSistem]);
     EE_Working::Write(EE_LC_PAN_MAX_TORQUE,values[panTorqueSistem]);
     EE_Working::Write(EE_LC_DUTCH_MAX_TORQUE,values[dutchTorqueSistem]);
     EE_Working::Write(EE_LC_TILT_MAX_TORQUE,values[tiltTorqueSistem]);
+    EE_Working::Write(EE_LC_ECO_MOD_ON,values[ecoModSistem]);
+    EE_Working::Write(EE_LC_SOFT_MODE_ON,values[softModeSistem]);
 }
 
 void SetMaxTorque::updateFromEeprom()
 {
-    UInt32 tmp[4];
+    UInt32 tmp[5];
     tmp[ecoModSistem]=EE_Working::Read(EE_LC_ECO_MOD_ON);
+    tmp[softModeSistem]=EE_Working::Read(EE_LC_SOFT_MODE_ON);
     tmp[panTorqueSistem]=EE_Working::Read(EE_LC_PAN_MAX_TORQUE);
     tmp[dutchTorqueSistem]=EE_Working::Read(EE_LC_DUTCH_MAX_TORQUE);
     tmp[tiltTorqueSistem]=EE_Working::Read(EE_LC_TILT_MAX_TORQUE);
 
-
-    if(tmp[panTorqueSistem]>maxTorque||tmp[dutchTorqueSistem]>maxTorque||
-            tmp[tiltTorqueSistem]>maxTorque||tmp[ecoModSistem]>1)
+    if (tmp[panTorqueSistem]>maxTorque)
     {
         values[panTorqueSistem]=maxTorque;
-        values[dutchTorqueSistem]=maxTorque;
-        values[tiltTorqueSistem]=maxTorque;
-        values[ecoModSistem]=1;
+        EE_Working::Write(EE_LC_PAN_MAX_TORQUE,values[panTorqueSistem]);
+    }
 
-        saveInEprom();
-        return;
+    if (tmp[dutchTorqueSistem]>maxTorque)
+    {
+        values[dutchTorqueSistem]=maxTorque;
+        EE_Working::Write(EE_LC_DUTCH_MAX_TORQUE,values[dutchTorqueSistem]);
+    }
+
+    if (tmp[tiltTorqueSistem]>maxTorque)
+    {
+        values[tiltTorqueSistem]=maxTorque;
+        EE_Working::Write(EE_LC_TILT_MAX_TORQUE,values[tiltTorqueSistem]);
+    }
+
+    if(tmp[ecoModSistem]>1)
+    {
+        values[ecoModSistem]=1;
+        EE_Working::Write(EE_LC_ECO_MOD_ON,values[ecoModSistem]);
+    }
+
+    if(tmp[softModeSistem]>1)
+    {
+        values[softModeSistem]=1;
+        EE_Working::Write(EE_LC_SOFT_MODE_ON,values[softModeSistem]);
     }
 
     values[ecoModSistem]=tmp[ecoModSistem];
+    values[softModeSistem]=tmp[softModeSistem];
     eco=(bool)values[ecoModSistem];
+    soft=(bool)values[softModeSistem];
     values[panTorqueSistem]=tmp[panTorqueSistem];
     values[dutchTorqueSistem]=tmp[dutchTorqueSistem];
     values[tiltTorqueSistem]=tmp[tiltTorqueSistem];
@@ -3090,8 +3116,13 @@ void SetMaxTorque::Listener()
 
     if (getButtonState(pult_Button_Right) == PRESSED)
         {
-        if (Tek_Count==ecoMod) {
+        if (Tek_Count==ecoMod)
+            {
             setEco();
+            }
+        else if(Tek_Count==softMode)
+            {
+            setSoft();
             }
         else{
         upValue(Tek_Count-1);
@@ -3100,36 +3131,45 @@ void SetMaxTorque::Listener()
         return;
         }
     if (getButtonState(pult_Button_Left) == PRESSED)
-    {
-        if (Tek_Count==ecoMod) {
+        {
+        if (Tek_Count==ecoMod)
+            {
             setEco();
+            }
+        else if(Tek_Count==softMode)
+            {
+            setSoft();
             }
         else{
         downValue(Tek_Count-1);
         action();}
         Draw(Tek_Count);
         return;
-    }
+        }
     if (getButtonState(pult_Button_Right) == HOLD)
-    {
+        {
         if (Tek_Count==ecoMod)
+            return;
+        if (Tek_Count==softMode)
             return;
         upValue(Tek_Count-1);
         Draw(Tek_Count);
         action();
         Task_sleep(30);
         return;
-    }
+        }
     if (getButtonState(pult_Button_Left) == HOLD)
-    {
+        {
         if (Tek_Count==ecoMod)
-        return;
+            return;
+        if (Tek_Count==softMode)
+            return;
         downValue(Tek_Count-1);
         Draw(Tek_Count);
         action();
         Task_sleep(30);
         return;
-    }
+        }
 }
 
 //----------------------------------------------------------------------------------------------------------

@@ -704,10 +704,12 @@ public:
 				res+=channels->get(i)->getCurrentAdcValue();
 			}
 		}
-
-//        res = calcFluid(res);
-		fluidNew.updateKoaf(fluidControl->adcValue);
-		res = fluidNew.calulate(res);
+#ifdef fluidTest
+        fluidNew.updateKoaf(fluidControl->adcValue);
+        res = fluidNew.calulate(res);
+#else
+		res = calcFluid(res);
+#endif
         res*=revers;
         if (!enabled) res = 0.0;
 

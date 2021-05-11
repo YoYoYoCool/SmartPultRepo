@@ -78,14 +78,14 @@ const char * motorBlockStartString="BLOCKING MOTORS...";
 const char * motorBlockOkString="FINISHED BLOCKING";
 const char * motorHardBlockString="MOTORS FORCED ON";
 const char * activatedString ="ACTIVATED";
-const char * interraptString = "ABORTING...";
+const char * interraptString = "CANCELLING...";
 
 const char * joyStickUnblokOkString = "FINISHED UNBLOCKING";
 const char * levelCorrectUnblokStartString = "UNBLOCKING GV...";
 const char * levelCorrectUnblokOkString = "FINISHED UNBLOCKING";
 const char * motorUnblokStartString = "UNBLOCKING MOTORS...";
 const char * motorUnblokOkString = "FINISHED UNBLOCKING";
-const char * interruptedString = "ABORTED";
+const char * interruptedString = "CANCELLED";
 
 
 

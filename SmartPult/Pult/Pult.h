@@ -283,6 +283,13 @@ public:
 
     void setPlatform(UInt8 num); //выбор платформы (1 или 2)
     char* getGvAcc();
+    bool getGVEnable();
+
+    float getPanAngel();
+    float getTiltAngel();
+    float getRollAngel();
+    float getZoomAngel();
+
     void setXY(char* pName, UInt8 num, float x, float y);
 
     //Пресеты джойстиков
@@ -378,6 +385,8 @@ public:
     void setMaxTorque(UInt32 pan,UInt32 ducth,UInt32 tilt);
     //------------------------------------------------------------------------
     void setEcoMode(bool eco);
+
+    void setSoftRegim(bool regim);
     //------------------------------------------------------------------------
     void setJoyDeadZone(UInt32 pan,UInt32 ducth,UInt32 tilt,UInt32 zoom);
     //------------------------------------------------------------------------
@@ -455,6 +464,10 @@ public:
     void xorPreston ();
 
     bool getEnablePreston();
+
+    bool getPanGerconStatus();
+    bool getTiltGerconStatus();
+    bool getRollGerconStatus();
 
     //------------------------------------------------------------
 

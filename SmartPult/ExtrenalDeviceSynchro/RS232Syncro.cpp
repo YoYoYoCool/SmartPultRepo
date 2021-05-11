@@ -30,7 +30,7 @@ namespace ExtrSyncroization
         bool ExtrenalDevieExchDriver::lockTransmitionTask=false;
         ProtocolDopReal::DataOutDopReal ExtrenalDevieExchDriver::dataDopReal;
         ProtocolDopReal::ProtocolDopReal protocolDopReal(ExtrenalDevieExchDriver::dataDopReal);
-        uint32_t timeOutValue = 15;
+        uint32_t timeOutValue = 16;
 
 
         UInt8 testBuf[]={0xA2, 0x03, 0x7F, 0x7E, 0x00, 0x04, 0x00, 0x03, 0x42, 0x0A, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x7F ,0x00 } ;//18 el
@@ -77,7 +77,7 @@ namespace ExtrSyncroization
                     mode=mode_;
                     break;
                 case EXT_DEV_DOPREAL:
-                    if(!(uartDriver->updateUartParams(57600, 30))){lockTransmitionTask=true;}
+                    if(!(uartDriver->updateUartParams(38400, 30))){lockTransmitionTask=true;}
                     else{lockTransmitionTask=false;}
                     mode=mode_;
                     break;

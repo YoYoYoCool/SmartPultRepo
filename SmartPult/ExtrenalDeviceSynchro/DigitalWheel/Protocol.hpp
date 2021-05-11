@@ -22,7 +22,8 @@ namespace ProtocolWheel {
         wheelPan =  0,
         wheelRoll =     1,
         wheelTilt =     2,
-        shakerBox = 3,
+        pedal   =   3,
+        shakerBox = 4,
         panBar = 31
     };
 
