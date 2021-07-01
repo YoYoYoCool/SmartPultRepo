@@ -144,7 +144,8 @@ public:
 		writeData (writeCmdId);
 		exchange.transmit(&pack);
 		if (exchange.recieve(&pack)) {
-			if (header.address == myAddr) {
+			if (header.address == myAddr)
+			{
 				if (readData (askCmdId)) {
 					res = true;
 				}

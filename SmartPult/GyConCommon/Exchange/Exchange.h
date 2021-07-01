@@ -143,18 +143,24 @@ public:
 	}
 	bool recieve(Pack_* requestPack) {
 		okCounter++;
-		if (reciever.recievePack(requestPack)) {
+		if (reciever.recievePack(requestPack))
+		{
 			disconnectedCounter = 7;
 			connected = true;
 			return true;
-		} else {
+		}
+		else
+		{
 			errsCounter++;
-			if (disconnectedCounter <= 0) {
+			if (disconnectedCounter <= 0)
+			{
 				connected = false;
-			} else {
-				disconnectedCounter--;
-		        Task_sleep(3); //здесь но не уверен
 			}
+			else
+			{
+				disconnectedCounter--;
+			}
+            Task_sleep(3); //здесь но не уверен
 		}
 		return false;
 	}

@@ -43,7 +43,9 @@ union WheelDigital {
         volatile uint8_t digitalWheelPanTransmission :3;
         volatile uint8_t digitalWheelTiltTransmission :3;
         volatile uint8_t digitalWheelRollTransmission :3;
-        volatile uint32_t NU :17;
+        volatile uint8_t digitalPedalChannel :2;
+        volatile uint8_t shakerBoxChannel :1;
+        volatile uint32_t NU :14;
         }data;
     };
 
@@ -555,11 +557,26 @@ const char * whellRollFull  = "DUTCH RANGE: FULL";
 
 char * rollText[digitalWheelText] = {(char *)whellRollOff,(char *)whellRollSlow,(char *)whellRollMiddle,(char *)whellRollFast,(char *)whellRollFull} ;
 
-const char * festWheelPan  = "PAN WHEEL: FIRST";
-const char * festWheelTilt = "PAN WHEEL: SECOND";
-const char * festWheelRoll = "PAN WHEEL: THIRD";
+const char * textDigitalPedalDisable     = "DIGITAL PEDAL: DISABLE";
+#ifdef USAEdition
+const char * textDigitalPedalRoll  = "DIGITAL PEDAL: ROLL";
+#else
+const char * textDigitalPedalRoll  = "DIGITAL PEDAL: DUTCH";
+#endif
+const char * textDigitalPedalZoom = "DIGITAL PEDAL: ZOOM";
+char * pedalText[3] = {
+                         (char*)textDigitalPedalDisable,
+                         (char*)textDigitalPedalRoll,
+                         (char*)textDigitalPedalZoom
+};
 
-char * festText  [nameWheelID]  = {(char *)festWheelPan,  (char *)festWheelTilt,  (char *)festWheelRoll  };
+const char * shakerBoxDisable  = "SHAKER BOX: DISABLE";
+const char * shakerBoxEnable = "SHAKER BOX: ENABLE";
+
+
+char * shakerBoxText  [2]  = {
+                              (char *)shakerBoxDisable,
+                              (char *)shakerBoxEnable  };
 
 const char * secondWheelPan  = "TILT WHEEL: FIRST";
 const char * secondWheelTilt = "TILT WHEEL: SECOND";
@@ -579,17 +596,7 @@ const char * thirdWheelRoll = "DUTCH WHEEL: THIRD";
 
 char * thirdText [nameWheelID]  = {(char *)thirdWheelPan, (char *)thirdWheelTilt, (char *)thirdWheelRoll };
 
-const char * textStartSelect     = "START WHEEL SELECTION";
-const char * textPanWheelSelect  = "CHOOSE THE PAN WHEEL";
-const char * textTiltWheelSelect = "CHOOSE THE TILT WHEEL";
-#ifdef USAEdition
-const char * textRollWheelSelect = "CHOOSE THE ROll WHEEL";
-#else
-const char * textRollWheelSelect = "CHOOSE THE DUTCH WHEEL";
-#endif
-const char * textEndSelect       = "ASSIGNMENT COMPLETED";
 
-char * selectWheel[6] = {(char*)textStartSelect,(char*)textPanWheelSelect,(char*)textTiltWheelSelect, (char*)textRollWheelSelect,(char*)textEndSelect};
 
 t_Pos_Size_XY positionHeaderDigital = {    .X=30,  .Y=0, .Xsize=289, .Ysize=30  };
 
@@ -600,7 +607,7 @@ class  LCDDegitalWheel:public LCDWheelBase {
 public:
     LCDDegitalWheel( WheelDigital & digitalData):
         digitalData(digitalData),
-        LCDWheelBase(2,(char *)headerDigitalWheel,positionHeaderDigital,(char *)pointerDigital,positionPointerDigital) {
+        LCDWheelBase(4,(char *)headerDigitalWheel,positionHeaderDigital,(char *)pointerDigital,positionPointerDigital) {
             select=false;
             digitalData.all=0;
             cellHeader.Active_Style = Style_MenuHeader;
@@ -628,12 +635,16 @@ public:
 
             p_pult->disableAllDigitalWheel();
             position.Y+=position.Ysize;
-            startWheelSelect.Set_Coord(position);
-            startWheelSelect.p_text=(char *)textStartSelect;
+            digitalPedal.Set_Coord(position);
+            digitalPedal.p_text=(char *)textDigitalPedalDisable;
+            digitalPedal.Active_Style.Cell_Color=ClrLinen;
+            digitalPedal.UnActive_Style.Cell_Color=ClrLinen;
 
             position.Y+=position.Ysize;
-            ferstIDWheel.Set_Coord(position);
-            ferstIDWheel.p_text=(char *)festWheelPan;
+            shakerBox.Set_Coord(position);
+            shakerBox.p_text=(char *)shakerBoxDisable;
+            shakerBox.Active_Style.Cell_Color=ClrLinen;
+            shakerBox.UnActive_Style.Cell_Color=ClrLinen;
 
             position.Y+=position.Ysize;
             secondIDWheel.Set_Coord(position);
@@ -646,17 +657,17 @@ public:
             cell[0]=&wheelPanTransmission;
             cell[1]=&wheelTiltTransmission;
             cell[2]=&wheelRollTransmission;
-            cell[3]=&startWheelSelect;
-            cell[4]=&ferstIDWheel;
+            cell[3]=&digitalPedal;
+            cell[4]=&shakerBox;
             cell[5]=&secondIDWheel;
             cell[6]=&thirdIDWheel;
             }
 
 private:
 
-    LCD_Cell wheelPanTransmission, wheelTiltTransmission, wheelRollTransmission;
-    LCD_Cell ferstIDWheel, secondIDWheel,thirdIDWheel;
-    LCD_Cell startWheelSelect;
+    LCD_Cell wheelPanTransmission, wheelTiltTransmission, wheelRollTransmission,digitalPedal,shakerBox;
+    LCD_Cell  secondIDWheel,thirdIDWheel;
+
     WheelDigital & digitalData;
 
 public:
@@ -693,6 +704,32 @@ public:
         else {
             p_pult->digitalWhellRollDisable();
                 }
+        if (digitalData.data.digitalPedalChannel==1)
+            {
+            p_pult->enableDigitalRollPedal();
+            digitalPedal.p_text=pedalText[1];
+            digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+            digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+            }
+        else if (digitalData.data.digitalPedalChannel==2)
+            {
+            p_pult->enableDigitalZoomPedal();
+            digitalPedal.p_text=pedalText[2];
+            digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+            digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+            }
+        else
+            {
+            p_pult->disableDigitalPedal();
+            }
+        if (digitalData.data.shakerBoxChannel)
+            {
+            p_pult->enableDigitalZoomPedal();
+            digitalPedal.p_text=pedalText[2];
+            digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+            digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+            }
+
         }
 
     virtual void workingForm() {
@@ -712,13 +749,6 @@ public:
             if (getButtonState(pult_Button_Left)== PRESSED) {
                 left();
                 }
-
-            if (getButtonState(pult_Button_Select)==PRESSED) {
-                if (encoder.getActualPosition()==3) {
-                    starSetWheel();
-                }
-                return;
-                }
             }
         }
 
@@ -729,7 +759,7 @@ public:
 private:
 
     void starSetWheel() {
-        startWheelSelect.p_text=(char *)textPanWheelSelect;
+       // startWheelSelect.p_text=(char *)textPanWheelSelect;
         }
 
     void drawForm() {
@@ -739,10 +769,7 @@ private:
             cell[i]->ReHide();
             }
         cell[encoder.getActualPosition()]->ReDraw();
-        startWheelSelect.ReHide();
-        ferstIDWheel.ReHide();
-        secondIDWheel.ReHide();
-        thirdIDWheel.ReHide();
+
         }
 
     void left() {
@@ -784,6 +811,53 @@ private:
             wheelRollTransmission.ReDraw();
             return;
             }
+        if (cell[encoder.getActualPosition()]==&digitalPedal) {
+            digitalData.data.digitalPedalChannel--;
+            if (digitalData.data.digitalPedalChannel>2)
+                digitalData.data.digitalPedalChannel=2;
+            digitalPedal.p_text=pedalText[digitalData.data.digitalPedalChannel];
+            switch (digitalData.data.digitalPedalChannel)
+                {
+            case 0:
+                digitalPedal.Active_Style.Cell_Color=ClrLinen;
+                digitalPedal.UnActive_Style.Cell_Color=ClrLinen;
+                p_pult->disableDigitalPedal();
+                break;
+            case 1:
+                digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+                digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableDigitalRollPedal();
+                break;
+            case 2:
+                digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+                digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableDigitalZoomPedal();
+                break;
+                }
+            digitalPedal.ReDraw();
+            return;
+            }
+
+        if (cell[encoder.getActualPosition()]==&shakerBox) {
+            digitalData.data.shakerBoxChannel--;
+            shakerBox.p_text=shakerBoxText[digitalData.data.shakerBoxChannel];
+            switch (digitalData.data.shakerBoxChannel)
+            {
+            case 0:
+                shakerBox.Active_Style.Cell_Color=ClrLinen;
+                shakerBox.UnActive_Style.Cell_Color=ClrLinen;
+                p_pult->disableShakerBox();
+                break;
+            case 1:
+                shakerBox.Active_Style.Cell_Color=ClrMediumOrchid;
+                shakerBox.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableShakerBox();
+                break;
+            }
+            shakerBox.ReDraw();
+            return;
+            }
+
         }
 
     void right() {
@@ -825,20 +899,58 @@ private:
             wheelRollTransmission.ReDraw();
             return;
             }
-        }
+        if (cell[encoder.getActualPosition()]==&digitalPedal) {
+            digitalData.data.digitalPedalChannel++;
+            if (digitalData.data.digitalPedalChannel>2)
+                digitalData.data.digitalPedalChannel=0;
+            digitalPedal.p_text=pedalText[digitalData.data.digitalPedalChannel];
+            switch (digitalData.data.digitalPedalChannel)
+                {
+            case 0:
+                digitalPedal.Active_Style.Cell_Color=ClrLinen;
+                digitalPedal.UnActive_Style.Cell_Color=ClrLinen;
+                p_pult->disableDigitalPedal();
+                break;
+            case 1:
+                digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+                digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableDigitalRollPedal();
+                break;
+            case 2:
+                digitalPedal.Active_Style.Cell_Color=ClrMediumOrchid;
+                digitalPedal.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableDigitalZoomPedal();
+                break;
+                }
+            digitalPedal.ReDraw();
+            return;
+            }
+
+        if (cell[encoder.getActualPosition()]==&shakerBox) {
+            digitalData.data.shakerBoxChannel++;
+            shakerBox.p_text=shakerBoxText[digitalData.data.shakerBoxChannel];
+            switch (digitalData.data.shakerBoxChannel)
+            {
+            case 0:
+                shakerBox.Active_Style.Cell_Color=ClrLinen;
+                shakerBox.UnActive_Style.Cell_Color=ClrLinen;
+                p_pult->disableShakerBox();
+                break;
+            case 1:
+                shakerBox.Active_Style.Cell_Color=ClrMediumOrchid;
+                shakerBox.UnActive_Style.Cell_Color=ClrMediumOrchid;
+                p_pult->enableShakerBox();
+                break;
+            }
+            shakerBox.ReDraw();
+            return;
+            }
+    }
+
 
 };
 
-class  LCDWheelDeadZone:public LCDWheelBase {
-    
-    
 
-private:
-    
-public:
-    
-    
-    };
 
 
 

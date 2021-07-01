@@ -12,13 +12,13 @@
 #define LANDSCAPE       //isDisplayOrientation
 
 //#define Garanin
-#define USAEdition
-//#define joyPult
+//#define USAEdition
+#define joyPult
 //#define crane
 #define fluidTest
 //#define myPanBar
 //#define PanBarDebug
-//#define joyPultRussian
+#define joyPultRussian
 
 #ifdef joyPult
 #else

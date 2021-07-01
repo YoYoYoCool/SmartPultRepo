@@ -7,6 +7,7 @@
 
 
 #include "MemoryControl.hpp"
+#include "../PultGlobalDefinitions.h"
 
     uint32_t EE_Working::profileID=0;
 
@@ -129,7 +130,11 @@
     const EepromDefault panFolowingDefault      =  {       0,               0,                 2};              //98
     const EepromDefault CRCDefaultOld           =  {       0xFFFFFFFF,      0xFFFFFFFF,         0xFFFFFFFF};     //99
     const EepromDefault ZIFRevers               =  {       0,               0x7,                0x7};     //100
+#ifdef USAEdition
+    const EepromDefault externalLensControlOnOff=  {       0,               1,                  1};        //101
+#else
     const EepromDefault externalLensControlOnOff=  {       0,               0,                  1};        //101
+#endif
     const EepromDefault shakerBlocking          =  {       0,               0x00007FFF,         0x00007FFF};     //102
     const EepromDefault internalRNDShakerPanSpeed =  {       0,             0,                  0x40400000};     //103
     const EepromDefault internalRNDShakerTiltSpeed =  {       0,             0,                  0x40400000};     //104

@@ -488,6 +488,14 @@ public:
     //-------------------------------------------------------------
     void setCamIDDopReal(uint8_t CamId);
 
+    void disableDigitalPedal();
+    void enableDigitalRollPedal();
+    void enableDigitalZoomPedal();
+
+    void disableShakerBox();
+    void enableShakerBox();
+
+
 };
 
 

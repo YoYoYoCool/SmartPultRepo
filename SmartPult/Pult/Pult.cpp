@@ -24,6 +24,10 @@
 #include "../ExtrenalDeviceSynchro/DigitalWheel/Protocol.hpp"
 #include "../ExtrenalDeviceSynchro/DigitalWheel/Digital Wheel.hpp"
 #include "../ExtrenalDeviceSynchro/DigitalWheel/ExchangeWheelManager.hpp"
+#include "../ExtrenalDeviceSynchro/DigitalPedal/Pedal.hpp"
+#include "../ExtrenalDeviceSynchro/DigitalPedal/PedalCnannel.hpp"
+#include "../ExtrenalDeviceSynchro/ShakerBox/ShakerBox.hpp"
+#include "../ExtrenalDeviceSynchro/ShakerBox/ShakerBoxChannel.hpp"
 #include "LensParam/LensPack.hpp"
 #include "PULT_Indicator/ServoPwm.h"
 #include "backlight.hpp"
@@ -34,7 +38,7 @@
 
 #define MAX_TRANSFER_TIMEOUT 350
 //#define MAX_TRANSFER_TIMEOUT 100
-#define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 50
+#define MAX_TRANSFER_TIMEOUT_ALTERNATIV_TASK 10
 //#define PULT_DEVELOPING_BOARD
 
 
@@ -364,6 +368,26 @@ ShakerSinChannel rollInternalSinShakerChannel;
 
 ShakerSinChannel zoomInternalSinShakerChannel;
 
+ExternalElement::Pedal digitalPedal;
+
+ExtrenalDevices::PedalChannel rollDigitalPedalChannel(digitalPedal,dutchJoySpeedResistor,230.0);
+
+ExtrenalDevices::PedalChannel zoomDigitalPedalChannel(digitalPedal,zoomSpeedResistor,1.0);
+
+ExternalElement::ShakerBox shakerBox;
+
+ExternalElement::ShakerBoxGetSpeedPan panShekerSpeed(shakerBox);
+
+ExternalElement::ShakerBoxGetSpeedTilt tiltShekerSpeed(shakerBox);
+
+ExternalElement::ShakerBoxGetSpeedRoll rollShekerSpeed(shakerBox);
+
+ExtrenalDevices::ShekerBoxChannel panShakerBoxChannel(panShekerSpeed);
+
+ExtrenalDevices::ShekerBoxChannel tiltShakerBoxChannel(tiltShekerSpeed);
+
+ExtrenalDevices::ShekerBoxChannel rollShakerBoxChannel(rollShekerSpeed);
+
 volatile uint32_t counterMain,counterExchang, deltaCounter;
 
 #ifdef Garanin
@@ -384,8 +408,6 @@ ExtrenalDevices::WheelChannel digitalWheelRoll (230.0,1.0,&dutchJoySpeedResistor
 
 ExtrenalDevices::WheelChannel digitalWheelTilt (230.0,1.0,&tiltJoySpeedResistor);
 
-//ExtrenalDevices::WheelChannel digitalPedal (1.0,1.0,&dutchJoySpeedResistor);
-
 ExtrenalDevices::WheelChannel* digitalWheelChannel[3] = { &digitalWheelPan, &digitalWheelRoll, &digitalWheelTilt };
 
 #endif
@@ -399,48 +421,105 @@ HallEffectJoyChannel zoomPedalChannel(0.0006,2110,&zoomSpeedResistor,50, 250,0.0
 
 #ifdef Garanin
 
-JoyChannelIF* panChannelsArray[4]=      {&panJoyChannel,    &panExtern1Channel, &digitalWheelPanPasha,&panInternalShakerChannel};
-JoyChannelIF* dutchChannelsArray[5]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,&digitalWheelRollPasha,&rollInternalShakerChannel};
-JoyChannelIF* tiltChannelsArray[4]=     {&tiltJoyChannel,   &tiltExtern1Channel,&digitalWheelTiltPasha,&tiltInternalShakerChannel};
-JoyChannelIF* zoomChannelsArray[3]=     {&zoomJoyChannel,&zoomInternalShakerChannel,&zoomPedalChannel};
+JoyChannelIF* panChannelsArray[5]=      {&panJoyChannel,
+                                         &panExtern1Channel,
+                                         &digitalWheelPanPasha,
+                                         &panInternalShakerChannel,
+                                         &panShakerBoxChannel};
+JoyChannelIF* dutchChannelsArray[7]=    {&dutchJoyChannel,
+                                         &dutchExtern2Channel,
+                                         &dutchExtern1Channel,
+                                         &digitalWheelRollPasha,
+                                         &rollInternalShakerChannel,
+                                         &rollDigitalPedalChannel,
+                                         &rollShakerBoxChannel};
+JoyChannelIF* tiltChannelsArray[5]=     {&tiltJoyChannel,
+                                         &tiltExtern1Channel,
+                                         &digitalWheelTiltPasha,
+                                         &tiltInternalShakerChannel,
+                                         &tiltShakerBoxChannel};
+JoyChannelIF* zoomChannelsArray[4]=     {&zoomJoyChannel,
+                                         &zoomInternalShakerChannel,
+                                         &zoomPedalChannel,
+                                         &zoomDigitalPedalChannel};
 
-JoyChannels panChannals     (panChannelsArray,4);
-JoyChannels dutchChannals   (dutchChannelsArray,5);
-JoyChannels tiltChannals    (tiltChannelsArray,4);
-JoyChannels zoomChannals    (zoomChannelsArray,3);
+JoyChannels panChannals     (panChannelsArray,5);
+JoyChannels dutchChannals   (dutchChannelsArray,7);
+JoyChannels tiltChannals    (tiltChannelsArray,5);
+JoyChannels zoomChannals    (zoomChannelsArray,4);
 
 #else
 
 #ifdef joyPult
 
 
-JoyChannelIF* panChannelsArray[6]=      {&panJoyChannel,    &panExtern1Channel, &cartoniPanAxisChannel,
-                                         &digitalWheelPan,&panInternalShakerChannel,
-                                         panBar.getSpeedChannel(ExtrenalDevices::panSpeedChannel)};
-JoyChannelIF* dutchChannelsArray[7]=    {&dutchJoyChannel,  &dutchExtern2Channel,   &dutchExtern1Channel,
-                                         &cartoniDutchAxisChannel,&digitalWheelRoll,&rollInternalShakerChannel,
-                                         panBar.getSpeedChannel(ExtrenalDevices::dutchSpeedChannel)};
-JoyChannelIF* tiltChannelsArray[6]=     {&tiltJoyChannel,   &tiltExtern1Channel, &cartoniTiltAxisChannel,
-                                         &digitalWheelTilt,&tiltInternalShakerChannel,
-                                         panBar.getSpeedChannel(ExtrenalDevices::tiltSpeedChannel)};
-JoyChannelIF* zoomChannelsArray[5]=     {&zoomJoyChannel, &cartoniZoomAxisChannel,&zoomInternalShakerChannel,
-                                        panBar.getSpeedChannel(ExtrenalDevices::zoomSpeedChannel),&zoomPedalChannel};
+JoyChannelIF* panChannelsArray[7]=      {&panJoyChannel,
+                                         &panExtern1Channel,
+                                         &cartoniPanAxisChannel,
+                                         &digitalWheelPan,
+                                         &panInternalShakerChannel,
+                                         panBar.getSpeedChannel(ExtrenalDevices::panSpeedChannel),
+                                         &panShakerBoxChannel};
 
-JoyChannels panChannals     (panChannelsArray,6);
-JoyChannels dutchChannals   (dutchChannelsArray,7);
-JoyChannels tiltChannals    (tiltChannelsArray,6);
-JoyChannels zoomChannals    (zoomChannelsArray,5);
+JoyChannelIF* dutchChannelsArray[9]=    {&dutchJoyChannel,
+                                         &dutchExtern2Channel,
+                                         &dutchExtern1Channel,
+                                         &cartoniDutchAxisChannel,
+                                         &digitalWheelRoll,
+                                         &rollInternalShakerChannel,
+                                         panBar.getSpeedChannel(ExtrenalDevices::dutchSpeedChannel),
+                                         &rollDigitalPedalChannel,
+                                         &rollShakerBoxChannel};
+
+JoyChannelIF* tiltChannelsArray[7]=     {&tiltJoyChannel,
+                                         &tiltExtern1Channel,
+                                         &cartoniTiltAxisChannel,
+                                         &digitalWheelTilt,
+                                         &tiltInternalShakerChannel,
+                                         panBar.getSpeedChannel(ExtrenalDevices::tiltSpeedChannel),
+                                         &tiltShakerBoxChannel};
+
+JoyChannelIF* zoomChannelsArray[6]=     {&zoomJoyChannel,
+                                         &cartoniZoomAxisChannel,
+                                         &zoomInternalShakerChannel,
+                                         panBar.getSpeedChannel(ExtrenalDevices::zoomSpeedChannel),
+                                         &zoomPedalChannel,
+                                         &zoomDigitalPedalChannel};
+
+JoyChannels panChannals     (panChannelsArray,7);
+JoyChannels dutchChannals   (dutchChannelsArray,9);
+JoyChannels tiltChannals    (tiltChannelsArray,7);
+JoyChannels zoomChannals    (zoomChannelsArray,6);
 
     #else
-    JoyChannelIF* panChannelsArray[4]=      {&panExtern1Channel, &cartoniPanAxisChannel,&digitalWheelPan,&panInternalShakerChannel};
-    JoyChannelIF* dutchChannelsArray[5]=    {&dutchExtern2Channel,   &dutchExtern1Channel, &cartoniDutchAxisChannel,&digitalWheelRoll,&rollInternalShakerChannel};
-    JoyChannelIF* tiltChannelsArray[4]=     {&tiltExtern1Channel, &cartoniTiltAxisChannel,&digitalWheelTilt,&tiltInternalShakerChannel};
-    JoyChannelIF* zoomChannelsArray[2]=     { &cartoniZoomAxisChannel,&zoomInternalShakerChannel};
+    JoyChannelIF* panChannelsArray[5]=      {&panExtern1Channel,
+                                             &cartoniPanAxisChannel,
+                                             &digitalWheelPan,
+                                             &panInternalShakerChannel,
+                                             &panShakerBoxChannel};
 
-    JoyChannels panChannals     (panChannelsArray,4);
-    JoyChannels dutchChannals   (dutchChannelsArray,5);
-    JoyChannels tiltChannals    (tiltChannelsArray,4);
-    JoyChannels zoomChannals    (zoomChannelsArray,2);
+    JoyChannelIF* dutchChannelsArray[7]=    {&dutchExtern2Channel,
+                                             &dutchExtern1Channel,
+                                             &cartoniDutchAxisChannel,
+                                             &digitalWheelRoll,
+                                             &rollInternalShakerChannel,
+                                             &rollDigitalPedalChannel,
+                                             &rollShakerBoxChannel};
+
+    JoyChannelIF* tiltChannelsArray[5]=     {&tiltExtern1Channel,
+                                             &cartoniTiltAxisChannel,
+                                             &digitalWheelTilt,
+                                             &tiltInternalShakerChannel,
+                                             &tiltShakerBoxChannel};
+
+    JoyChannelIF* zoomChannelsArray[3]=     { &cartoniZoomAxisChannel,
+                                              &zoomInternalShakerChannel,
+                                              &zoomDigitalPedalChannel};
+
+    JoyChannels panChannals     (panChannelsArray,5);
+    JoyChannels dutchChannals   (dutchChannelsArray,7);
+    JoyChannels tiltChannals    (tiltChannelsArray,5);
+    JoyChannels zoomChannals    (zoomChannelsArray,3);
     #endif
 #endif
                                     //joystics
@@ -683,63 +762,7 @@ Backlight backlight;
 
 
 static UInt16 muxPosRef = 9;
-//=====================================================================================================
-//сея чушь есть пробный объектив;
-//#define LensOtlancka
-#ifdef LensOtlancka
-#include "LensParam/LensDb.hpp"
-#include "LensParam/LensData.hpp"
-#include "LensParam/MX66L51235FDriver.hpp"
-#include "LensParam/dummyDriver.hpp"
-#include "Libs/Containers/List.hpp"
-#include "Libs/Containers/String.hpp"
-#define DummyDriverSet
 
-#ifdef DummyDriverSet
-    LensDb::DummyDriverSettings setting = {0x1234,0x5678,0x9abc};
-    LensDb::DummyDriver driver(setting);
-
-#else
-    LensDb::MX66L51235FDriverSettings setting = {0x1234,0x5678,0x9abc};
-    LensDb::MX66L51235FDriver driver(setting);
-#endif
-    char* nameDummy = "myName";
-        Containers::StringStatic<64> stringNameDummy(&nameDummy[0]);
-        LensDb::LensPoint zoomPoint[3]={zoomPoint[0].position=10.1,
-                                        zoomPoint[0].percent=0,
-                                        zoomPoint[1].position=20.5,
-                                        zoomPoint[1].percent=50.4,
-                                        zoomPoint[2].position=40.5,
-                                        zoomPoint[2].percent=100.0};
-        LensDb::LensPoint irisPoint[4]={irisPoint[0].position=10.2,
-                                        irisPoint[0].percent=0,
-                                        irisPoint[1].position=20.6,
-                                        irisPoint[1].percent=30.7,
-                                        irisPoint[2].position=50.9,
-                                        irisPoint[2].percent=80.8,
-                                        irisPoint[3].position=90.8,
-                                        irisPoint[3].percent=100.0};
-        LensDb::LensPoint focusPoint[5]={focusPoint[0].position=10.0,
-                                         focusPoint[0].percent=0.0,
-                                         focusPoint[1].position=20.4,
-                                         focusPoint[1].percent=30.3,
-                                         focusPoint[2].position=40.8,
-                                         focusPoint[2].percent=45.7,
-                                         focusPoint[3].position=50.9,
-                                         focusPoint[3].percent=80.7,
-                                         focusPoint[4].position=90.8,
-                                         focusPoint[4].percent=100.0};
-
-        Containers::List<LensDb::LensPoint> dummyZoomPointList(&zoomPoint[0],3,64);
-        Containers::List<LensDb::LensPoint> dummyIrisPointList(&irisPoint[0],4,64);
-        Containers::List<LensDb::LensPoint> dummyFocusPointList(&focusPoint[0],5,64);
-        LensDb::LensAxis _zoom(dummyZoomPointList);
-        LensDb::LensAxis _iris(dummyIrisPointList);
-        LensDb::LensAxis _focus(dummyFocusPointList);
-        LensDb::LensObjective dummyObjective(stringNameDummy,_zoom,_iris,_focus);
-
-        LensDb::LensDb<64,300> lansBaseManager(driver);
-#endif
 //=====================================================================================================
 //============================== DRIVER API  ==========================================================
 #pragma CODE_SECTION(".secure")
@@ -747,32 +770,6 @@ void Pult::driverTask()
 {
     ledControl.getDriver()->init();
     watchDogTimer.registerKey(WD_KEY2);
-#ifdef LensOtlancka
-    lansBaseManager.store(1,dummyObjective);
-    char* nameDummyNew = "";
-    Containers::StringStatic<64> stringNameDummyNew(&nameDummyNew[0]);
-    dummyObjective.setName(stringNameDummyNew);
-    bool lensValid = lansBaseManager.load(1,dummyObjective);
-    LensDb::LensAxis dummyAxis1 (dummyObjective.zoom());
-
-    LensDb::LensPoint dymmyPoint1[3];
-    for (Uint32 id=0; id<dummyAxis1.getSize(); id++) {
-        dymmyPoint1[id]=dummyAxis1.point(id);
-        }
-    LensDb::LensAxis dummyAxis2 (dummyObjective.iris());
-    LensDb::LensPoint dymmyPoint2[4];
-    for (Uint32 id=0; id<dummyAxis2.getSize(); id++) {
-        dymmyPoint2[id]=dummyAxis2.point(id);
-        }
-    LensDb::LensAxis dummyAxis3 (dummyObjective.focus());
-    LensDb::LensPoint dymmyPoint3[5];
-    for (Uint32 id=0; id<dummyAxis3.getSize(); id++) {
-        dymmyPoint3[id]=dummyAxis3.point(id);
-        }
-    uint32_t a=0;
-    a=10;
-    a-=5;
-#endif
 
     filesSystemAPI.initFS();
     motionControlAPI.init();
@@ -1321,7 +1318,8 @@ void Pult::exchangeAlternativeTask()
     ExtrenalDevices::DataOut panData;
     ExtrenalDevices::DataOut tiltData;
     ExtrenalDevices::DataOut rollData;
-//    ExtrenalDevices::DataOut pedalData;
+    ExtrenalDevices::DataOut pedalData;
+    ExtrenalDevices::DataOut shakerBoxData;
     ExtrenalDevices::DataOut panBarData;
     LensDb::LensPackStatic<256> packRx;
     LensDb::LensPackStatic<256> packTx;
@@ -1329,15 +1327,12 @@ void Pult::exchangeAlternativeTask()
     panData.dataInput=&panWheelData;
     tiltData.dataInput=&tiltWheelData;
     rollData.dataInput=&rollWheelData;
-    JoyChannelIF* cnannel[5];
-    cnannel[0]=&digitalWheelPan;
-    cnannel[1]=&digitalWheelTilt;
-    cnannel[2]=&digitalWheelRoll;
-    cnannel[3]=&panBar;
     int32_t panBarDataBuf[7];
     int32_t pedalDat;
+    int32_t shakerBoxDat[3];
     panBarData.dataInput=&panBarDataBuf[0];
- //   pedalData.dataInput = &pedalDat;
+    pedalData.dataInput = &pedalDat;
+    shakerBoxData.dataInput=shakerBoxDat;
     Rs485Driver2 driverWhell(params.uartId, 115200, params.recieveTimeout, params.txEnablePin);
     ExtrenalDevices::DigitalWheelManager digitalWheelManager(driverWhell,protokol,packRx,packTx);
     while(true)
@@ -1371,8 +1366,27 @@ void Pult::exchangeAlternativeTask()
             exchange = true;
         }
 
-        //if(digitalPedal.isEnable_())
-//        digitalWheelManager.exchenge(ProtocolWheel::pedal, ProtocolWheel::wheelSpeedRequest, pedalData);
+        if (digitalPedal.isEnable())
+        {
+            digitalPedal.updateConnect(digitalWheelManager.exchenge(ProtocolWheel::pedal, ProtocolWheel::wheelSpeedRequest, pedalData));
+            if (!digitalPedal.isConnect())
+                pedalDat=0;
+            digitalPedal._inValue()[0]=pedalDat;
+            exchange = true;
+        }
+
+  /*      if (shakerBox.isEnable())
+        {
+            shakerBox.updateConnect(digitalWheelManager.exchenge(ProtocolWheel::shakerBox, ProtocolWheel::wheelSpeedRequest, shakerBoxData));
+            if (!shakerBox.isConnect())
+            {
+                for (uint8_t i=0;i<3;i++)
+                    shakerBoxDat[i]=0;
+            }
+            for (uint8_t i=0;i<3;i++)
+                shakerBox.getMassive()[i]=shakerBoxDat[i];
+            exchange = true;
+        }*/
 
         if (panBar.isEnable_())
         {
@@ -1442,11 +1456,13 @@ void Pult::exchangeTask()
             protocol.askCmdId = 4;
             *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
         }
-
-        if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE_ZIF)
+        if (!preston.getEnable())
         {
-            protocol.askCmdId = 5;
-            *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
+            if(*motionControlAPI.getAnglesFlag()==MOTION_GET_ANGLE_ZIF)
+            {
+                protocol.askCmdId = 5;
+                *motionControlAPI.getAnglesFlag()=MOTION_ANGLE_WAIT;
+            }
         }
 
         if(*motionControlAPI.getAnglesFlag()==MOTION_SET_ANGLE)
@@ -2256,6 +2272,9 @@ Warning rollWheelDisconnect ("Dutch wheel disconnect", WT_WARNING);
 Warning panBarDisconnect ("Pan bar disconnect", WT_WARNING);
 Warning panBarError ("Pan bar has error", WT_WARNING);
 #endif
+Warning pedalDisconnect ("Digital pedal disconnect", WT_WARNING);
+Warning shakerBoxDisconnect ("Shaker box disconnect", WT_WARNING);
+
 
 void Pult::updateWarningsList()
 {
@@ -2280,6 +2299,8 @@ void Pult::updateWarningsList()
     if ((digitalWheelTilt.isEnable_())&&(!digitalWheelTilt.isConnect()))   {warnings.getRunStrWarnings()->add(&tiltWheelDisconnect);}
     if ((digitalWheelRoll.isEnable_())&&(!digitalWheelRoll.isConnect()))   {warnings.getRunStrWarnings()->add(&rollWheelDisconnect);}
 #endif
+    if ((digitalPedal.isEnable())&&(!digitalPedal.isConnect()))   {warnings.getRunStrWarnings()->add(&pedalDisconnect);}
+    if ((shakerBox.isEnable())&&(!shakerBox.isConnect()))   {warnings.getRunStrWarnings()->add(&shakerBoxDisconnect);}
 #ifdef myPanBar
     if ((panBar.isEnable_())&&(!panBar.isConnect()))   {warnings.getRunStrWarnings()->add(&panBarDisconnect);}
     if ((panBar.isEnable_())&&(panBar.isConnect())&&(panBar.isError())) {   warnings.getRunStrWarnings()->add(&panBarError);}
@@ -3242,4 +3263,39 @@ IShakerSin* Pult::_zoomAxisShakerSin(){   return &zoomInternalSinShakerChannel; 
 void Pult::setCamIDDopReal(uint8_t camId) {ExtrSyncroization::ExtrenalDevieExchDriver::dataDopReal.setCamId(camId);}
 
 
+void Pult::disableDigitalPedal()
+{
+    digitalPedal.disableExternalDevice();
+    rollDigitalPedalChannel.disable();
+    zoomDigitalPedalChannel.disable();
+}
+
+void Pult::enableDigitalRollPedal()
+{
+    digitalPedal.enableExternalDevice();
+    rollDigitalPedalChannel.enable();
+    zoomDigitalPedalChannel.disable();
+}
+void Pult::enableDigitalZoomPedal()
+{
+    digitalPedal.enableExternalDevice();
+    rollDigitalPedalChannel.disable();
+    zoomDigitalPedalChannel.enable();
+}
+
+void Pult::disableShakerBox()
+{
+    shakerBox.disableExternalDevice();
+    panShakerBoxChannel.disable();
+    tiltShakerBoxChannel.disable();
+    rollShakerBoxChannel.disable();
+}
+
+void Pult::enableShakerBox()
+{
+    shakerBox.enableExternalDevice();
+    panShakerBoxChannel.enable();
+    tiltShakerBoxChannel.enable();
+    rollShakerBoxChannel.enable();
+}
 
